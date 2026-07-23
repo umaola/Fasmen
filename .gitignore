@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.local.example
+
+# local JSON "database" (phase 1 only — replaced by Firestore later)
+/data/*.json
 
 # vercel
 .vercel

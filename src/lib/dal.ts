@@ -1,0 +1,29 @@
+import "server-only";
+import { cache } from "react";
+import { redirect } from "next/navigation";
+import { getSession, deleteSession } from "./session";
+import { findUserById } from "./users";
+
+// Also guards against a session cookie that outlived its user record (e.g.
+// the local JSON store was reset during development) — without this check,
+// the page would render with a null user instead of bouncing to /login.
+export const verifySession = cache(async () => {
+  const session = await getSession();
+  if (!session?.userId) {
+    redirect("/login");
+  }
+
+  const user = await findUserById(session.userId);
+  if (!user) {
+    await deleteSession();
+    redirect("/login");
+  }
+
+  return session;
+});
+
+export const getCurrentUser = cache(async () => {
+  const session = await getSession();
+  if (!session?.userId) return null;
+  return (await findUserById(session.userId)) ?? null;
+});
