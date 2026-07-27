@@ -37,9 +37,18 @@ yarn-error.log*
 # local JSON "database" (phase 1 only — replaced by Firestore later)
 /data/*.json
 
+# user-uploaded images (phase 1 only — local disk stands in for cloud storage)
+/public/uploads/
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI agent skill tooling (personal, not part of the app)
+/.agents/
+/.claude/skills/
+/.codex/
+skills-lock.json

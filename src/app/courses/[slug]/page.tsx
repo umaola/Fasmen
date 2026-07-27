@@ -43,6 +43,17 @@ export default async function CourseDetailPage({
           ← Back to catalog
         </Link>
 
+        {course.thumbnailUrl && (
+          <div className="mt-4 aspect-video w-full overflow-hidden rounded-lg bg-primary-100">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={course.thumbnailUrl}
+              alt={course.title}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+
         <div className="mt-4 flex items-start justify-between gap-6">
           <div>
             <span className="inline-flex rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-700">

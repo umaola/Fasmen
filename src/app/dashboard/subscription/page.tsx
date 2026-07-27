@@ -23,7 +23,7 @@ export default async function SubscriptionPage() {
       {!isVerified && (
         <div className="mt-6 rounded-lg bg-[#fcf3e1] p-5 text-sm text-warning-600">
           Complete{" "}
-          <Link href="/dashboard/verification" className="font-medium underline">
+          <Link href="/dashboard/account/verify" className="font-medium underline">
             tutor verification
           </Link>{" "}
           before subscribing to a paid plan.

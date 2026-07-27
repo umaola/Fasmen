@@ -1,7 +1,7 @@
 import { listPublishedCourses } from "@/lib/courses";
 import { CATEGORIES } from "@/lib/categories";
 import { CourseCard } from "@/components/CourseCard";
-import Link from "next/link";
+import { BackButton } from "./BackButton";
 
 export default async function CourseCatalogPage({
   searchParams,
@@ -16,9 +16,7 @@ export default async function CourseCatalogPage({
       <div className="mx-auto max-w-6xl">
         <div className="flex items-center justify-between">
           <h1 className="font-heading text-2xl font-bold text-primary-900">Browse courses</h1>
-          <Link href="/" className="text-sm font-medium text-primary-700">
-            ← Back home
-          </Link>
+          <BackButton />
         </div>
 
         <form method="GET" className="mt-6 flex flex-col gap-3 sm:flex-row">

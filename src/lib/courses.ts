@@ -25,6 +25,7 @@ export interface Course {
   status: CourseStatus;
   language: string;
   level: CourseLevel;
+  thumbnailUrl: string | null;
   totalLessons: number;
   enrollmentCount: number;
   averageRating: number;
@@ -108,6 +109,7 @@ export async function createCourseDraft(input: {
     status: "draft",
     language: input.language,
     level: input.level,
+    thumbnailUrl: null,
     totalLessons: 0,
     enrollmentCount: 0,
     averageRating: 0,
@@ -207,6 +209,13 @@ export async function updateCourseDetails(
 ): Promise<Course | null> {
   const { priceNaira, ...rest } = patch;
   return updateCourse(courseId, { ...rest, price: Math.round(priceNaira * 100) });
+}
+
+export async function updateCourseThumbnail(
+  courseId: string,
+  thumbnailUrl: string
+): Promise<Course | null> {
+  return updateCourse(courseId, { thumbnailUrl });
 }
 
 export async function deleteCourse(courseId: string): Promise<void> {

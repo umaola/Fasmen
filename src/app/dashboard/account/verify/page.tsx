@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/authz";
+import { uploadVerificationPhotoAction } from "@/app/actions/kyc";
+import { ProfilePhotoUpload } from "@/components/ProfilePhotoUpload";
 import { VerificationForm } from "./VerificationForm";
 
-export default async function VerificationPage() {
+export default async function VerifyIdentityPage() {
   const user = await requireRole("tutor");
   if (!user) {
     redirect("/dashboard");
@@ -12,13 +14,11 @@ export default async function VerificationPage() {
   const tutorProfile = user.tutorProfile;
 
   return (
-    <div className="mx-auto max-w-xl">
-      <h1 className="font-heading text-2xl font-bold text-primary-900">
-        Get your public portfolio link
-      </h1>
+    <div>
+      <h2 className="font-heading text-lg font-semibold text-primary-900">Verify identity</h2>
       <p className="mt-1 text-sm text-neutral-700">
-        A couple of quick details and you&apos;ll have a shareable page students can visit to see
-        your courses.
+        A couple of quick details and you&apos;ll have a shareable portfolio page students can
+        visit to see your courses.
       </p>
 
       {tutorProfile?.verified && tutorProfile.username && (
@@ -32,6 +32,14 @@ export default async function VerificationPage() {
           </Link>
         </div>
       )}
+
+      <div className="mt-4">
+        <ProfilePhotoUpload
+          action={uploadVerificationPhotoAction}
+          photoURL={user.photoURL}
+          fieldName="photo"
+        />
+      </div>
 
       <VerificationForm
         idType={tutorProfile?.idType ?? null}

@@ -9,6 +9,7 @@ import {
   type CreateCourseState,
   type AddLessonState,
   type RejectCourseState,
+  type ImageUploadState,
 } from "@/lib/definitions";
 import { getCurrentUser } from "@/lib/dal";
 import { requireRole } from "@/lib/authz";
@@ -22,10 +23,12 @@ import {
   moveLesson,
   findCourseById,
   updateCourseDetails,
+  updateCourseThumbnail,
   deleteCourse,
   deleteLessonsByCourse,
 } from "@/lib/courses";
 import { deleteQuestionsByCourse } from "@/lib/assessments";
+import { saveUploadedImage, UploadError } from "@/lib/uploads";
 
 export async function createCourse(
   _state: CreateCourseState,
@@ -105,6 +108,38 @@ export async function editCourse(
   revalidatePath(`/dashboard/courses/${courseId}`);
   revalidatePath("/dashboard/courses");
   revalidatePath(`/courses/${course.slug}`);
+  return { success: true };
+}
+
+export async function uploadCourseThumbnailAction(
+  courseId: string,
+  _state: ImageUploadState,
+  formData: FormData
+): Promise<ImageUploadState> {
+  const course = await requireCourseOwner(courseId);
+  if (!course) {
+    return { message: "You don't have access to this course." };
+  }
+
+  const file = formData.get("thumbnail");
+  if (!(file instanceof File)) {
+    return { message: "Choose an image file." };
+  }
+
+  try {
+    const thumbnailUrl = await saveUploadedImage(file, "courses");
+    await updateCourseThumbnail(courseId, thumbnailUrl);
+  } catch (err) {
+    if (err instanceof UploadError) {
+      return { message: err.message };
+    }
+    throw err;
+  }
+
+  revalidatePath(`/dashboard/courses/${courseId}`);
+  revalidatePath("/dashboard/courses");
+  revalidatePath(`/courses/${course.slug}`);
+  revalidatePath("/courses");
   return { success: true };
 }
 

@@ -10,6 +10,7 @@ import { categoryName } from "@/lib/categories";
 import { AddLessonForm } from "./AddLessonForm";
 import { AddQuestionForm } from "./AddQuestionForm";
 import { CourseDetailsSection } from "./CourseDetailsSection";
+import { CourseThumbnailUpload } from "./CourseThumbnailUpload";
 import { LessonsList } from "./LessonsList";
 import { DeleteCourseButton } from "./DeleteCourseButton";
 
@@ -71,6 +72,10 @@ export default async function CourseDetailPage({
       )}
 
       <p className="mt-4 text-neutral-700">{course.description}</p>
+
+      <div className="mt-6">
+        <CourseThumbnailUpload courseId={course.id} thumbnailUrl={course.thumbnailUrl} />
+      </div>
 
       <CourseDetailsSection course={course} initialEditing={edit === "true"} />
 

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { verifySession, getCurrentUser } from "@/lib/dal";
 import { listCoursesByTutor, listPendingReviewCourses, describeCourseActivity } from "@/lib/courses";
-import { listEnrollmentsByStudent, listEnrollmentsByTutor } from "@/lib/enrollments";
+import { listEnrollmentsByTutor } from "@/lib/enrollments";
 import { listPaymentsByTutor, listAllPayments } from "@/lib/payments";
 import { listReviewsByTutor } from "@/lib/reviews";
 import { formatNaira } from "@/lib/currency";
 import { WelcomeModal } from "./WelcomeModal";
 import { PerformanceChart } from "./PerformanceChart";
+import { StudentDashboard } from "./StudentDashboard";
 
 function EmptyState({
   title,
@@ -51,6 +52,10 @@ export default async function DashboardPage({
   const showWelcomeModal =
     justSignedUp !== undefined && user.role === "tutor" && !user.tutorProfile?.verified;
 
+  if (user.role === "student") {
+    return <StudentDashboard studentId={user.id} />;
+  }
+
   return (
     <div>
       {showWelcomeModal && <WelcomeModal />}
@@ -60,59 +65,10 @@ export default async function DashboardPage({
       </h1>
 
       <div className="mt-8">
-        {user.role === "student" && <StudentOverview studentId={user.id} />}
-
         {user.role === "tutor" && <TutorOverview tutorId={user.id} />}
 
         {user.role === "admin" && <AdminOverview />}
       </div>
-    </div>
-  );
-}
-
-async function StudentOverview({ studentId }: { studentId: string }) {
-  const enrollments = await listEnrollmentsByStudent(studentId);
-
-  if (enrollments.length === 0) {
-    return (
-      <EmptyState
-        title="No courses yet"
-        body="You haven't enrolled in any courses. Browse the catalog to find something to learn."
-        actionHref="/courses"
-        actionLabel="Browse courses"
-      />
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      {enrollments.map((enrollment) => (
-        <div
-          key={enrollment.id}
-          className="rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]"
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex-1">
-              <p className="font-medium text-neutral-900">{enrollment.courseTitle}</p>
-              <div className="mt-2 h-2 w-full max-w-xs rounded-full bg-neutral-200">
-                <div
-                  className="h-2 rounded-full bg-primary-500"
-                  style={{ width: `${enrollment.progress.percentComplete}%` }}
-                />
-              </div>
-              <p className="mt-1 text-xs text-neutral-700">
-                You&apos;re {enrollment.progress.percentComplete}% through this course
-              </p>
-            </div>
-            <Link
-              href={`/dashboard/learn/${enrollment.courseSlug}`}
-              className="h-10 shrink-0 rounded-md border border-primary-700 px-5 text-sm font-medium leading-10 text-primary-700 transition hover:bg-primary-100"
-            >
-              Continue
-            </Link>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

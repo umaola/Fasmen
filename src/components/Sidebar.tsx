@@ -103,7 +103,7 @@ export function Sidebar({
         </div>
       )}
 
-      <div className="hidden lg:flex lg:w-60 lg:shrink-0 lg:flex-col lg:bg-primary-900">
+      <div className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col lg:overflow-y-auto lg:bg-primary-900">
         {navContent}
       </div>
     </>

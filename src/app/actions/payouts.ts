@@ -35,6 +35,7 @@ export async function connectPayoutAccountAction(
     accountNumberLast4: accountNumber.slice(-4),
   });
 
+  revalidatePath("/dashboard/account/bank");
   revalidatePath("/dashboard/earnings");
   return { success: true };
 }

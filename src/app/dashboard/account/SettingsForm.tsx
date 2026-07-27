@@ -19,7 +19,7 @@ export function SettingsForm({
   return (
     <form
       action={action}
-      className="mt-8 flex max-w-xl flex-col gap-5 rounded-lg bg-white p-6 shadow-[0_1px_3px_rgba(18,22,28,0.08)]"
+      className="mt-4 flex flex-col gap-5 rounded-lg bg-white p-6 shadow-[0_1px_3px_rgba(18,22,28,0.08)]"
     >
       <div>
         <label htmlFor="displayName" className="block text-sm font-medium text-neutral-900">

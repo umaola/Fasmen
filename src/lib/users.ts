@@ -73,6 +73,18 @@ export async function updateUserProfile(
   return updated;
 }
 
+export async function updateUserPhoto(userId: string, photoURL: string): Promise<UserProfile | null> {
+  let updated: UserProfile | null = null;
+  await withCollection<UserProfile>(USERS_FILE, (users) =>
+    users.map((u) => {
+      if (u.id !== userId) return u;
+      updated = { ...u, photoURL, updatedAt: new Date().toISOString() };
+      return updated;
+    })
+  );
+  return updated;
+}
+
 export async function incrementTutorTotalStudents(tutorId: string): Promise<void> {
   await withCollection<UserProfile>(USERS_FILE, (users) =>
     users.map((u) => {

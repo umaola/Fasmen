@@ -160,6 +160,13 @@ export type TutorVerificationState =
     }
   | undefined;
 
+export type ImageUploadState =
+  | {
+      message?: string;
+      success?: boolean;
+    }
+  | undefined;
+
 export const SubscribeFormSchema = z.object({
   plan: z.enum(["creator", "enterprise"], { error: "Choose a plan." }),
   billingPeriodMonths: z.coerce.number().refine((n) => [1, 12].includes(n), {

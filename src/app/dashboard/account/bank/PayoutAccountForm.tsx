@@ -40,7 +40,7 @@ export function PayoutAccountForm({
           Complete tutor verification before connecting a bank account for payouts.
         </p>
         <Link
-          href="/dashboard/verification"
+          href="/dashboard/account/verify"
           className="mt-3 inline-flex h-10 items-center rounded-md bg-primary-700 px-5 text-sm font-medium text-white transition hover:bg-primary-900"
         >
           Complete verification

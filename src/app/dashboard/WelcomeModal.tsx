@@ -19,7 +19,7 @@ export function WelcomeModal() {
         </p>
         <div className="mt-6 flex flex-col gap-3">
           <Link
-            href="/dashboard/verification"
+            href="/dashboard/account/verify"
             className="inline-flex h-11 items-center justify-center rounded-md bg-primary-700 font-medium text-white transition hover:bg-primary-900"
           >
             Complete registration

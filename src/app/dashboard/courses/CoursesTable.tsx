@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { Course } from "@/lib/courses";
 import { StatusChip } from "@/components/StatusChip";
 import { Pagination } from "@/components/Pagination";
-import { SearchIcon } from "@/components/icons";
+import { SearchIcon, ImagePlaceholderIcon } from "@/components/icons";
 import { categoryName } from "@/lib/categories";
 import { formatNaira } from "@/lib/currency";
 import { CourseRowActions } from "./CourseRowActions";
@@ -74,8 +74,22 @@ export function CoursesTable({ courses }: { courses: Course[] }) {
                   <td className="px-4 py-3 whitespace-nowrap text-neutral-700">
                     {course.id.slice(0, 8)}
                   </td>
-                  <td className="px-4 py-3 font-medium whitespace-nowrap text-neutral-900">
-                    {course.title}
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-neutral-100">
+                        {course.thumbnailUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={course.thumbnailUrl}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <ImagePlaceholderIcon className="h-4 w-4 text-neutral-400" />
+                        )}
+                      </div>
+                      <span className="font-medium text-neutral-900">{course.title}</span>
+                    </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-neutral-700">
                     {categoryName(course.category)}

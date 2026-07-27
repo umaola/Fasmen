@@ -1,8 +1,8 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/dal";
 import { listPaymentsByTutor } from "@/lib/payments";
 import { formatNaira } from "@/lib/currency";
-import { PayoutAccountForm } from "./PayoutAccountForm";
 import { EarningsAnalytics } from "./EarningsAnalytics";
 
 export default async function EarningsPage() {
@@ -22,17 +22,21 @@ export default async function EarningsPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-bold text-primary-900">Earnings</h1>
-      <p className="mt-1 text-sm text-neutral-700">
-        Enrollments are simulated locally until a real payment provider is wired up — an admin
-        marks payouts as sent from the reconciliation dashboard until real bank transfers exist.
-      </p>
-
-      <div className="mt-6">
-        <PayoutAccountForm
-          payoutAccount={user.tutorProfile?.payoutAccount ?? null}
-          isVerified={Boolean(user.tutorProfile?.verified)}
-        />
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-2xl font-bold text-primary-900">Earnings</h1>
+          <p className="mt-1 text-sm text-neutral-700">
+            Enrollments are simulated locally until a real payment provider is wired up — an admin
+            marks payouts as sent from the reconciliation dashboard until real bank transfers
+            exist.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/account/bank"
+          className="shrink-0 text-sm font-medium text-primary-700 hover:text-primary-900"
+        >
+          Manage bank account
+        </Link>
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
