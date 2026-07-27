@@ -25,15 +25,15 @@ export default async function TutorReviewsPage() {
       </p>
 
       <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-4">
-        <div className="min-w-0 rounded-lg bg-white p-3 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
+        <div className="min-w-0 rounded-lg bg-white p-4 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
           <p className="truncate text-xs text-neutral-700 sm:text-sm">Average rating</p>
-          <p className="font-heading mt-1 truncate text-base font-bold text-primary-900 sm:text-2xl">
+          <p className="font-heading mt-1 truncate text-xl font-extrabold text-primary-900 sm:text-2xl sm:font-bold">
             {averageRating > 0 ? `★ ${averageRating.toFixed(1)}` : "No ratings yet"}
           </p>
         </div>
-        <div className="min-w-0 rounded-lg bg-white p-3 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
+        <div className="min-w-0 rounded-lg bg-white p-4 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
           <p className="truncate text-xs text-neutral-700 sm:text-sm">Total reviews</p>
-          <p className="font-heading mt-1 truncate text-base font-bold text-primary-900 sm:text-2xl">
+          <p className="font-heading mt-1 truncate text-xl font-extrabold text-primary-900 sm:text-2xl sm:font-bold">
             {reviews.length}
           </p>
         </div>
