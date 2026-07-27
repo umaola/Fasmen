@@ -1,0 +1,12 @@
+[
+  {
+    "id": "bdf55a27-72c2-433d-a8a5-6acfb7dbd436",
+    "courseId": "1e678296-9258-4434-9e13-da8d954edf27",
+    "studentId": "b6edef13-1408-437e-ae1e-be4771e676bc",
+    "studentName": "Test Student",
+    "rating": 4,
+    "comment": "Really clear explanation of layout fundamentals. Would have liked more examples, but great start.",
+    "createdAt": "2026-07-20T00:01:03.406Z",
+    "updatedAt": "2026-07-20T00:01:03.406Z"
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "2297862c-c490-4b8c-beb1-646c58059061",
+    "courseId": "1e678296-9258-4434-9e13-da8d954edf27",
+    "title": "Understanding Layout Principles",
+    "order": 0,
+    "type": "reading",
+    "content": "In this lesson, we cover the basics of grid systems, whitespace, and visual hierarchy that make up good web layout.",
+    "isPreview": true,
+    "createdAt": "2026-07-19T16:11:45.705Z"
+  },
+  {
+    "id": "670ed843-b4bc-4afe-b8ba-37eb7ddb3261",
+    "courseId": "ccb954aa-28af-4a8a-8c50-71010670d650",
+    "title": "Introduction",
+    "order": 0,
+    "type": "reading",
+    "content": "understand what you are goign to be learning",
+    "isPreview": true,
+    "createdAt": "2026-07-19T20:39:27.580Z"
+  },
+  {
+    "id": "97901461-a529-42ec-8ec0-627320047580",
+    "courseId": "ccb954aa-28af-4a8a-8c50-71010670d650",
+    "title": "starting point",
+    "order": 1,
+    "type": "reading",
+    "content": "dshbdjfhjsdjcnndscndksjfkkfjkkdsklaskjkdjfrkjfkos",
+    "isPreview": false,
+    "createdAt": "2026-07-19T20:40:03.259Z"
+  },
+  {
+    "id": "c2e937ef-1259-4b92-9614-2de66023d8b7",
+    "courseId": "6e3cf779-61ba-4199-9212-9aa695f59572",
+    "title": "Lesson 1",
+    "order": 0,
+    "type": "reading",
+    "content": "Content for testing purposes only.",
+    "videoUrl": null,
+    "videoDurationSeconds": null,
+    "isPreview": true,
+    "createdAt": "2026-07-20T00:09:35.206Z"
+  },
+  {
+    "id": "bf65e704-bdb5-43b5-882f-7d08f1bae344",
+    "courseId": "11aacbba-470b-48f7-a77d-97f226aed884",
+    "title": "Lesson 1",
+    "order": 0,
+    "type": "reading",
+    "content": "Test content.",
+    "videoUrl": null,
+    "videoDurationSeconds": null,
+    "isPreview": true,
+    "createdAt": "2026-07-20T09:21:21.316Z"
+  },
+  {
+    "id": "1d142e0d-ef24-4c72-99e3-37613b5d9e33",
+    "courseId": "e60c1de8-7aa1-48f4-935a-83bcbf33413c",
+    "title": "Lesson 1",
+    "order": 0,
+    "type": "reading",
+    "content": "Test content for gating verification.",
+    "videoUrl": null,
+    "videoDurationSeconds": null,
+    "isPreview": false,
+    "createdAt": "2026-07-21T09:57:10.140Z"
+  },
+  {
+    "id": "605d88a2-c665-4835-afae-ac7c150b2898",
+    "courseId": "c6405998-e1b2-45a9-90b1-1aeae6c74623",
+    "title": "intro",
+    "order": 0,
+    "type": "video",
+    "content": "43uydehhcjks;lklsdjdkkld",
+    "videoUrl": "https://www.youtube.com/watch?v=ItlH-DPfbgM",
+    "videoDurationSeconds": 40,
+    "isPreview": false,
+    "createdAt": "2026-07-27T21:14:52.163Z"
+  }
+]

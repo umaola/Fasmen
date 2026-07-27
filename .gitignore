@@ -34,8 +34,6 @@ yarn-error.log*
 .env*
 !.env.local.example
 
-# local JSON "database" (phase 1 only — replaced by Firestore later)
-/data/*.json
 
 # user-uploaded images (phase 1 only — local disk stands in for cloud storage)
 /public/uploads/

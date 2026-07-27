@@ -1,0 +1,50 @@
+[
+  {
+    "id": "430c864f-42c2-4299-9946-385593ccb5d5",
+    "studentId": "b6edef13-1408-437e-ae1e-be4771e676bc",
+    "courseId": "1e678296-9258-4434-9e13-da8d954edf27",
+    "courseTitle": "Intro to Web Design",
+    "tutorId": "48a58b08-b3b9-4ca0-aa5d-bdb9487e0a86",
+    "amount": 500000,
+    "currency": "NGN",
+    "status": "success",
+    "platformFeeAmount": 150000,
+    "tutorPayoutAmount": 350000,
+    "payoutStatus": "paid",
+    "providerReference": "DUMMY-84bc8c07-6498-48f1-8193-c503d1c684be",
+    "createdAt": "2026-07-19T23:42:26.406Z",
+    "confirmedAt": "2026-07-19T23:42:26.406Z"
+  },
+  {
+    "id": "c6731191-37f4-43e6-b6a9-913f0f062909",
+    "studentId": "b6edef13-1408-437e-ae1e-be4771e676bc",
+    "courseId": "6e3cf779-61ba-4199-9212-9aa695f59572",
+    "courseTitle": "Quiz Test Course",
+    "tutorId": "48a58b08-b3b9-4ca0-aa5d-bdb9487e0a86",
+    "amount": 50000,
+    "currency": "NGN",
+    "status": "success",
+    "platformFeeAmount": 15000,
+    "tutorPayoutAmount": 35000,
+    "payoutStatus": "paid",
+    "providerReference": "DUMMY-4a8c9f5e-ce57-4dd6-b9dd-3375af938782",
+    "createdAt": "2026-07-20T00:12:12.704Z",
+    "confirmedAt": "2026-07-20T00:12:12.704Z"
+  },
+  {
+    "id": "1e89d62a-fc3c-41e0-97e3-e1a3a03492a3",
+    "studentId": "b6edef13-1408-437e-ae1e-be4771e676bc",
+    "courseId": "11aacbba-470b-48f7-a77d-97f226aed884",
+    "courseTitle": "Certificate Test Course",
+    "tutorId": "48a58b08-b3b9-4ca0-aa5d-bdb9487e0a86",
+    "amount": 20000,
+    "currency": "NGN",
+    "status": "success",
+    "platformFeeAmount": 6000,
+    "tutorPayoutAmount": 14000,
+    "payoutStatus": "paid",
+    "providerReference": "DUMMY-8acfba45-35df-49dc-a8ff-e7e9b2fb63ac",
+    "createdAt": "2026-07-20T09:28:32.185Z",
+    "confirmedAt": "2026-07-20T09:28:32.185Z"
+  }
+]

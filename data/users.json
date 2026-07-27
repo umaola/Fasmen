@@ -1,0 +1,132 @@
+[
+  {
+    "id": "61974124-7c51-43b1-b136-33839db1ecce",
+    "displayName": "umaolamma",
+    "email": "umaolamma@gmail.com",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "student",
+    "bio": null,
+    "createdAt": "2026-07-15T08:00:00.000Z",
+    "updatedAt": "2026-07-15T08:00:00.000Z",
+    "tutorProfile": null
+  },
+  {
+    "id": "990fcf7f-8c02-415e-8d5a-3c4c4dd7824c",
+    "displayName": "umaolamma",
+    "email": "umaolamma@mail.com",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "student",
+    "bio": null,
+    "createdAt": "2026-07-15T08:05:00.000Z",
+    "updatedAt": "2026-07-15T08:05:00.000Z",
+    "tutorProfile": null
+  },
+  {
+    "id": "e27acdcf-f919-442b-8211-ee5b3bc1220e",
+    "displayName": "Test Admin",
+    "email": "admin@test.local",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "admin",
+    "bio": null,
+    "createdAt": "2026-07-19T18:00:00.000Z",
+    "updatedAt": "2026-07-19T18:00:00.000Z",
+    "tutorProfile": null
+  },
+  {
+    "id": "48a58b08-b3b9-4ca0-aa5d-bdb9487e0a86",
+    "displayName": "Test Tutor",
+    "email": "tutor@test.local",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "tutor",
+    "bio": "I'm a web designer with 5 years of experience building accessible, fast-loading sites for small businesses across Lagos.",
+    "createdAt": "2026-07-19T18:05:00.000Z",
+    "updatedAt": "2026-07-23T12:44:06.383Z",
+    "tutorProfile": {
+      "totalStudents": 3,
+      "averageRating": 4,
+      "verified": true,
+      "username": "test-tutor",
+      "idType": "passport",
+      "idNumber": "A12345678",
+      "payoutAccount": {
+        "provider": "paystack",
+        "subaccountCode": "SUB-restored-48a58b08",
+        "bankName": "Guaranty Trust Bank",
+        "accountNumberLast4": "6789"
+      }
+    }
+  },
+  {
+    "id": "b6edef13-1408-437e-ae1e-be4771e676bc",
+    "displayName": "Test Student",
+    "email": "student@test.local",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "student",
+    "bio": null,
+    "createdAt": "2026-07-19T18:10:00.000Z",
+    "updatedAt": "2026-07-19T18:10:00.000Z",
+    "tutorProfile": null
+  },
+  {
+    "id": "0715be13-c7fa-42cc-9a7c-bd0c779d26be",
+    "displayName": "Ada Verify",
+    "email": "ada.verify@test.local",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "tutor",
+    "bio": "I teach practical data analysis skills to beginners, focusing on real Nigerian business use cases.",
+    "createdAt": "2026-07-21T09:00:00.000Z",
+    "updatedAt": "2026-07-22T14:32:06.301Z",
+    "tutorProfile": {
+      "totalStudents": 0,
+      "averageRating": 0,
+      "verified": true,
+      "username": "ada-verify",
+      "idType": "nin",
+      "idNumber": "12345678901",
+      "payoutAccount": {
+        "provider": "paystack",
+        "bankName": "Zenith Bank",
+        "accountNumberLast4": "6655",
+        "subaccountCode": "SUB-897e699b-f4ec-4fb9-bf71-c7e3356a52b6"
+      }
+    }
+  },
+  {
+    "id": "b1cc09dc-e250-41cb-b627-a1f60b344b92",
+    "displayName": "Unverified Tutor",
+    "email": "unverified@test.local",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "student",
+    "bio": null,
+    "createdAt": "2026-07-22T10:00:00.000Z",
+    "updatedAt": "2026-07-22T10:00:00.000Z",
+    "tutorProfile": null
+  },
+  {
+    "id": "1f7d430a-a6a8-4985-8456-6599fb2199a8",
+    "displayName": "Unverified Tutor 2",
+    "email": "unverified2@test.local",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "tutor",
+    "bio": null,
+    "createdAt": "2026-07-22T10:05:00.000Z",
+    "updatedAt": "2026-07-22T10:05:00.000Z",
+    "tutorProfile": {
+      "totalStudents": 0,
+      "averageRating": 0,
+      "verified": false,
+      "username": null,
+      "idType": null,
+      "idNumber": null,
+      "payoutAccount": null
+    }
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "c7341a39-9305-40bb-aa87-9627522a41ad",
+    "studentId": "b6edef13-1408-437e-ae1e-be4771e676bc",
+    "studentName": "Test Student",
+    "courseId": "11aacbba-470b-48f7-a77d-97f226aed884",
+    "courseTitle": "Certificate Test Course",
+    "tutorName": "Test Tutor",
+    "scorePercent": 100,
+    "issuedAt": "2026-07-20T09:30:17.044Z"
+  }
+]
