@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Payment } from "@/lib/payments";
 import { formatNaira } from "@/lib/currency";
+import { RangeSelect } from "@/components/RangeSelect";
 import {
   RANGE_OPTIONS,
   bucketPayments,
@@ -34,14 +35,16 @@ export function EarningsAnalytics({ payments }: { payments: Payment[] }) {
 
   const buckets = bucketPayments(payments, range);
   const maxValue = niceMax(Math.max(...buckets.map((b) => b.value), 1));
-  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(maxValue * f));
+  const yTicks = [0, 0.5, 1].map((f) => Math.round(maxValue * f));
 
   const n = buckets.length;
   const slotWidth = CHART_W / n;
   const barWidth = Math.min(24, slotWidth * 0.6);
   const gap = slotWidth - barWidth;
   const scaleY = (value: number) => (CHART_H * value) / maxValue;
-  const labelStride = n > 20 ? Math.ceil(n / 10) : n > 10 ? 2 : 1;
+  // Cap to ~5 evenly-spaced labels regardless of range, so months stay legible
+  // on mobile instead of crowding into unreadable text.
+  const labelStride = Math.max(1, Math.ceil(n / 5));
 
   const transactions = filterPaymentsByRange(payments, range).sort((a, b) =>
     b.createdAt.localeCompare(a.createdAt)
@@ -49,23 +52,7 @@ export function EarningsAnalytics({ payments }: { payments: Payment[] }) {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Date range">
-        {RANGE_OPTIONS.map((opt) => (
-          <button
-            key={opt.key}
-            type="button"
-            onClick={() => setRange(opt.key)}
-            aria-pressed={range === opt.key}
-            className={`h-9 rounded-md px-4 text-sm font-medium transition ${
-              range === opt.key
-                ? "bg-primary-700 text-white"
-                : "border border-neutral-200 text-neutral-700 hover:bg-neutral-100"
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <RangeSelect label="Date range" options={RANGE_OPTIONS} value={range} onChange={setRange} />
 
       <div className="relative mt-4 rounded-lg bg-white p-4 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
         <h3 className="text-sm font-medium text-neutral-900">Earnings</h3>
@@ -93,7 +80,7 @@ export function EarningsAnalytics({ payments }: { payments: Payment[] }) {
                     y={y}
                     textAnchor="end"
                     dominantBaseline="middle"
-                    fontSize={11}
+                    fontSize={13}
                     fill={AXIS_TEXT_COLOR}
                   >
                     {formatCompactNaira(tick)}
@@ -133,9 +120,9 @@ export function EarningsAnalytics({ payments }: { payments: Payment[] }) {
                   {i % labelStride === 0 && (
                     <text
                       x={x + barWidth / 2}
-                      y={VIEW_H - PAD.bottom + 16}
+                      y={VIEW_H - PAD.bottom + 18}
                       textAnchor="middle"
-                      fontSize={10}
+                      fontSize={13}
                       fill={AXIS_TEXT_COLOR}
                     >
                       {bucket.label}
@@ -172,7 +159,7 @@ export function EarningsAnalytics({ payments }: { payments: Payment[] }) {
         <div className="mt-4 overflow-x-auto rounded-lg bg-white shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 text-neutral-700">
+              <tr className="border-b border-neutral-200 bg-neutral-200 text-neutral-700">
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium">Course</th>
                 <th className="px-4 py-3 font-medium">Amount</th>

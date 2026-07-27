@@ -61,7 +61,7 @@ export default async function ReconciliationPage() {
         <div className="mt-4 overflow-x-auto rounded-lg bg-white shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 text-neutral-700">
+              <tr className="border-b border-neutral-200 bg-neutral-200 text-neutral-700">
                 <th className="px-4 py-3 font-medium">Course</th>
                 <th className="px-4 py-3 font-medium">Amount</th>
                 <th className="px-4 py-3 font-medium">Platform fee</th>

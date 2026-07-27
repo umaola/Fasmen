@@ -5,6 +5,7 @@ import type { Enrollment } from "@/lib/enrollments";
 import type { Payment } from "@/lib/payments";
 import type { TutorReview } from "@/lib/reviews";
 import { formatNaira } from "@/lib/currency";
+import { RangeSelect } from "@/components/RangeSelect";
 import {
   PERF_RANGE_OPTIONS,
   buildPerformanceBuckets,
@@ -69,23 +70,7 @@ export function PerformanceChart({
     <div className="rounded-lg bg-white p-6 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-heading text-lg font-semibold text-primary-900">Analytics</h2>
-        <div className="flex flex-wrap gap-1" role="group" aria-label="Time range">
-          {PERF_RANGE_OPTIONS.map((opt) => (
-            <button
-              key={opt.key}
-              type="button"
-              onClick={() => setRange(opt.key)}
-              aria-pressed={range === opt.key}
-              className={`h-9 rounded-md px-3 text-sm font-medium transition ${
-                range === opt.key
-                  ? "border border-primary-700 text-primary-700"
-                  : "text-neutral-700 hover:bg-neutral-100"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+        <RangeSelect label="Time range" options={PERF_RANGE_OPTIONS} value={range} onChange={setRange} />
       </div>
 
       <div className="mt-4 flex flex-wrap gap-4">

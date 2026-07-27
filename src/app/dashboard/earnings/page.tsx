@@ -39,22 +39,22 @@ export default async function EarningsPage() {
         </Link>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
-          <p className="text-sm text-neutral-700">Total revenue</p>
-          <p className="font-heading mt-1 text-2xl font-bold text-primary-900">
+      <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="min-w-0 rounded-lg bg-white p-3 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
+          <p className="truncate text-xs text-neutral-700 sm:text-sm">Total revenue</p>
+          <p className="font-heading mt-1 truncate text-base font-bold text-primary-900 sm:text-2xl">
             {formatNaira(totalRevenue)}
           </p>
         </div>
-        <div className="rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
-          <p className="text-sm text-neutral-700">Paid out</p>
-          <p className="font-heading mt-1 text-2xl font-bold text-success-600">
+        <div className="min-w-0 rounded-lg bg-white p-3 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
+          <p className="truncate text-xs text-neutral-700 sm:text-sm">Paid out</p>
+          <p className="font-heading mt-1 truncate text-base font-bold text-success-600 sm:text-2xl">
             {formatNaira(paidOutAmount)}
           </p>
         </div>
-        <div className="rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
-          <p className="text-sm text-neutral-700">Pending payout</p>
-          <p className="font-heading mt-1 text-2xl font-bold text-warning-600">
+        <div className="min-w-0 rounded-lg bg-white p-3 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
+          <p className="truncate text-xs text-neutral-700 sm:text-sm">Pending payout</p>
+          <p className="font-heading mt-1 truncate text-base font-bold text-warning-600 sm:text-2xl">
             {formatNaira(pendingAmount)}
           </p>
         </div>

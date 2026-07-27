@@ -194,6 +194,15 @@ export function CertificateIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function PlusIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M12 4v16" />
+      <path d="M4 12h16" />
+    </Icon>
+  );
+}
+
 export function HeartIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Icon {...props}>

@@ -106,7 +106,7 @@ async function TutorOverview({ tutorId }: { tutorId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <StatTile label="Total enrollments" value={String(totalStudents)} />
         <StatTile label="Total courses" value={String(courses.length)} />
         <StatTile label="Total earnings" value={formatNaira(totalPayout)} />
@@ -122,16 +122,16 @@ async function TutorOverview({ tutorId }: { tutorId: string }) {
             </h2>
             <Link
               href="/dashboard/courses"
-              className="text-xs font-medium text-primary-700 hover:text-primary-900"
+              className="shrink-0 pl-4 text-xs font-medium text-primary-700 underline hover:text-primary-900"
             >
-              Manage your courses
+              Manage
             </Link>
           </div>
           <ul className="mt-2 flex flex-col divide-y divide-neutral-200">
             {recentActivity.map((item, i) => (
-              <li key={i} className="flex items-center justify-between py-2.5 text-sm">
-                <span className="text-neutral-900">{item.message}</span>
-                <span className="shrink-0 pl-4 text-xs text-neutral-700">
+              <li key={i} className="flex items-center justify-between gap-2 py-2.5 text-sm">
+                <span className="min-w-0 truncate text-neutral-900">{item.message}</span>
+                <span className="shrink-0 text-xs text-neutral-700">
                   {new Date(item.at).toLocaleDateString("en-NG", {
                     day: "numeric",
                     month: "short",
@@ -149,9 +149,9 @@ async function TutorOverview({ tutorId }: { tutorId: string }) {
             </h2>
             <Link
               href="/dashboard/earnings"
-              className="text-xs font-medium text-primary-700 hover:text-primary-900"
+              className="shrink-0 pl-4 text-xs font-medium text-primary-700 underline hover:text-primary-900"
             >
-              See all transactions
+              View all
             </Link>
           </div>
           {recentTransactions.length === 0 ? (
@@ -159,10 +159,10 @@ async function TutorOverview({ tutorId }: { tutorId: string }) {
           ) : (
             <ul className="mt-2 flex flex-col divide-y divide-neutral-200">
               {recentTransactions.map((payment) => (
-                <li key={payment.id} className="flex items-center justify-between py-2.5 text-sm">
-                  <div>
-                    <p className="text-neutral-900">{payment.courseTitle}</p>
-                    <p className="text-xs text-neutral-700">
+                <li key={payment.id} className="flex items-center justify-between gap-2 py-2.5 text-sm">
+                  <div className="min-w-0">
+                    <p className="truncate text-neutral-900">{payment.courseTitle}</p>
+                    <p className="truncate text-xs text-neutral-700">
                       {new Date(payment.createdAt).toLocaleDateString("en-NG", {
                         day: "numeric",
                         month: "short",
@@ -170,7 +170,7 @@ async function TutorOverview({ tutorId }: { tutorId: string }) {
                       })}
                     </p>
                   </div>
-                  <span className="shrink-0 pl-4 font-medium text-primary-900">
+                  <span className="shrink-0 font-medium text-primary-900">
                     {formatNaira(payment.tutorPayoutAmount)}
                   </span>
                 </li>
@@ -185,10 +185,12 @@ async function TutorOverview({ tutorId }: { tutorId: string }) {
 
 function StatTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
-      <p className="text-sm text-neutral-700">{label}</p>
-      <p className="font-heading mt-1 text-2xl font-bold text-primary-900">{value}</p>
-      {hint && <p className="mt-1 text-xs text-neutral-400">{hint}</p>}
+    <div className="min-w-0 rounded-lg bg-white p-3 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
+      <p className="truncate text-xs text-neutral-700 sm:text-sm">{label}</p>
+      <p className="font-heading mt-1 truncate text-base font-bold text-primary-900 sm:text-2xl">
+        {value}
+      </p>
+      {hint && <p className="mt-1 truncate text-xs text-neutral-400">{hint}</p>}
     </div>
   );
 }

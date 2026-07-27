@@ -24,16 +24,16 @@ export default async function TutorReviewsPage() {
         What students are saying across all of your courses.
       </p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
-          <p className="text-sm text-neutral-700">Average rating</p>
-          <p className="font-heading mt-1 text-2xl font-bold text-primary-900">
+      <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-4">
+        <div className="min-w-0 rounded-lg bg-white p-3 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
+          <p className="truncate text-xs text-neutral-700 sm:text-sm">Average rating</p>
+          <p className="font-heading mt-1 truncate text-base font-bold text-primary-900 sm:text-2xl">
             {averageRating > 0 ? `★ ${averageRating.toFixed(1)}` : "No ratings yet"}
           </p>
         </div>
-        <div className="rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
-          <p className="text-sm text-neutral-700">Total reviews</p>
-          <p className="font-heading mt-1 text-2xl font-bold text-primary-900">
+        <div className="min-w-0 rounded-lg bg-white p-3 shadow-[0_1px_3px_rgba(18,22,28,0.08)] sm:p-5">
+          <p className="truncate text-xs text-neutral-700 sm:text-sm">Total reviews</p>
+          <p className="font-heading mt-1 truncate text-base font-bold text-primary-900 sm:text-2xl">
             {reviews.length}
           </p>
         </div>

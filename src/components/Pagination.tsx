@@ -30,16 +30,16 @@ export function Pagination({
   onPageChange: (page: number) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4">
-      <p className="text-sm text-neutral-700">
+    <div className="flex items-center justify-between gap-2 sm:gap-4">
+      <p className="shrink-0 text-xs text-neutral-700 sm:text-sm">
         Page {currentPage} of {totalPages}
       </p>
 
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 sm:gap-4">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           {pageNumbers(currentPage, totalPages).map((p, i) =>
             p === "ellipsis" ? (
-              <span key={`e-${i}`} className="px-2 text-sm text-neutral-700">
+              <span key={`e-${i}`} className="px-1 text-xs text-neutral-700 sm:px-2 sm:text-sm">
                 …
               </span>
             ) : (
@@ -47,7 +47,7 @@ export function Pagination({
                 key={p}
                 type="button"
                 onClick={() => onPageChange(p)}
-                className={`h-9 w-9 rounded-md text-sm font-medium transition ${
+                className={`h-7 w-7 rounded-md text-xs font-medium transition sm:h-9 sm:w-9 sm:text-sm ${
                   p === currentPage
                     ? "border border-accent-600 text-accent-600"
                     : "text-neutral-700 hover:bg-neutral-100"
@@ -59,22 +59,26 @@ export function Pagination({
           )}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1 sm:gap-2">
           <button
             type="button"
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className="h-9 rounded-md border border-neutral-200 px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-50"
+            aria-label="Previous page"
+            className="h-7 rounded-md border border-neutral-200 px-2 text-xs font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-50 sm:h-9 sm:px-4 sm:text-sm"
           >
-            ← Previous
+            <span className="sm:hidden">←</span>
+            <span className="hidden sm:inline">← Previous</span>
           </button>
           <button
             type="button"
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
-            className="h-9 rounded-md border border-neutral-200 px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-50"
+            aria-label="Next page"
+            className="h-7 rounded-md border border-neutral-200 px-2 text-xs font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-50 sm:h-9 sm:px-4 sm:text-sm"
           >
-            Next →
+            <span className="sm:hidden">→</span>
+            <span className="hidden sm:inline">Next →</span>
           </button>
         </div>
       </div>
