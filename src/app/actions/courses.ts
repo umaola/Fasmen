@@ -191,7 +191,7 @@ export async function createLesson(
     title: formData.get("title"),
     type: formData.get("type"),
     content: formData.get("content"),
-    videoUrl: formData.get("videoUrl") ?? undefined,
+    videoGuid: formData.get("videoGuid") ?? undefined,
     videoDurationSeconds: formData.get("videoDurationSeconds") || undefined,
     isPreview: formData.get("isPreview") ?? undefined,
   });
@@ -200,13 +200,13 @@ export async function createLesson(
     return { errors: validatedFields.error.flatten().fieldErrors };
   }
 
-  const { title, type, content, videoUrl, videoDurationSeconds, isPreview } = validatedFields.data;
+  const { title, type, content, videoGuid, videoDurationSeconds, isPreview } = validatedFields.data;
   await addLesson({
     courseId,
     title,
     type,
     content,
-    videoUrl,
+    videoGuid,
     videoDurationSeconds,
     isPreview: isPreview === "on",
   });
@@ -229,7 +229,7 @@ export async function updateLessonAction(
     title: formData.get("title"),
     type: formData.get("type"),
     content: formData.get("content"),
-    videoUrl: formData.get("videoUrl") ?? undefined,
+    videoGuid: formData.get("videoGuid") ?? undefined,
     videoDurationSeconds: formData.get("videoDurationSeconds") || undefined,
     isPreview: formData.get("isPreview") ?? undefined,
   });
@@ -238,12 +238,12 @@ export async function updateLessonAction(
     return { errors: validatedFields.error.flatten().fieldErrors };
   }
 
-  const { title, type, content, videoUrl, videoDurationSeconds, isPreview } = validatedFields.data;
+  const { title, type, content, videoGuid, videoDurationSeconds, isPreview } = validatedFields.data;
   await updateLesson(lessonId, {
     title,
     type,
     content,
-    videoUrl,
+    videoGuid,
     videoDurationSeconds,
     isPreview: isPreview === "on",
   });

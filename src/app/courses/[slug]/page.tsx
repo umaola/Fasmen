@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findCourseBySlug, listLessonsByCourse, DUMMY_VIDEO_SRC } from "@/lib/courses";
+import { findCourseBySlug, listLessonsByCourse } from "@/lib/courses";
+import { getBunnyEmbedUrl } from "@/lib/bunny";
 import { categoryName } from "@/lib/categories";
 import { findUserById } from "@/lib/users";
 import { getCurrentUser } from "@/lib/dal";
@@ -137,8 +138,16 @@ export default async function CourseDetailPage({
                   <span className="text-xs text-neutral-400">Locked until enrolled</span>
                 )}
               </div>
-              {lesson.isPreview && lesson.type === "video" && (
-                <video controls className="mt-3 w-full rounded-md" src={DUMMY_VIDEO_SRC} />
+              {lesson.isPreview && lesson.type === "video" && lesson.videoGuid && (
+                <div className="mt-3 aspect-video w-full overflow-hidden rounded-md">
+                  <iframe
+                    src={getBunnyEmbedUrl(lesson.videoGuid)}
+                    loading="lazy"
+                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                    allowFullScreen
+                    className="h-full w-full border-0"
+                  />
+                </div>
               )}
               {lesson.isPreview && (
                 <p className="mt-3 whitespace-pre-line text-sm text-neutral-700">

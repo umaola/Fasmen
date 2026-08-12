@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { requireRole } from "@/lib/authz";
-import { findCourseBySlug, listLessonsByCourse, DUMMY_VIDEO_SRC } from "@/lib/courses";
+import { findCourseBySlug, listLessonsByCourse } from "@/lib/courses";
 import { findEnrollment } from "@/lib/enrollments";
 import { completeLessonAction } from "@/app/actions/progress";
+import { getBunnyEmbedUrl } from "@/lib/bunny";
 
 export default async function LearnPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -74,9 +75,22 @@ export default async function LearnPage({ params }: { params: Promise<{ slug: st
                   </form>
                 )}
               </div>
-              {lesson.type === "video" && (
-                <video controls className="mt-3 w-full rounded-md" src={DUMMY_VIDEO_SRC} />
-              )}
+              {lesson.type === "video" &&
+                (lesson.videoGuid ? (
+                  <div className="mt-3 aspect-video w-full overflow-hidden rounded-md">
+                    <iframe
+                      src={getBunnyEmbedUrl(lesson.videoGuid)}
+                      loading="lazy"
+                      allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                      className="h-full w-full border-0"
+                    />
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm text-neutral-700">
+                    This lesson&apos;s video hasn&apos;t been uploaded yet.
+                  </p>
+                ))}
               {lesson.content && (
                 <p className="mt-3 whitespace-pre-line text-sm text-neutral-700">
                   {lesson.content}

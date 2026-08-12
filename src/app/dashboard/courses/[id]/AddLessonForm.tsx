@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { createLesson } from "@/app/actions/courses";
 import type { AddLessonState } from "@/lib/definitions";
+import { VideoUploadButton } from "@/components/VideoUploadButton";
 
 export function AddLessonForm({ courseId }: { courseId: string }) {
   const boundAction = createLesson.bind(null, courseId);
@@ -75,22 +76,12 @@ export function AddLessonForm({ courseId }: { courseId: string }) {
       ) : (
         <>
           <div>
-            <label htmlFor="lesson-video-url" className="block text-sm font-medium text-neutral-900">
-              Video URL
-            </label>
-            <input
-              id="lesson-video-url"
-              name="videoUrl"
-              type="text"
-              placeholder="https://cdn.example.com/lesson-1.mp4"
-              className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
-            />
-            <p className="mt-1 text-xs text-neutral-400">
-              No video CDN is wired up yet — every video lesson plays the same sample clip in the
-              meantime, but the URL you enter here is stored as the record.
-            </p>
-            {state?.errors?.videoUrl && (
-              <p className="mt-1 text-sm text-error-600">{state.errors.videoUrl[0]}</p>
+            <span className="block text-sm font-medium text-neutral-900">Video</span>
+            <div className="mt-1">
+              <VideoUploadButton courseId={courseId} />
+            </div>
+            {state?.errors?.videoGuid && (
+              <p className="mt-1 text-sm text-error-600">{state.errors.videoGuid[0]}</p>
             )}
           </div>
           <div>

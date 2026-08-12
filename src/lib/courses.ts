@@ -40,14 +40,9 @@ export interface Course {
 
 export type LessonType = "reading" | "video";
 
-// Every video lesson plays this one public-domain sample clip regardless of
-// the stored videoUrl, until a real video CDN is wired up.
-export const DUMMY_VIDEO_SRC =
-  "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-
-// Mirrors courses/{courseId}/lessons/{lessonId}. videoUrl is stored/displayed
-// as if it were the real CDN link, but playback uses one shared sample clip
-// until a real video CDN is wired up (see courses/[slug]/page.tsx).
+// Mirrors courses/{courseId}/lessons/{lessonId}. videoGuid is the Bunny
+// Stream video GUID (see src/lib/bunny.ts) — not a raw URL — resolved into a
+// playback URL via getBunnyEmbedUrl() wherever a lesson is actually played.
 export interface Lesson {
   id: string;
   courseId: string;
@@ -55,7 +50,7 @@ export interface Lesson {
   order: number;
   type: LessonType;
   content: string;
-  videoUrl: string | null;
+  videoGuid: string | null;
   videoDurationSeconds: number | null;
   isPreview: boolean;
   createdAt: string;
@@ -267,7 +262,7 @@ export async function addLesson(input: {
   title: string;
   type: LessonType;
   content: string;
-  videoUrl?: string;
+  videoGuid?: string;
   videoDurationSeconds?: number;
   isPreview: boolean;
 }): Promise<Lesson> {
@@ -279,7 +274,7 @@ export async function addLesson(input: {
     order: existing.length,
     type: input.type,
     content: input.content,
-    videoUrl: input.type === "video" ? (input.videoUrl ?? null) : null,
+    videoGuid: input.type === "video" ? (input.videoGuid ?? null) : null,
     videoDurationSeconds: input.type === "video" ? (input.videoDurationSeconds ?? null) : null,
     isPreview: input.isPreview,
     createdAt: new Date().toISOString(),
@@ -296,7 +291,7 @@ export async function updateLesson(
     title: string;
     type: LessonType;
     content: string;
-    videoUrl?: string;
+    videoGuid?: string;
     videoDurationSeconds?: number;
     isPreview: boolean;
   }
@@ -309,7 +304,7 @@ export async function updateLesson(
             title: patch.title,
             type: patch.type,
             content: patch.content,
-            videoUrl: patch.type === "video" ? (patch.videoUrl ?? null) : null,
+            videoGuid: patch.type === "video" ? (patch.videoGuid ?? null) : null,
             videoDurationSeconds: patch.type === "video" ? (patch.videoDurationSeconds ?? null) : null,
             isPreview: patch.isPreview,
           }

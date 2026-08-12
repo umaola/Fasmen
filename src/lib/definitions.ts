@@ -86,7 +86,7 @@ export const AddLessonFormSchema = z
     title: z.string().min(2, { error: "Title must be at least 2 characters." }).trim(),
     type: z.enum(["reading", "video"], { error: "Choose a lesson type." }),
     content: z.string().trim(),
-    videoUrl: z.url({ error: "Enter a valid URL." }).optional().or(z.literal("")),
+    videoGuid: z.string().min(1).optional().or(z.literal("")),
     videoDurationSeconds: z.coerce
       .number({ error: "Enter a valid duration." })
       .min(1, { error: "Must be at least 1 second." })
@@ -97,9 +97,9 @@ export const AddLessonFormSchema = z
     path: ["content"],
     error: "Content must be at least 10 characters.",
   })
-  .refine((v) => v.type !== "video" || !!v.videoUrl, {
-    path: ["videoUrl"],
-    error: "Enter a video URL.",
+  .refine((v) => v.type !== "video" || !!v.videoGuid, {
+    path: ["videoGuid"],
+    error: "Upload a video.",
   });
 
 export type AddLessonState =
@@ -108,7 +108,7 @@ export type AddLessonState =
         title?: string[];
         type?: string[];
         content?: string[];
-        videoUrl?: string[];
+        videoGuid?: string[];
         videoDurationSeconds?: string[];
       };
       message?: string;
