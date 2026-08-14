@@ -44,7 +44,7 @@
     "role": "tutor",
     "bio": "I'm a web designer with 5 years of experience building accessible, fast-loading sites for small businesses across Lagos.",
     "createdAt": "2026-07-19T18:05:00.000Z",
-    "updatedAt": "2026-07-23T12:44:06.383Z",
+    "updatedAt": "2026-08-13T17:47:57.318Z",
     "tutorProfile": {
       "totalStudents": 3,
       "averageRating": 4,
@@ -54,9 +54,9 @@
       "idNumber": "A12345678",
       "payoutAccount": {
         "provider": "paystack",
-        "subaccountCode": "SUB-restored-48a58b08",
         "bankName": "Guaranty Trust Bank",
-        "accountNumberLast4": "6789"
+        "accountNumberLast4": "6789",
+        "subaccountCode": "SUB-ca36f706-5a73-46d7-824d-1108180fef1d"
       }
     }
   },
@@ -69,7 +69,7 @@
     "role": "student",
     "bio": null,
     "createdAt": "2026-07-19T18:10:00.000Z",
-    "updatedAt": "2026-07-19T18:10:00.000Z",
+    "updatedAt": "2026-08-13T12:15:24.034Z",
     "tutorProfile": null
   },
   {
@@ -118,7 +118,7 @@
     "role": "tutor",
     "bio": null,
     "createdAt": "2026-07-22T10:05:00.000Z",
-    "updatedAt": "2026-07-22T10:05:00.000Z",
+    "updatedAt": "2026-08-13T17:49:50.441Z",
     "tutorProfile": {
       "totalStudents": 0,
       "averageRating": 0,
@@ -127,6 +127,31 @@
       "idType": null,
       "idNumber": null,
       "payoutAccount": null
+    }
+  },
+  {
+    "id": "5c5b0050-737a-4a1f-8db9-25aa9950616f",
+    "displayName": "Amarachi Uma",
+    "email": "ola@gmail.com",
+    "phoneNumber": null,
+    "photoURL": "/uploads/avatars/bb296d5b-9541-4865-bbd0-87ba0378ba65.png",
+    "role": "tutor",
+    "bio": "I am a software engineer",
+    "createdAt": "2026-08-13T12:05:53.076Z",
+    "updatedAt": "2026-08-14T20:00:11.449Z",
+    "tutorProfile": {
+      "totalStudents": 0,
+      "averageRating": 0,
+      "verified": true,
+      "username": "olamma",
+      "idType": "nin",
+      "idNumber": "00000000000",
+      "payoutAccount": {
+        "provider": "paystack",
+        "bankName": "First Bank of Nigeria",
+        "accountNumberLast4": "0000",
+        "subaccountCode": "SUB-9853a987-2599-498a-97d6-51d9aae3e5ce"
+      }
     }
   }
 ]
