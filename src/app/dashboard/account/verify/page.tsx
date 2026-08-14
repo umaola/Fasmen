@@ -46,6 +46,7 @@ export default async function VerifyIdentityPage() {
         idNumber={tutorProfile?.idNumber ?? null}
         bio={user.bio ?? ""}
         username={tutorProfile?.username ?? null}
+        verified={tutorProfile?.verified ?? false}
       />
     </div>
   );

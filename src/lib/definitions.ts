@@ -185,7 +185,6 @@ export type SubscribeState =
   | undefined;
 
 export const PayoutAccountFormSchema = z.object({
-  provider: z.enum(["paystack", "flutterwave"], { error: "Choose a payout provider." }),
   bankName: z.string().min(1, { error: "Choose a bank." }),
   accountNumber: z
     .string()
@@ -196,7 +195,6 @@ export const PayoutAccountFormSchema = z.object({
 export type PayoutAccountState =
   | {
       errors?: {
-        provider?: string[];
         bankName?: string[];
         accountNumber?: string[];
       };

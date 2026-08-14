@@ -55,8 +55,7 @@ export function PayoutAccountForm({
         <div className="rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
           <h2 className="font-heading text-lg font-semibold text-primary-900">Payout account</h2>
           <p className="mt-2 text-sm text-neutral-700">
-            {payoutAccount.bankName} · •••• {payoutAccount.accountNumberLast4} ·{" "}
-            {payoutAccount.provider === "paystack" ? "Paystack" : "Flutterwave"}
+            {payoutAccount.bankName} · •••• {payoutAccount.accountNumberLast4}
           </p>
           <button
             type="button"
@@ -124,24 +123,6 @@ export function PayoutAccountForm({
           </p>
 
           <form action={action} className="mt-4 flex flex-col gap-4">
-            <div>
-              <label htmlFor="provider" className="block text-sm font-medium text-neutral-900">
-                Payout provider
-              </label>
-              <select
-                id="provider"
-                name="provider"
-                defaultValue="paystack"
-                className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
-              >
-                <option value="paystack">Paystack</option>
-                <option value="flutterwave">Flutterwave</option>
-              </select>
-              {state?.errors?.provider && (
-                <p className="mt-1 text-sm text-error-600">{state.errors.provider[0]}</p>
-              )}
-            </div>
-
             <div>
               <label htmlFor="bankName" className="block text-sm font-medium text-neutral-900">
                 Bank

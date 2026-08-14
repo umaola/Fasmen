@@ -19,7 +19,6 @@ export async function connectPayoutAccountAction(
   }
 
   const validatedFields = PayoutAccountFormSchema.safeParse({
-    provider: formData.get("provider"),
     bankName: formData.get("bankName"),
     accountNumber: formData.get("accountNumber"),
   });
@@ -28,9 +27,12 @@ export async function connectPayoutAccountAction(
     return { errors: validatedFields.error.flatten().fieldErrors };
   }
 
-  const { provider, bankName, accountNumber } = validatedFields.data;
+  const { bankName, accountNumber } = validatedFields.data;
+  // The provider is an internal implementation detail, not a tutor choice —
+  // stored (mirroring firestore-schema.md) but defaulted here until a real
+  // payment integration decides it.
   await connectPayoutAccount(user.id, {
-    provider,
+    provider: "paystack",
     bankName,
     accountNumberLast4: accountNumber.slice(-4),
   });
