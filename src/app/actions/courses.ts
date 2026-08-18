@@ -38,6 +38,9 @@ export async function createCourse(
   if (!user) {
     return { message: "Only tutor accounts can create courses." };
   }
+  if (!user.tutorProfile?.verified) {
+    return { message: "You must complete tutor registration before creating a course." };
+  }
 
   const validatedFields = CreateCourseFormSchema.safeParse({
     title: formData.get("title"),
@@ -211,7 +214,7 @@ export async function createLesson(
     isPreview: isPreview === "on",
   });
   revalidatePath(`/dashboard/courses/${courseId}`);
-  return undefined;
+  return { success: true };
 }
 
 export async function updateLessonAction(
@@ -289,5 +292,5 @@ export async function rejectCourseAction(
 
   await rejectCourse(courseId, validatedFields.data.feedback);
   revalidatePath("/dashboard/admin/review");
-  return undefined;
+  return { success: true };
 }

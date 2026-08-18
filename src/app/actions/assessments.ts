@@ -56,7 +56,7 @@ export async function addQuestionAction(
 
   await addQuestion({ courseId, questionText, type, options, correctOptionIndexes, points });
   revalidatePath(`/dashboard/courses/${courseId}`);
-  return undefined;
+  return { success: true };
 }
 
 export async function deleteQuestionAction(courseId: string, questionId: string): Promise<void> {

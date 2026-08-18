@@ -1,15 +1,26 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createCourse } from "@/app/actions/courses";
 import { CATEGORIES } from "@/lib/categories";
 import type { CreateCourseState } from "@/lib/definitions";
+import { FormAlert } from "@/components/FormAlert";
 
 export function NewCourseForm() {
   const [state, action, pending] = useActionState<CreateCourseState, FormData>(
     createCourse,
     undefined
   );
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [level, setLevel] = useState("beginner");
+  const [tags, setTags] = useState("");
+  const [priceNaira, setPriceNaira] = useState("0");
+  const [language, setLanguage] = useState("en");
+  const [passThresholdPercent, setPassThresholdPercent] = useState("70");
+  const [maxAttempts, setMaxAttempts] = useState("3");
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -19,12 +30,21 @@ export function NewCourseForm() {
       </p>
 
       <form action={action} className="mt-8 flex flex-col gap-5 rounded-lg bg-white p-6 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
+        <FormAlert message={state?.message} />
+
         <Field label="Title" name="title" error={state?.errors?.title?.[0]}>
           <input
             id="title"
             name="title"
             type="text"
-            className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            aria-invalid={!!state?.errors?.title}
+            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+              state?.errors?.title
+                ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+            }`}
           />
         </Field>
 
@@ -33,7 +53,14 @@ export function NewCourseForm() {
             id="description"
             name="description"
             rows={4}
-            className="mt-1 w-full rounded-sm border border-neutral-200 px-3 py-2 text-base outline-none focus:border-primary-500"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            aria-invalid={!!state?.errors?.description}
+            className={`mt-1 w-full rounded-sm border px-3 py-2 text-base outline-none transition focus:ring-1 ${
+              state?.errors?.description
+                ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+            }`}
           />
         </Field>
 
@@ -42,8 +69,14 @@ export function NewCourseForm() {
             <select
               id="category"
               name="category"
-              defaultValue=""
-              className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              aria-invalid={!!state?.errors?.category}
+              className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                state?.errors?.category
+                  ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                  : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+              }`}
             >
               <option value="" disabled>
                 Choose a category
@@ -60,8 +93,14 @@ export function NewCourseForm() {
             <select
               id="level"
               name="level"
-              defaultValue="beginner"
-              className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              aria-invalid={!!state?.errors?.level}
+              className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                state?.errors?.level
+                  ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                  : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+              }`}
             >
               <option value="beginner">Beginner</option>
               <option value="intermediate">Intermediate</option>
@@ -76,7 +115,14 @@ export function NewCourseForm() {
             name="tags"
             type="text"
             placeholder="e.g. react, frontend, javascript"
-            className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            aria-invalid={!!state?.errors?.tags}
+            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+              state?.errors?.tags
+                ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+            }`}
           />
         </Field>
 
@@ -88,8 +134,14 @@ export function NewCourseForm() {
               type="number"
               min="0"
               step="1"
-              defaultValue="0"
-              className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+              value={priceNaira}
+              onChange={(e) => setPriceNaira(e.target.value)}
+              aria-invalid={!!state?.errors?.priceNaira}
+              className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                state?.errors?.priceNaira
+                  ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                  : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+              }`}
             />
           </Field>
 
@@ -97,8 +149,14 @@ export function NewCourseForm() {
             <select
               id="language"
               name="language"
-              defaultValue="en"
-              className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              aria-invalid={!!state?.errors?.language}
+              className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                state?.errors?.language
+                  ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                  : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+              }`}
             >
               <option value="en">English</option>
               <option value="yo">Yoruba</option>
@@ -120,8 +178,14 @@ export function NewCourseForm() {
               type="number"
               min="1"
               max="100"
-              defaultValue="70"
-              className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+              value={passThresholdPercent}
+              onChange={(e) => setPassThresholdPercent(e.target.value)}
+              aria-invalid={!!state?.errors?.passThresholdPercent}
+              className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                state?.errors?.passThresholdPercent
+                  ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                  : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+              }`}
             />
           </Field>
 
@@ -135,13 +199,17 @@ export function NewCourseForm() {
               name="maxAttempts"
               type="number"
               min="1"
-              defaultValue="3"
-              className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+              value={maxAttempts}
+              onChange={(e) => setMaxAttempts(e.target.value)}
+              aria-invalid={!!state?.errors?.maxAttempts}
+              className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                state?.errors?.maxAttempts
+                  ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                  : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+              }`}
             />
           </Field>
         </div>
-
-        {state?.message && <p className="text-sm text-error-600">{state.message}</p>}
 
         <button
           type="submit"
@@ -172,7 +240,7 @@ function Field({
         {label}
       </label>
       {children}
-      {error && <p className="mt-1 text-sm text-error-600">{error}</p>}
+      {error && <p className="mt-1 text-sm font-medium text-error-600">{error}</p>}
     </div>
   );
 }

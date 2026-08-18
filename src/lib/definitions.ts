@@ -126,6 +126,7 @@ export type RejectCourseState =
         feedback?: string[];
       };
       message?: string;
+      success?: boolean;
     }
   | undefined;
 
@@ -243,6 +244,7 @@ export type AddQuestionState =
         points?: string[];
       };
       message?: string;
+      success?: boolean;
     }
   | undefined;
 

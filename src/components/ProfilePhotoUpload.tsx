@@ -3,6 +3,7 @@
 import { useActionState, useRef } from "react";
 import { ImagePlaceholderIcon } from "@/components/icons";
 import type { ImageUploadState } from "@/lib/definitions";
+import { FormAlert } from "@/components/FormAlert";
 
 export function ProfilePhotoUpload({
   action,
@@ -48,7 +49,7 @@ export function ProfilePhotoUpload({
         Tap to change/upload your profile image, only valid image files less than 5MB are
         accepted.
       </p>
-      {state?.message && <p className="text-sm text-error-600">{state.message}</p>}
+      <FormAlert message={state?.message} />
     </form>
   );
 }

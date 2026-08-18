@@ -5,6 +5,7 @@ import { updateLessonAction } from "@/app/actions/courses";
 import type { AddLessonState } from "@/lib/definitions";
 import type { Lesson } from "@/lib/courses";
 import { VideoUploadButton } from "@/components/VideoUploadButton";
+import { FormAlert } from "@/components/FormAlert";
 
 export function EditLessonForm({
   courseId,
@@ -20,10 +21,19 @@ export function EditLessonForm({
     boundAction,
     undefined
   );
+  const [title, setTitle] = useState(lesson.title);
   const [type, setType] = useState<"reading" | "video">(lesson.type);
+  const [content, setContent] = useState(lesson.content);
+  const [videoDurationSeconds, setVideoDurationSeconds] = useState(
+    lesson.videoDurationSeconds ? String(lesson.videoDurationSeconds) : ""
+  );
+  const [isPreview, setIsPreview] = useState(lesson.isPreview);
 
   return (
     <form action={action} className="mt-3 flex flex-col gap-4 rounded-lg bg-neutral-100 p-5">
+      <FormAlert message={state?.message} />
+      {state?.success && <FormAlert type="success" message="Lesson saved." />}
+
       <div>
         <label
           htmlFor={`lesson-title-${lesson.id}`}
@@ -35,18 +45,24 @@ export function EditLessonForm({
           id={`lesson-title-${lesson.id}`}
           name="title"
           type="text"
-          defaultValue={lesson.title}
-          className="mt-1 h-11 w-full rounded-sm border border-neutral-200 bg-white px-3 text-base outline-none focus:border-primary-500"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          aria-invalid={!!state?.errors?.title}
+          className={`mt-1 h-11 w-full rounded-sm border bg-white px-3 text-base outline-none transition focus:ring-1 ${
+            state?.errors?.title
+              ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+              : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+          }`}
         />
         {state?.errors?.title && (
-          <p className="mt-1 text-sm text-error-600">{state.errors.title[0]}</p>
+          <p className="mt-1 text-sm font-medium text-error-600">{state.errors.title[0]}</p>
         )}
       </div>
 
       <div>
         <span className="block text-sm font-medium text-neutral-900">Lesson type</span>
         <div className="mt-1 flex gap-4">
-          <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 cursor-pointer">
             <input
               type="radio"
               name="type"
@@ -56,7 +72,7 @@ export function EditLessonForm({
             />
             Reading
           </label>
-          <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 cursor-pointer">
             <input
               type="radio"
               name="type"
@@ -67,7 +83,7 @@ export function EditLessonForm({
             Video
           </label>
         </div>
-        {state?.errors?.type && <p className="mt-1 text-sm text-error-600">{state.errors.type[0]}</p>}
+        {state?.errors?.type && <p className="mt-1 text-sm font-medium text-error-600">{state.errors.type[0]}</p>}
       </div>
 
       {type === "reading" ? (
@@ -82,11 +98,17 @@ export function EditLessonForm({
             id={`lesson-content-${lesson.id}`}
             name="content"
             rows={4}
-            defaultValue={lesson.type === "reading" ? lesson.content : ""}
-            className="mt-1 w-full rounded-sm border border-neutral-200 bg-white px-3 py-2 text-base outline-none focus:border-primary-500"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            aria-invalid={!!state?.errors?.content}
+            className={`mt-1 w-full rounded-sm border bg-white px-3 py-2 text-base outline-none transition focus:ring-1 ${
+              state?.errors?.content
+                ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+            }`}
           />
           {state?.errors?.content && (
-            <p className="mt-1 text-sm text-error-600">{state.errors.content[0]}</p>
+            <p className="mt-1 text-sm font-medium text-error-600">{state.errors.content[0]}</p>
           )}
         </div>
       ) : (
@@ -97,7 +119,7 @@ export function EditLessonForm({
               <VideoUploadButton courseId={courseId} defaultGuid={lesson.videoGuid} />
             </div>
             {state?.errors?.videoGuid && (
-              <p className="mt-1 text-sm text-error-600">{state.errors.videoGuid[0]}</p>
+              <p className="mt-1 text-sm font-medium text-error-600">{state.errors.videoGuid[0]}</p>
             )}
           </div>
           <div>
@@ -112,11 +134,17 @@ export function EditLessonForm({
               name="videoDurationSeconds"
               type="number"
               min={1}
-              defaultValue={lesson.videoDurationSeconds ?? undefined}
-              className="mt-1 h-11 w-full rounded-sm border border-neutral-200 bg-white px-3 text-base outline-none focus:border-primary-500"
+              value={videoDurationSeconds}
+              onChange={(e) => setVideoDurationSeconds(e.target.value)}
+              aria-invalid={!!state?.errors?.videoDurationSeconds}
+              className={`mt-1 h-11 w-full rounded-sm border bg-white px-3 text-base outline-none transition focus:ring-1 ${
+                state?.errors?.videoDurationSeconds
+                  ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                  : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+              }`}
             />
             {state?.errors?.videoDurationSeconds && (
-              <p className="mt-1 text-sm text-error-600">{state.errors.videoDurationSeconds[0]}</p>
+              <p className="mt-1 text-sm font-medium text-error-600">{state.errors.videoDurationSeconds[0]}</p>
             )}
           </div>
           <div>
@@ -130,20 +158,24 @@ export function EditLessonForm({
               id={`lesson-caption-${lesson.id}`}
               name="content"
               rows={3}
-              defaultValue={lesson.type === "video" ? lesson.content : ""}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               className="mt-1 w-full rounded-sm border border-neutral-200 bg-white px-3 py-2 text-base outline-none focus:border-primary-500"
             />
           </div>
         </>
       )}
 
-      <label className="flex items-center gap-2 text-sm text-neutral-700">
-        <input type="checkbox" name="isPreview" defaultChecked={lesson.isPreview} className="h-4 w-4" />
+      <label className="flex items-center gap-2 text-sm text-neutral-700 cursor-pointer">
+        <input
+          type="checkbox"
+          name="isPreview"
+          checked={isPreview}
+          onChange={(e) => setIsPreview(e.target.checked)}
+          className="h-4 w-4 rounded text-primary-700"
+        />
         Make this a free preview lesson
       </label>
-
-      {state?.message && <p className="text-sm text-error-600">{state.message}</p>}
-      {state?.success && <p className="text-sm text-success-600">Lesson saved.</p>}
 
       <div className="flex gap-3">
         <button

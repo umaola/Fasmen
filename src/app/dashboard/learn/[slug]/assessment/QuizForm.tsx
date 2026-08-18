@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useActionState } from "react";
 import { submitAssessmentAction, type SubmitAssessmentResult } from "@/app/actions/assessments";
 import type { Question } from "@/lib/assessments";
+import { FormAlert } from "@/components/FormAlert";
 
 type ClientQuestion = Omit<Question, "correctOptionIndexes">;
 
@@ -91,7 +92,7 @@ export function QuizForm({
         </div>
       ))}
 
-      {state && "error" in state && <p className="text-sm text-error-600">{state.error}</p>}
+      {state && "error" in state && <FormAlert message={state.error} />}
 
       <button
         type="submit"

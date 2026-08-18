@@ -5,6 +5,7 @@ import Link from "next/link";
 import { submitTutorVerification } from "@/app/actions/kyc";
 import type { TutorVerificationState } from "@/lib/definitions";
 import type { TutorIdType } from "@/lib/users";
+import { FormAlert } from "@/components/FormAlert";
 
 const ID_TYPE_LABELS: Record<TutorIdType, string> = {
   nin: "National Identification Number (NIN)",
@@ -105,8 +106,26 @@ export function VerificationForm({
     submitTutorVerification,
     undefined
   );
+  const [idTypeValue, setIdTypeValue] = useState<string>(idType ?? "");
+  const [idNumberValue, setIdNumberValue] = useState<string>(idNumber ?? "");
+  const [bioValue, setBioValue] = useState<string>(bio ?? "");
   const [usernameValue, setUsernameValue] = useState(username ?? "");
   const availability = useUsernameAvailability(usernameValue, username);
+
+  // Sync state when props change (React-recommended pattern instead of useEffect)
+  const [prevProps, setPrevProps] = useState({ idType, idNumber, bio, username });
+  if (
+    prevProps.idType !== idType ||
+    prevProps.idNumber !== idNumber ||
+    prevProps.bio !== bio ||
+    prevProps.username !== username
+  ) {
+    setPrevProps({ idType, idNumber, bio, username });
+    setIdTypeValue(idType ?? "");
+    setIdNumberValue(idNumber ?? "");
+    setBioValue(bio ?? "");
+    setUsernameValue(username ?? "");
+  }
 
   // Unverified tutors land straight in the form; verified ones see their
   // saved details until they choose to edit.
@@ -214,6 +233,8 @@ export function VerificationForm({
         action={action}
         className="mt-6 flex flex-col gap-6 rounded-lg bg-white p-6 shadow-[0_1px_3px_rgba(18,22,28,0.08)]"
       >
+        <FormAlert message={state?.message} />
+
         {idLocked ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -241,8 +262,14 @@ export function VerificationForm({
                 id="idType"
                 name="idType"
                 autoFocus
-                defaultValue={idType ?? ""}
-                className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+                value={idTypeValue}
+                onChange={(e) => setIdTypeValue(e.target.value)}
+                aria-invalid={!!state?.errors?.idType}
+                className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                  state?.errors?.idType
+                    ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                    : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+                }`}
               >
                 <option value="" disabled>
                   Choose an ID type
@@ -254,7 +281,7 @@ export function VerificationForm({
                 ))}
               </select>
               {state?.errors?.idType && (
-                <p className="mt-1 text-sm text-error-600">{state.errors.idType[0]}</p>
+                <p className="mt-1 text-sm font-medium text-error-600">{state.errors.idType[0]}</p>
               )}
             </div>
 
@@ -267,14 +294,20 @@ export function VerificationForm({
                 name="idNumber"
                 type="text"
                 inputMode="numeric"
-                defaultValue={idNumber ?? ""}
-                className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+                value={idNumberValue}
+                onChange={(e) => setIdNumberValue(e.target.value)}
+                aria-invalid={!!state?.errors?.idNumber}
+                className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                  state?.errors?.idNumber
+                    ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                    : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+                }`}
               />
               <p className="mt-1 text-xs text-neutral-400">
                 Used only to verify your account — never shown publicly.
               </p>
               {state?.errors?.idNumber && (
-                <p className="mt-1 text-sm text-error-600">{state.errors.idNumber[0]}</p>
+                <p className="mt-1 text-sm font-medium text-error-600">{state.errors.idNumber[0]}</p>
               )}
             </div>
           </>
@@ -288,12 +321,18 @@ export function VerificationForm({
             id="bio"
             name="bio"
             rows={4}
-            defaultValue={bio}
+            value={bioValue}
+            onChange={(e) => setBioValue(e.target.value)}
             placeholder="Tell students about your background and expertise."
-            className="mt-1 w-full rounded-sm border border-neutral-200 px-3 py-2 text-base outline-none focus:border-primary-500"
+            aria-invalid={!!state?.errors?.bio}
+            className={`mt-1 w-full rounded-sm border px-3 py-2 text-base outline-none transition focus:ring-1 ${
+              state?.errors?.bio
+                ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+            }`}
           />
           <p className="mt-1 text-xs text-neutral-400">This appears on your public portfolio.</p>
-          {state?.errors?.bio && <p className="mt-1 text-sm text-error-600">{state.errors.bio[0]}</p>}
+          {state?.errors?.bio && <p className="mt-1 text-sm font-medium text-error-600">{state.errors.bio[0]}</p>}
         </div>
 
         <div>
@@ -307,7 +346,12 @@ export function VerificationForm({
             autoComplete="off"
             value={usernameValue}
             onChange={(e) => setUsernameValue(e.target.value)}
-            className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+            aria-invalid={!!state?.errors?.username}
+            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+              state?.errors?.username
+                ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+            }`}
           />
           <p className="mt-1 text-xs text-neutral-700">
             Your portfolio link:{" "}
@@ -343,11 +387,9 @@ export function VerificationForm({
             </p>
           )}
           {state?.errors?.username && (
-            <p className="mt-1 text-sm text-error-600">{state.errors.username[0]}</p>
+            <p className="mt-1 text-sm font-medium text-error-600">{state.errors.username[0]}</p>
           )}
         </div>
-
-        {state?.message && <p className="text-sm text-error-600">{state.message}</p>}
 
         <div className="flex items-center gap-4">
           <button
@@ -360,7 +402,13 @@ export function VerificationForm({
           {verified ? (
             <button
               type="button"
-              onClick={() => setEditing(false)}
+              onClick={() => {
+                setIdTypeValue(idType ?? "");
+                setIdNumberValue(idNumber ?? "");
+                setBioValue(bio ?? "");
+                setUsernameValue(username ?? "");
+                setEditing(false);
+              }}
               className="text-sm font-medium text-neutral-700 hover:text-primary-700"
             >
               Cancel

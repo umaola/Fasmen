@@ -11,6 +11,7 @@ import {
   type BillingPeriodOption,
 } from "@/lib/subscriptionPlans";
 import type { SubscribeState } from "@/lib/definitions";
+import { FormAlert } from "@/components/FormAlert";
 
 const PLAN_ORDER: SubscriptionPlanId[] = ["free", "creator", "enterprise"];
 
@@ -126,7 +127,7 @@ export function PlanSelector({ currentPlanId }: { currentPlanId: SubscriptionPla
             ))}
           </ul>
 
-          {state?.message && <p className="mt-3 text-sm text-error-600">{state.message}</p>}
+          <FormAlert message={state?.message} className="mt-3" />
 
           <form action={action} className="mt-5">
             <input type="hidden" name="plan" value={selectedPlan} />

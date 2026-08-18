@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/dal";
 import { getEffectivePlan } from "@/lib/subscriptions";
@@ -12,23 +11,12 @@ export default async function SubscriptionPage() {
   }
 
   const { plan, subscription } = await getEffectivePlan(user.id);
-  const isVerified = Boolean(user.tutorProfile?.verified);
   const hasLapsed = subscription && new Date(subscription.currentPeriodEnd) <= new Date();
 
   return (
     <div>
       <h1 className="font-heading text-2xl font-bold text-primary-900">Subscription</h1>
       <p className="mt-1 text-sm text-neutral-700">Manage your plan and billing.</p>
-
-      {!isVerified && (
-        <div className="mt-6 rounded-lg bg-[#fcf3e1] p-5 text-sm text-warning-600">
-          Complete{" "}
-          <Link href="/dashboard/account/verify" className="font-medium underline">
-            tutor verification
-          </Link>{" "}
-          before subscribing to a paid plan.
-        </div>
-      )}
 
       <div className="mt-6 rounded-lg bg-white p-6 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
         <p className="text-sm text-neutral-700">Current plan</p>

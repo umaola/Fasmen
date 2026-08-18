@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   trailingSlash: false,
+  serverExternalPackages: ["firebase-admin"],
   experimental: {
     // Server Actions default to a 1MB body limit, well under the 5MB image
     // uploads this app actually accepts (see MAX_UPLOAD_BYTES in

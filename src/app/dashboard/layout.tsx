@@ -84,7 +84,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {showVerificationBanner && (
             <div className="flex flex-wrap items-center justify-between gap-2 bg-[#fcf3e1] px-6 py-3 text-sm text-warning-600">
               <span>
-                Complete your tutor verification to unlock course submission and get your public
+                Complete your tutor verification to unlock course creation and get your public
                 portfolio link.
               </span>
               <Link href="/dashboard/account/verify" className="font-medium underline">

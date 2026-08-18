@@ -153,5 +153,97 @@
         "subaccountCode": "SUB-9853a987-2599-498a-97d6-51d9aae3e5ce"
       }
     }
+  },
+  {
+    "id": "3a610394-c30d-4978-9e40-d12ffe8f9326",
+    "displayName": "Amarachi Okechukwu Uma",
+    "email": "babya@gmail.com",
+    "phoneNumber": null,
+    "photoURL": "/uploads/avatars/776f04c9-7dba-4257-9fa9-08d367b7ccd1.png",
+    "role": "tutor",
+    "bio": null,
+    "createdAt": "2026-08-18T11:11:59.678Z",
+    "updatedAt": "2026-08-18T11:12:18.475Z",
+    "tutorProfile": {
+      "totalStudents": 0,
+      "averageRating": 0,
+      "verified": false,
+      "username": null,
+      "idType": null,
+      "idNumber": null,
+      "payoutAccount": null
+    }
+  },
+  {
+    "id": "ddbf1229-7e9d-4aaa-9677-2793556c4326",
+    "displayName": "Chidi Tutor",
+    "email": "chidi.tutor.aug18.1217@example.com",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "tutor",
+    "bio": "I am a seasoned physics teacher with 8 years of classroom and online tutoring experience.",
+    "createdAt": "2026-08-18T11:18:38.225Z",
+    "updatedAt": "2026-08-18T11:41:54.302Z",
+    "tutorProfile": {
+      "totalStudents": 0,
+      "averageRating": 0,
+      "verified": true,
+      "username": "chiditutor",
+      "idType": "passport",
+      "idNumber": "A12345678",
+      "payoutAccount": null
+    }
+  },
+  {
+    "id": "3c9c1096-a2f7-4f5c-8607-4281721d204b",
+    "displayName": "Login Test User",
+    "email": "logintest@example.com",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "student",
+    "bio": null,
+    "createdAt": "2026-08-18T11:56:06.030Z",
+    "updatedAt": "2026-08-18T11:56:06.030Z",
+    "tutorProfile": null
+  },
+  {
+    "id": "0737a9fd-1d1f-4e2b-980b-e9f3ac790f22",
+    "displayName": "Amarachi Okechukwu Uma",
+    "email": "boo@gmail.com",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "tutor",
+    "bio": null,
+    "createdAt": "2026-08-18T21:34:13.137Z",
+    "updatedAt": "2026-08-18T21:34:13.137Z",
+    "tutorProfile": {
+      "totalStudents": 0,
+      "averageRating": 0,
+      "verified": false,
+      "username": null,
+      "idType": null,
+      "idNumber": null,
+      "payoutAccount": null
+    }
+  },
+  {
+    "id": "2d0d6131-9d13-40a4-966c-26fc4eb79dc7",
+    "displayName": "Test Tutor",
+    "email": "testtutor1787092640@example.com",
+    "phoneNumber": null,
+    "photoURL": null,
+    "role": "tutor",
+    "bio": "Experienced math and science instructor with over 10 years of teaching experience.",
+    "createdAt": "2026-08-18T21:38:13.985Z",
+    "updatedAt": "2026-08-18T21:41:46.709Z",
+    "tutorProfile": {
+      "totalStudents": 0,
+      "averageRating": 0,
+      "verified": true,
+      "username": "tutor4839",
+      "idType": "nin",
+      "idNumber": "12345678901",
+      "payoutAccount": null
+    }
   }
 ]

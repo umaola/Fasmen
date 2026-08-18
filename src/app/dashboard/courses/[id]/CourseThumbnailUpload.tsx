@@ -4,6 +4,7 @@ import { useActionState, useRef } from "react";
 import { uploadCourseThumbnailAction } from "@/app/actions/courses";
 import { ImagePlaceholderIcon } from "@/components/icons";
 import type { ImageUploadState } from "@/lib/definitions";
+import { FormAlert } from "@/components/FormAlert";
 
 export function CourseThumbnailUpload({
   courseId,
@@ -46,7 +47,7 @@ export function CourseThumbnailUpload({
           />
           {pending && <span className="text-xs text-neutral-700">Uploading...</span>}
         </div>
-        {state?.message && <p className="mt-1 text-sm text-error-600">{state.message}</p>}
+        <FormAlert message={state?.message} className="mt-2" />
       </div>
     </form>
   );

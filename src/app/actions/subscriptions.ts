@@ -19,9 +19,6 @@ export async function subscribeToPlanAction(
   if (!user) {
     return { message: "Only tutor accounts can subscribe to a plan." };
   }
-  if (!user.tutorProfile?.verified) {
-    return { message: "Complete tutor verification before subscribing to a plan." };
-  }
 
   const validatedFields = SubscribeFormSchema.safeParse({
     plan: formData.get("plan"),

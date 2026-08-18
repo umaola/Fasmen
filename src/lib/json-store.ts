@@ -1,11 +1,46 @@
+import "server-only";
 import { promises as fs } from "fs";
 import path from "path";
+import { getDb, hasFirestoreCredentials } from "./firestore";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 
-// Serializes all reads/writes per file so concurrent requests in dev don't
-// interleave a read-modify-write and clobber each other's changes — there's
-// no real DB transaction to lean on with a flat JSON file.
+// Backed by Firestore when credentials are configured in .env.local, with
+// an automatic fallback to local data/*.json files for offline / local dev.
+// The module keeps its original name and API — callers still pass "users.json"
+// and get an array back — so data modules on top of it require no changes.
+const COLLECTIONS: Record<string, { name: string; idField: string }> = {
+  "users.json": { name: "users", idField: "id" },
+  // No Firebase Auth yet, so password hashes still live beside the profiles.
+  // This collection disappears when Auth lands.
+  "credentials.json": { name: "credentials", idField: "userId" },
+  "courses.json": { name: "courses", idField: "id" },
+  "lessons.json": { name: "lessons", idField: "id" },
+  "enrollments.json": { name: "enrollments", idField: "id" },
+  "payments.json": { name: "payments", idField: "id" },
+  "reviews.json": { name: "reviews", idField: "id" },
+  "certificates.json": { name: "certificates", idField: "id" },
+  "questions.json": { name: "assessmentQuestions", idField: "id" },
+  "quiz-attempts.json": { name: "quizAttempts", idField: "id" },
+  "subscriptions.json": { name: "subscriptions", idField: "id" },
+};
+
+function collectionFor(file: string) {
+  const entry = COLLECTIONS[file];
+  if (!entry) throw new Error(`Unknown collection "${file}".`);
+  return entry;
+}
+
+function docIdOf(record: unknown, idField: string, file: string): string {
+  const id = (record as Record<string, unknown>)?.[idField];
+  if (typeof id !== "string" || !id) {
+    throw new Error(`Record in "${file}" is missing a "${idField}" to key on.`);
+  }
+  return id;
+}
+
+// Serializes reads/writes per collection so two mutations in the same server
+// instance can't interleave a read-modify-write.
 const queues = new Map<string, Promise<unknown>>();
 
 function enqueue<T>(file: string, task: () => Promise<T>): Promise<T> {
@@ -40,17 +75,53 @@ async function writeFileRaw<T>(file: string, data: T[]): Promise<void> {
   await fs.writeFile(fullPath, JSON.stringify(data, null, 2), "utf8");
 }
 
-export function readCollection<T>(file: string): Promise<T[]> {
-  return enqueue(file, () => readFileRaw<T>(file));
+async function readAllFirestore<T>(file: string): Promise<T[]> {
+  const { name } = collectionFor(file);
+  const snapshot = await getDb().collection(name).get();
+  return snapshot.docs.map((doc) => doc.data() as T);
 }
 
-// Read-modify-write as a single queued step, so two mutations of the same
-// collection can never race each other.
+export function readCollection<T>(file: string): Promise<T[]> {
+  return enqueue(file, () => {
+    if (hasFirestoreCredentials()) {
+      return readAllFirestore<T>(file);
+    }
+    return readFileRaw<T>(file);
+  });
+}
+
+// Read-modify-write as a single queued step.
 export function withCollection<T>(
   file: string,
   mutate: (data: T[]) => T[] | Promise<T[]>
 ): Promise<T[]> {
   return enqueue(file, async () => {
+    if (hasFirestoreCredentials()) {
+      const { name, idField } = collectionFor(file);
+      const current = await readAllFirestore<T>(file);
+      const updated = await mutate(current);
+
+      const db = getDb();
+      const collection = db.collection(name);
+      const batch = db.batch();
+
+      const before = new Map(current.map((r) => [docIdOf(r, idField, file), r]));
+      const after = new Map(updated.map((r) => [docIdOf(r, idField, file), r]));
+
+      for (const [id, record] of after) {
+        const previous = before.get(id);
+        if (!previous || JSON.stringify(previous) !== JSON.stringify(record)) {
+          batch.set(collection.doc(id), record as Record<string, unknown>);
+        }
+      }
+      for (const id of before.keys()) {
+        if (!after.has(id)) batch.delete(collection.doc(id));
+      }
+
+      await batch.commit();
+      return updated;
+    }
+
     const current = await readFileRaw<T>(file);
     const updated = await mutate(current);
     await writeFileRaw(file, updated);

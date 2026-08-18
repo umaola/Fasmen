@@ -65,7 +65,12 @@ export default async function DashboardPage({
       </h1>
 
       <div className="mt-8">
-        {user.role === "tutor" && <TutorOverview tutorId={user.id} />}
+        {user.role === "tutor" && (
+          <TutorOverview
+            tutorId={user.id}
+            isVerified={Boolean(user.tutorProfile?.verified)}
+          />
+        )}
 
         {user.role === "admin" && <AdminOverview />}
       </div>
@@ -73,10 +78,27 @@ export default async function DashboardPage({
   );
 }
 
-async function TutorOverview({ tutorId }: { tutorId: string }) {
+async function TutorOverview({
+  tutorId,
+  isVerified,
+}: {
+  tutorId: string;
+  isVerified: boolean;
+}) {
   const courses = await listCoursesByTutor(tutorId);
 
   if (courses.length === 0) {
+    if (!isVerified) {
+      return (
+        <EmptyState
+          title="Complete your registration"
+          body="Complete your tutor verification details before creating your first course on FASMEN."
+          actionHref="/dashboard/account/verify"
+          actionLabel="Complete registration"
+        />
+      );
+    }
+
     return (
       <EmptyState
         title="No courses yet"

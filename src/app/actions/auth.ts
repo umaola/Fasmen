@@ -7,7 +7,7 @@ import {
   type SignupState,
   type LoginState,
 } from "@/lib/definitions";
-import { createUserProfile, findUserByEmail } from "@/lib/users";
+import { createUserProfile, findUserByEmail, findUserById } from "@/lib/users";
 import { createCredential, credentialsExistForEmail, verifyCredential } from "@/lib/credentials";
 import { createSession, deleteSession } from "@/lib/session";
 
@@ -53,7 +53,7 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
     return { message: "Incorrect email or password." };
   }
 
-  const profile = await findUserByEmail(email);
+  const profile = (await findUserById(userId)) ?? (await findUserByEmail(email));
   if (!profile) {
     return { message: "Incorrect email or password." };
   }

@@ -7,6 +7,7 @@ import { NIGERIAN_BANKS } from "@/lib/banks";
 import { CloseIcon } from "@/components/icons";
 import type { PayoutAccountState } from "@/lib/definitions";
 import type { PayoutAccount } from "@/lib/users";
+import { FormAlert } from "@/components/FormAlert";
 
 export function PayoutAccountForm({
   payoutAccount,
@@ -16,6 +17,8 @@ export function PayoutAccountForm({
   isVerified: boolean;
 }) {
   const [panelOpen, setPanelOpen] = useState(false);
+  const [bankNameValue, setBankNameValue] = useState("");
+  const [accountNumberValue, setAccountNumberValue] = useState("");
   const [state, action, pending] = useActionState<PayoutAccountState, FormData>(
     connectPayoutAccountAction,
     undefined
@@ -28,6 +31,8 @@ export function PayoutAccountForm({
   if (state?.success && !handledSuccess) {
     setHandledSuccess(true);
     setPanelOpen(false);
+    setBankNameValue("");
+    setAccountNumberValue("");
   } else if (!state?.success && handledSuccess) {
     setHandledSuccess(false);
   }
@@ -123,6 +128,11 @@ export function PayoutAccountForm({
           </p>
 
           <form action={action} className="mt-4 flex flex-col gap-4">
+            <FormAlert message={state?.message} />
+            {state?.success && (
+              <FormAlert type="success" message="Payout account connected." />
+            )}
+
             <div>
               <label htmlFor="bankName" className="block text-sm font-medium text-neutral-900">
                 Bank
@@ -130,8 +140,14 @@ export function PayoutAccountForm({
               <select
                 id="bankName"
                 name="bankName"
-                defaultValue=""
-                className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+                value={bankNameValue}
+                onChange={(e) => setBankNameValue(e.target.value)}
+                aria-invalid={!!state?.errors?.bankName}
+                className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                  state?.errors?.bankName
+                    ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                    : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+                }`}
               >
                 <option value="" disabled>
                   Choose your bank
@@ -143,7 +159,7 @@ export function PayoutAccountForm({
                 ))}
               </select>
               {state?.errors?.bankName && (
-                <p className="mt-1 text-sm text-error-600">{state.errors.bankName[0]}</p>
+                <p className="mt-1 text-sm font-medium text-error-600">{state.errors.bankName[0]}</p>
               )}
             </div>
 
@@ -157,20 +173,22 @@ export function PayoutAccountForm({
                 type="text"
                 inputMode="numeric"
                 maxLength={10}
-                className="mt-1 h-11 w-full rounded-sm border border-neutral-200 px-3 text-base outline-none focus:border-primary-500"
+                value={accountNumberValue}
+                onChange={(e) => setAccountNumberValue(e.target.value)}
+                aria-invalid={!!state?.errors?.accountNumber}
+                className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+                  state?.errors?.accountNumber
+                    ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
+                    : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+                }`}
               />
               <p className="mt-1 text-xs text-neutral-400">
                 We only keep the last 4 digits on file once connected.
               </p>
               {state?.errors?.accountNumber && (
-                <p className="mt-1 text-sm text-error-600">{state.errors.accountNumber[0]}</p>
+                <p className="mt-1 text-sm font-medium text-error-600">{state.errors.accountNumber[0]}</p>
               )}
             </div>
-
-            {state?.message && <p className="text-sm text-error-600">{state.message}</p>}
-            {state?.success && (
-              <p className="text-sm text-success-600">Payout account connected.</p>
-            )}
 
             <div className="flex items-center gap-3">
               <button
