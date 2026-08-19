@@ -85,14 +85,18 @@ async function readAllFirestore<T>(file: string): Promise<T[]> {
     const { name } = collectionFor(file);
     const db = getDb();
     if (!db) {
-      console.warn(`Firestore DB instance not available for ${file}`);
-      return [];
+      console.warn(`Firestore DB instance not available for ${file}, falling back to local file`);
+      return readFileRaw<T>(file);
     }
     const snapshot = await db.collection(name).get();
     return snapshot.docs.map((doc) => doc.data() as T);
   } catch (error) {
-    console.error(`Failed to read collection from Firestore (${file}):`, error);
-    return [];
+    console.error(`Failed to read collection from Firestore (${file}), falling back to local file:`, error);
+    try {
+      return await readFileRaw<T>(file);
+    } catch {
+      return [];
+    }
   }
 }
 

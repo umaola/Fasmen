@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getSession } from "@/lib/session";
+import { decrypt, COOKIE_NAME } from "@/lib/session";
 
 const protectedRoutes = ["/dashboard"];
 const authRoutes = ["/login", "/signup"];
@@ -9,7 +9,8 @@ export async function proxy(request: NextRequest) {
   const isProtectedRoute = protectedRoutes.some((route) => path.startsWith(route));
   const isAuthRoute = authRoutes.includes(path);
 
-  const session = await getSession();
+  const token = request.cookies.get(COOKIE_NAME)?.value;
+  const session = token ? await decrypt(token) : null;
 
   if (isProtectedRoute && !session?.userId) {
     return NextResponse.redirect(new URL("/login", request.nextUrl));

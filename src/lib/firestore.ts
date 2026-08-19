@@ -12,16 +12,26 @@ export function getDb() {
       return null;
     }
 
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: privateKey,
-      }),
-    });
+    try {
+      initializeApp({
+        credential: cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: privateKey,
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to initialize Firebase Admin app:', err);
+      return null;
+    }
   }
 
-  return getFirestore();
+  try {
+    return getFirestore();
+  } catch (err) {
+    console.error('Failed to get Firestore instance:', err);
+    return null;
+  }
 }
 
 export function hasFirestoreCredentials(): boolean {
