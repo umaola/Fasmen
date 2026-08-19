@@ -70,16 +70,32 @@ async function readFileRaw<T>(file: string): Promise<T[]> {
 }
 
 async function writeFileRaw<T>(file: string, data: T[]): Promise<void> {
+  if (process.env.NODE_ENV === "production" && !hasFirestoreCredentials()) {
+    throw new Error(
+      "Database storage is not configured for production. Local file persistence is read-only on Vercel. Please configure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY in your Vercel Project Settings > Environment Variables."
+    );
+  }
   const fullPath = path.join(DATA_DIR, file);
   await ensureFile(fullPath);
   await fs.writeFile(fullPath, JSON.stringify(data, null, 2), "utf8");
 }
 
 async function readAllFirestore<T>(file: string): Promise<T[]> {
-  const { name } = collectionFor(file);
-  const snapshot = await getDb().collection(name).get();
-  return snapshot.docs.map((doc) => doc.data() as T);
+  try {
+    const { name } = collectionFor(file);
+    const db = getDb();
+    if (!db) {
+      console.warn(`Firestore DB instance not available for ${file}`);
+      return [];
+    }
+    const snapshot = await db.collection(name).get();
+    return snapshot.docs.map((doc) => doc.data() as T);
+  } catch (error) {
+    console.error(`Failed to read collection from Firestore (${file}):`, error);
+    return [];
+  }
 }
+
 
 export function readCollection<T>(file: string): Promise<T[]> {
   return enqueue(file, () => {
@@ -102,6 +118,9 @@ export function withCollection<T>(
       const updated = await mutate(current);
 
       const db = getDb();
+      if (!db) {
+        throw new Error(`Firestore DB instance not available for ${file}`);
+      }
       const collection = db.collection(name);
       const batch = db.batch();
 

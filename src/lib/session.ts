@@ -6,11 +6,18 @@ import type { Role } from "./users";
 const COOKIE_NAME = "fasmen_session";
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-const secretKey = process.env.SESSION_SECRET;
-if (!secretKey) {
-  throw new Error("SESSION_SECRET env var is required (see .env.local.example)");
+function getEncodedKey(): Uint8Array {
+  const secretKey = process.env.SESSION_SECRET;
+  if (!secretKey) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "SESSION_SECRET environment variable is missing. Please set SESSION_SECRET in your Vercel Project Settings > Environment Variables."
+      );
+    }
+    return new TextEncoder().encode("dev-secret-key-must-be-at-least-32-characters-long-12345");
+  }
+  return new TextEncoder().encode(secretKey);
 }
-const encodedKey = new TextEncoder().encode(secretKey);
 
 export interface SessionPayload extends JWTPayload {
   userId: string;
@@ -22,13 +29,13 @@ async function encrypt(payload: SessionPayload): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(encodedKey);
+    .sign(getEncodedKey());
 }
 
 async function decrypt(token: string | undefined): Promise<SessionPayload | null> {
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify<SessionPayload>(token, encodedKey, {
+    const { payload } = await jwtVerify<SessionPayload>(token, getEncodedKey(), {
       algorithms: ["HS256"],
     });
     return payload;

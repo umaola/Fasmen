@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from "next/link";
 import { listPublishedCourses } from "@/lib/courses";
 import { CATEGORIES, categoryBadgeClass } from "@/lib/categories";

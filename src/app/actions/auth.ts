@@ -25,15 +25,26 @@ export async function signup(_state: SignupState, formData: FormData): Promise<S
 
   const { displayName, email, password, role } = validatedFields.data;
 
-  if (await credentialsExistForEmail(email)) {
-    return { message: "An account with this email already exists." };
+  let destination: string | null = null;
+  try {
+    if (await credentialsExistForEmail(email)) {
+      return { message: "An account with this email already exists." };
+    }
+
+    const profile = await createUserProfile({ displayName, email, role });
+    await createCredential(profile.id, email, password);
+    await createSession(profile.id, profile.role);
+
+    destination = profile.role === "tutor" ? "/dashboard?justSignedUp=1" : "/dashboard";
+  } catch (error) {
+    console.error("Signup error:", error);
+    const errMessage = error instanceof Error ? error.message : "Failed to create account.";
+    return { message: errMessage };
   }
 
-  const profile = await createUserProfile({ displayName, email, role });
-  await createCredential(profile.id, email, password);
-  await createSession(profile.id, profile.role);
-
-  redirect(profile.role === "tutor" ? "/dashboard?justSignedUp=1" : "/dashboard");
+  if (destination) {
+    redirect(destination);
+  }
 }
 
 export async function login(_state: LoginState, formData: FormData): Promise<LoginState> {
@@ -48,18 +59,29 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
 
   const { email, password } = validatedFields.data;
 
-  const userId = await verifyCredential(email, password);
-  if (!userId) {
-    return { message: "Incorrect email or password." };
+  let destination: string | null = null;
+  try {
+    const userId = await verifyCredential(email, password);
+    if (!userId) {
+      return { message: "Incorrect email or password." };
+    }
+
+    const profile = (await findUserById(userId)) ?? (await findUserByEmail(email));
+    if (!profile) {
+      return { message: "Incorrect email or password." };
+    }
+
+    await createSession(profile.id, profile.role);
+    destination = "/dashboard";
+  } catch (error) {
+    console.error("Login error:", error);
+    const errMessage = error instanceof Error ? error.message : "Failed to log in.";
+    return { message: errMessage };
   }
 
-  const profile = (await findUserById(userId)) ?? (await findUserByEmail(email));
-  if (!profile) {
-    return { message: "Incorrect email or password." };
+  if (destination) {
+    redirect(destination);
   }
-
-  await createSession(profile.id, profile.role);
-  redirect("/dashboard");
 }
 
 export async function logout(): Promise<void> {
