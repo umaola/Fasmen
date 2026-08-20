@@ -14,65 +14,73 @@ export async function submitTutorVerification(
   _state: TutorVerificationState,
   formData: FormData
 ): Promise<TutorVerificationState> {
-  const user = await requireRole("tutor");
-  if (!user) {
-    return { message: "Only tutor accounts can complete verification." };
+  try {
+    const user = await requireRole("tutor");
+    if (!user) {
+      return { message: "Only tutor accounts can complete verification." };
+    }
+
+    const validatedFields = TutorVerificationFormSchema.safeParse({
+      idType: formData.get("idType"),
+      idNumber: formData.get("idNumber"),
+      bio: formData.get("bio"),
+      username: formData.get("username"),
+    });
+
+    if (!validatedFields.success) {
+      return { errors: validatedFields.error.flatten().fieldErrors };
+    }
+
+    const { idType, idNumber, bio, username } = validatedFields.data;
+
+    const existing = await findUserByUsername(username);
+    if (existing && existing.id !== user.id) {
+      return { errors: { username: ["That username is already taken."] } };
+    }
+
+    await completeTutorVerification(user.id, { username, idType, idNumber, bio });
+
+    revalidatePath("/dashboard/account/verify");
+    revalidatePath("/dashboard");
+    revalidatePath(`/tutors/${username}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Verification submit error:", error);
+    const errMessage = error instanceof Error ? error.message : "Failed to save verification.";
+    return { message: errMessage };
   }
-
-  const validatedFields = TutorVerificationFormSchema.safeParse({
-    idType: formData.get("idType"),
-    idNumber: formData.get("idNumber"),
-    bio: formData.get("bio"),
-    username: formData.get("username"),
-  });
-
-  if (!validatedFields.success) {
-    return { errors: validatedFields.error.flatten().fieldErrors };
-  }
-
-  const { idType, idNumber, bio, username } = validatedFields.data;
-
-  const existing = await findUserByUsername(username);
-  if (existing && existing.id !== user.id) {
-    return { errors: { username: ["That username is already taken."] } };
-  }
-
-  await completeTutorVerification(user.id, { username, idType, idNumber, bio });
-
-  revalidatePath("/dashboard/account/verify");
-  revalidatePath("/dashboard");
-  revalidatePath(`/tutors/${username}`);
-  return { success: true };
 }
 
 export async function uploadVerificationPhotoAction(
   _state: ImageUploadState,
   formData: FormData
 ): Promise<ImageUploadState> {
-  const user = await requireRole("tutor");
-  if (!user) {
-    return { message: "Only tutor accounts can upload a verification photo." };
-  }
-
-  const file = formData.get("photo");
-  if (!(file instanceof File)) {
-    return { message: "Choose an image file." };
-  }
-
   try {
+    const user = await requireRole("tutor");
+    if (!user) {
+      return { message: "Only tutor accounts can upload a verification photo." };
+    }
+
+    const file = formData.get("photo");
+    if (!(file instanceof File)) {
+      return { message: "Choose an image file." };
+    }
+
     const photoURL = await saveUploadedImage(file, "avatars");
     await updateUserPhoto(user.id, photoURL);
+
+    revalidatePath("/dashboard/account/verify");
+    revalidatePath("/dashboard/account");
+    if (user.tutorProfile?.username) {
+      revalidatePath(`/tutors/${user.tutorProfile.username}`);
+    }
+    return { success: true };
   } catch (err) {
+    console.error("Photo upload error:", err);
     if (err instanceof UploadError) {
       return { message: err.message };
     }
-    throw err;
+    const errMessage = err instanceof Error ? err.message : "Failed to upload photo.";
+    return { message: errMessage };
   }
-
-  revalidatePath("/dashboard/account/verify");
-  revalidatePath("/dashboard/account");
-  if (user.tutorProfile?.username) {
-    revalidatePath(`/tutors/${user.tutorProfile.username}`);
-  }
-  return { success: true };
 }

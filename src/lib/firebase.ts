@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
+import { getAuth, GoogleAuthProvider, signInWithPopup, type Auth } from "firebase/auth";
 
 // Safe to run on both client and server — this only sets up the app handle,
 // no Auth/Firestore/Storage usage yet. The getApps() guard avoids a
@@ -27,6 +28,30 @@ function getFirebaseApp() {
 
 export const firebaseApp = typeof window !== "undefined" ? getFirebaseApp() : null;
 
+export function getFirebaseAuth(): Auth | null {
+  if (typeof window === "undefined") return null;
+  const app = getFirebaseApp();
+  if (!app) return null;
+  try {
+    return getAuth(app);
+  } catch (err) {
+    console.error("Failed to get Firebase client auth:", err);
+    return null;
+  }
+}
+
+export async function signInWithGooglePopup(): Promise<{ idToken: string } | null> {
+  const auth = getFirebaseAuth();
+  if (!auth) throw new Error("Firebase Auth is not available.");
+
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+
+  const result = await signInWithPopup(auth, provider);
+  const idToken = await result.user.getIdToken();
+  return { idToken };
+}
+
 // Analytics only works in a browser (uses IndexedDB/gtag) and isn't
 // supported in every browser, so this is async and cached rather than a
 // plain export — callers must handle a null result.
@@ -43,3 +68,4 @@ export function getFirebaseAnalytics(): Promise<Analytics | null> {
   }
   return analyticsPromise;
 }
+

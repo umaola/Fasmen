@@ -4,12 +4,14 @@ import { redirect } from "next/navigation";
 import {
   SignupFormSchema,
   LoginFormSchema,
+  ForgotPasswordFormSchema,
   type SignupState,
   type LoginState,
+  type ForgotPasswordState,
 } from "@/lib/definitions";
-import { createUserProfile, findUserByEmail, findUserById } from "@/lib/users";
-import { createCredential, credentialsExistForEmail, verifyCredential } from "@/lib/credentials";
+import { createUserProfile, findUserByEmail, findUserById, type Role } from "@/lib/users";
 import { createSession, deleteSession } from "@/lib/session";
+import { getAdminAuth, hasFirestoreCredentials } from "@/lib/firestore";
 
 export async function signup(_state: SignupState, formData: FormData): Promise<SignupState> {
   const validatedFields = SignupFormSchema.safeParse({
@@ -27,12 +29,35 @@ export async function signup(_state: SignupState, formData: FormData): Promise<S
 
   let destination: string | null = null;
   try {
-    if (await credentialsExistForEmail(email)) {
+    const existing = await findUserByEmail(email);
+    if (existing) {
       return { message: "An account with this email already exists." };
     }
 
-    const profile = await createUserProfile({ displayName, email, role });
-    await createCredential(profile.id, email, password);
+    let uid: string | undefined;
+
+    // Create Firebase Auth user when Firebase is configured
+    if (hasFirestoreCredentials()) {
+      const auth = getAdminAuth();
+      if (auth) {
+        try {
+          const authUser = await auth.createUser({
+            email,
+            password,
+            displayName,
+          });
+          uid = authUser.uid;
+        } catch (err: unknown) {
+          const error = err as { code?: string; message?: string };
+          if (error.code === "auth/email-already-exists") {
+            return { message: "An account with this email already exists." };
+          }
+          throw err;
+        }
+      }
+    }
+
+    const profile = await createUserProfile({ id: uid, displayName, email, role });
     await createSession(profile.id, profile.role);
 
     destination = profile.role === "tutor" ? "/dashboard?justSignedUp=1" : "/dashboard";
@@ -61,17 +86,36 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
 
   let destination: string | null = null;
   try {
-    const userId = await verifyCredential(email, password);
-    if (!userId) {
-      return { message: "Incorrect email or password." };
+    let idToken: string | undefined;
+    let userId: string | undefined;
+
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (apiKey && hasFirestoreCredentials()) {
+      // Verify credentials via Firebase Identity Toolkit
+      const verifyRes = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, returnSecureToken: true }),
+        }
+      );
+
+      const data = await verifyRes.json();
+      if (!verifyRes.ok) {
+        return { message: "Incorrect email or password." };
+      }
+
+      idToken = data.idToken;
+      userId = data.localId;
     }
 
-    const profile = (await findUserById(userId)) ?? (await findUserByEmail(email));
+    const profile = userId ? (await findUserById(userId)) : (await findUserByEmail(email));
     if (!profile) {
       return { message: "Incorrect email or password." };
     }
 
-    await createSession(profile.id, profile.role);
+    await createSession(profile.id, profile.role, idToken);
     destination = "/dashboard";
   } catch (error) {
     console.error("Login error:", error);
@@ -84,7 +128,98 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
   }
 }
 
+export async function loginWithFirebaseTokenAction(input: {
+  idToken: string;
+  roleIfNewUser?: Role;
+}): Promise<{ success: boolean; error?: string; redirectUrl?: string }> {
+  try {
+    const auth = getAdminAuth();
+    if (!auth) {
+      return { success: false, error: "Authentication service not available." };
+    }
+
+    const decoded = await auth.verifyIdToken(input.idToken);
+    const uid = decoded.uid;
+    const email = decoded.email;
+
+    if (!email) {
+      return { success: false, error: "No email associated with this account." };
+    }
+
+    let profile = (await findUserById(uid)) ?? (await findUserByEmail(email));
+    let isNew = false;
+
+    if (!profile) {
+      isNew = true;
+      profile = await createUserProfile({
+        id: uid,
+        displayName: decoded.name || email.split("@")[0],
+        email,
+        role: input.roleIfNewUser || "student",
+        photoURL: decoded.picture || null,
+      });
+    }
+
+    await createSession(profile.id, profile.role, input.idToken);
+
+    const redirectUrl =
+      isNew && profile.role === "tutor" ? "/dashboard?justSignedUp=1" : "/dashboard";
+
+    return { success: true, redirectUrl };
+  } catch (error) {
+    console.error("Firebase token login error:", error);
+    const errMessage = error instanceof Error ? error.message : "Authentication failed.";
+    return { success: false, error: errMessage };
+  }
+}
+
+export async function sendPasswordResetAction(
+  _state: ForgotPasswordState,
+  formData: FormData
+): Promise<ForgotPasswordState> {
+  const validatedFields = ForgotPasswordFormSchema.safeParse({
+    email: formData.get("email"),
+  });
+
+  if (!validatedFields.success) {
+    return { errors: validatedFields.error.flatten().fieldErrors };
+  }
+
+  const { email } = validatedFields.data;
+
+  try {
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (apiKey) {
+      const res = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ requestType: "PASSWORD_RESET", email }),
+        }
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        if (data.error?.message === "EMAIL_NOT_FOUND") {
+          // Prevent email enumeration while giving success feedback
+          return { success: true, message: "If an account exists with this email, a reset link has been sent." };
+        }
+      }
+    }
+
+    return {
+      success: true,
+      message: "If an account exists with this email, a reset link has been sent.",
+    };
+  } catch (error) {
+    console.error("Password reset error:", error);
+    return { message: "Failed to send password reset email. Please try again." };
+  }
+}
+
 export async function logout(): Promise<void> {
   await deleteSession();
   redirect("/login");
 }
+

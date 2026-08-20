@@ -41,6 +41,21 @@ export type LoginState =
     }
   | undefined;
 
+export const ForgotPasswordFormSchema = z.object({
+  email: z.email({ error: "Please enter a valid email." }).trim(),
+});
+
+export type ForgotPasswordState =
+  | {
+      errors?: {
+        email?: string[];
+      };
+      message?: string;
+      success?: boolean;
+    }
+  | undefined;
+
+
 export const CreateCourseFormSchema = z.object({
   title: z.string().min(4, { error: "Title must be at least 4 characters." }).trim(),
   description: z

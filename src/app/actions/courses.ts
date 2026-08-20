@@ -119,31 +119,33 @@ export async function uploadCourseThumbnailAction(
   _state: ImageUploadState,
   formData: FormData
 ): Promise<ImageUploadState> {
-  const course = await requireCourseOwner(courseId);
-  if (!course) {
-    return { message: "You don't have access to this course." };
-  }
-
-  const file = formData.get("thumbnail");
-  if (!(file instanceof File)) {
-    return { message: "Choose an image file." };
-  }
-
   try {
+    const course = await requireCourseOwner(courseId);
+    if (!course) {
+      return { message: "You don't have access to this course." };
+    }
+
+    const file = formData.get("thumbnail");
+    if (!(file instanceof File)) {
+      return { message: "Choose an image file." };
+    }
+
     const thumbnailUrl = await saveUploadedImage(file, "courses");
     await updateCourseThumbnail(courseId, thumbnailUrl);
+
+    revalidatePath(`/dashboard/courses/${courseId}`);
+    revalidatePath("/dashboard/courses");
+    revalidatePath(`/courses/${course.slug}`);
+    revalidatePath("/courses");
+    return { success: true };
   } catch (err) {
+    console.error("Course thumbnail upload error:", err);
     if (err instanceof UploadError) {
       return { message: err.message };
     }
-    throw err;
+    const errMessage = err instanceof Error ? err.message : "Failed to upload course thumbnail.";
+    return { message: errMessage };
   }
-
-  revalidatePath(`/dashboard/courses/${courseId}`);
-  revalidatePath("/dashboard/courses");
-  revalidatePath(`/courses/${course.slug}`);
-  revalidatePath("/courses");
-  return { success: true };
 }
 
 export async function deleteCourseAction(courseId: string): Promise<void> {

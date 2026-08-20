@@ -40,27 +40,29 @@ export async function updateProfilePhotoAction(
   _state: ImageUploadState,
   formData: FormData
 ): Promise<ImageUploadState> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { message: "You need to be logged in to update your profile photo." };
-  }
-
-  const file = formData.get("photo");
-  if (!(file instanceof File)) {
-    return { message: "Choose an image file." };
-  }
-
   try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { message: "You need to be logged in to update your profile photo." };
+    }
+
+    const file = formData.get("photo");
+    if (!(file instanceof File)) {
+      return { message: "Choose an image file." };
+    }
+
     const photoURL = await saveUploadedImage(file, "avatars");
     await updateUserPhoto(user.id, photoURL);
+
+    revalidatePath("/dashboard/account");
+    revalidatePath("/dashboard");
+    return { success: true };
   } catch (err) {
+    console.error("Profile photo upload error:", err);
     if (err instanceof UploadError) {
       return { message: err.message };
     }
-    throw err;
+    const errMessage = err instanceof Error ? err.message : "Failed to update profile photo.";
+    return { message: errMessage };
   }
-
-  revalidatePath("/dashboard/account");
-  revalidatePath("/dashboard");
-  return { success: true };
 }

@@ -108,17 +108,19 @@ export async function updateTutorAverageRating(tutorId: string, averageRating: n
 }
 
 export async function createUserProfile(input: {
+  id?: string;
   displayName: string;
   email: string;
   role: Role;
+  photoURL?: string | null;
 }): Promise<UserProfile> {
   const now = new Date().toISOString();
   const profile: UserProfile = {
-    id: randomUUID(),
+    id: input.id || randomUUID(),
     displayName: input.displayName,
     email: input.email.trim().toLowerCase(),
     phoneNumber: null,
-    photoURL: null,
+    photoURL: input.photoURL || null,
     role: input.role,
     bio: null,
     createdAt: now,

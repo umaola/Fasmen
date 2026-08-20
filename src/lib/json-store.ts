@@ -11,9 +11,6 @@ const DATA_DIR = path.join(process.cwd(), "data");
 // and get an array back — so data modules on top of it require no changes.
 const COLLECTIONS: Record<string, { name: string; idField: string }> = {
   "users.json": { name: "users", idField: "id" },
-  // No Firebase Auth yet, so password hashes still live beside the profiles.
-  // This collection disappears when Auth lands.
-  "credentials.json": { name: "credentials", idField: "userId" },
   "courses.json": { name: "courses", idField: "id" },
   "lessons.json": { name: "lessons", idField: "id" },
   "enrollments.json": { name: "enrollments", idField: "id" },
