@@ -14,7 +14,18 @@ const firebaseConfig: FirebaseOptions = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+function getFirebaseApp() {
+  if (getApps().length) return getApp();
+  if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) return null;
+  try {
+    return initializeApp(firebaseConfig);
+  } catch (err) {
+    console.error("Failed to initialize Firebase client app:", err);
+    return null;
+  }
+}
+
+export const firebaseApp = typeof window !== "undefined" ? getFirebaseApp() : null;
 
 // Analytics only works in a browser (uses IndexedDB/gtag) and isn't
 // supported in every browser, so this is async and cached rather than a
@@ -23,10 +34,12 @@ let analyticsPromise: Promise<Analytics | null> | null = null;
 
 export function getFirebaseAnalytics(): Promise<Analytics | null> {
   if (typeof window === "undefined") return Promise.resolve(null);
+  const app = getFirebaseApp();
+  if (!app) return Promise.resolve(null);
   if (!analyticsPromise) {
-    analyticsPromise = isSupported().then((supported) =>
-      supported ? getAnalytics(firebaseApp) : null
-    );
+    analyticsPromise = isSupported()
+      .then((supported) => (supported ? getAnalytics(app) : null))
+      .catch(() => null);
   }
   return analyticsPromise;
 }

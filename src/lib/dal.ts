@@ -15,7 +15,6 @@ export const verifySession = cache(async () => {
 
   const user = await findUserById(session.userId);
   if (!user) {
-    await deleteSession();
     redirect("/login");
   }
 

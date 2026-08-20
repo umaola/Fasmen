@@ -61,8 +61,12 @@ export async function getSession(): Promise<SessionPayload | null> {
 }
 
 export async function deleteSession(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete(COOKIE_NAME);
+  } catch {
+    // Cookie deletion is only supported in Server Actions / Route Handlers
+  }
 }
 
 export { COOKIE_NAME };
