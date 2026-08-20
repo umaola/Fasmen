@@ -33,27 +33,31 @@ export async function decrypt(token: string | undefined): Promise<SessionPayload
 
   // 1. Check with Firebase Admin if Firebase is configured
   if (hasFirestoreCredentials()) {
-    const auth = getAdminAuth();
-    if (auth) {
-      try {
-        const decoded = await auth.verifySessionCookie(token, false);
-        return {
-          userId: decoded.uid,
-          role: (decoded.role as Role) || "student",
-          email: decoded.email,
-        };
-      } catch {
+    try {
+      const auth = getAdminAuth();
+      if (auth) {
         try {
-          const decoded = await auth.verifyIdToken(token);
+          const decoded = await auth.verifySessionCookie(token, false);
           return {
             userId: decoded.uid,
             role: (decoded.role as Role) || "student",
             email: decoded.email,
           };
         } catch {
-          // Continue to JWT fallback
+          try {
+            const decoded = await auth.verifyIdToken(token);
+            return {
+              userId: decoded.uid,
+              role: (decoded.role as Role) || "student",
+              email: decoded.email,
+            };
+          } catch {
+            // Continue to JWT fallback
+          }
         }
       }
+    } catch {
+      // Continue to JWT fallback if Firebase Admin check fails
     }
   }
 

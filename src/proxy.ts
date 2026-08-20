@@ -4,17 +4,22 @@ import { decrypt, COOKIE_NAME } from "@/lib/session";
 const protectedRoutes = ["/dashboard"];
 
 export async function proxy(request: NextRequest) {
-  const path = request.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.some((route) => path.startsWith(route));
+  try {
+    const path = request.nextUrl.pathname;
+    const isProtectedRoute = protectedRoutes.some((route) => path.startsWith(route));
 
-  const token = request.cookies.get(COOKIE_NAME)?.value;
-  const session = token ? await decrypt(token) : null;
+    const token = request.cookies.get(COOKIE_NAME)?.value;
+    const session = token ? await decrypt(token) : null;
 
-  if (isProtectedRoute && !session?.userId) {
-    return NextResponse.redirect(new URL("/login", request.nextUrl));
+    if (isProtectedRoute && !session?.userId) {
+      return NextResponse.redirect(new URL("/login", request.nextUrl));
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Proxy middleware error:", error);
+    return NextResponse.next();
   }
-
-  return NextResponse.next();
 }
 
 export const config = {

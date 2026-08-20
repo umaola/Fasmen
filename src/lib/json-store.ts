@@ -51,19 +51,34 @@ function enqueue<T>(file: string, task: () => Promise<T>): Promise<T> {
 }
 
 async function ensureFile(fullPath: string): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
   try {
-    await fs.access(fullPath);
-  } catch {
-    await fs.writeFile(fullPath, "[]", "utf8");
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    try {
+      await fs.access(fullPath);
+    } catch {
+      await fs.writeFile(fullPath, "[]", "utf8");
+    }
+  } catch (err) {
+    // In serverless / read-only production environments (e.g. Vercel),
+    // filesystem writes outside /tmp fail with EROFS. We safely handle this.
+    console.warn("Read-only filesystem: unable to ensure local file exists:", err);
   }
 }
 
 async function readFileRaw<T>(file: string): Promise<T[]> {
   const fullPath = path.join(DATA_DIR, file);
-  await ensureFile(fullPath);
-  const raw = await fs.readFile(fullPath, "utf8");
-  return raw.trim() ? (JSON.parse(raw) as T[]) : [];
+  try {
+    const raw = await fs.readFile(fullPath, "utf8");
+    return raw.trim() ? (JSON.parse(raw) as T[]) : [];
+  } catch {
+    try {
+      await ensureFile(fullPath);
+      const raw = await fs.readFile(fullPath, "utf8");
+      return raw.trim() ? (JSON.parse(raw) as T[]) : [];
+    } catch {
+      return [];
+    }
+  }
 }
 
 async function writeFileRaw<T>(file: string, data: T[]): Promise<void> {
