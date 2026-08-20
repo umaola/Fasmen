@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { findCourseBySlug, listLessonsByCourse } from "@/lib/courses";
 import { getBunnyEmbedUrl } from "@/lib/bunny";
@@ -45,12 +46,14 @@ export default async function CourseDetailPage({
         </Link>
 
         {course.thumbnailUrl && (
-          <div className="mt-4 aspect-video w-full overflow-hidden rounded-lg bg-primary-100">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-lg bg-primary-100">
+            <Image
               src={course.thumbnailUrl}
               alt={course.title}
-              className="h-full w-full object-cover"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover"
             />
           </div>
         )}

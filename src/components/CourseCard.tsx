@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Course } from "@/lib/courses";
 import { categoryName } from "@/lib/categories";
 
@@ -8,13 +9,14 @@ export function CourseCard({ course }: { course: Course }) {
       href={`/courses/${course.slug}`}
       className="block overflow-hidden rounded-lg bg-white shadow-[0_1px_3px_rgba(18,22,28,0.08)] transition hover:shadow-[0_4px_12px_rgba(18,22,28,0.10)] hover:scale-[1.01]"
     >
-      <div className="flex aspect-video items-center justify-center bg-primary-100">
+      <div className="relative flex aspect-video items-center justify-center bg-primary-100 overflow-hidden">
         {course.thumbnailUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={course.thumbnailUrl}
             alt={course.title}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover"
           />
         ) : (
           <span className="font-heading text-3xl font-bold text-primary-700">
