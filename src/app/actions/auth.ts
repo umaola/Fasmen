@@ -86,7 +86,6 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
 
   let destination: string | null = null;
   try {
-    let idToken: string | undefined;
     let userId: string | undefined;
 
     const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
@@ -106,7 +105,6 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
         return { message: "Incorrect email or password." };
       }
 
-      idToken = data.idToken;
       userId = data.localId;
     }
 
@@ -115,7 +113,7 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
       return { message: "Incorrect email or password." };
     }
 
-    await createSession(profile.id, profile.role, idToken);
+    await createSession(profile.id, profile.role);
     destination = "/dashboard";
   } catch (error) {
     console.error("Login error:", error);
@@ -160,7 +158,7 @@ export async function loginWithFirebaseTokenAction(input: {
       });
     }
 
-    await createSession(profile.id, profile.role, input.idToken);
+    await createSession(profile.id, profile.role);
 
     const redirectUrl =
       isNew && profile.role === "tutor" ? "/dashboard?justSignedUp=1" : "/dashboard";

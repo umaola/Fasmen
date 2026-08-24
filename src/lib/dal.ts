@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { getSession, deleteSession } from "./session";
+import { getSession } from "./session";
 import { findUserById } from "./users";
 
 // Also guards against a session cookie that outlived its user record (e.g.

@@ -8,10 +8,14 @@ export async function proxy(request: NextRequest) {
     const path = request.nextUrl.pathname;
     const isProtectedRoute = protectedRoutes.some((route) => path.startsWith(route));
 
+    if (!isProtectedRoute) {
+      return NextResponse.next();
+    }
+
     const token = request.cookies.get(COOKIE_NAME)?.value;
     const session = token ? await decrypt(token) : null;
 
-    if (isProtectedRoute && !session?.userId) {
+    if (!session?.userId) {
       return NextResponse.redirect(new URL("/login", request.nextUrl));
     }
 
@@ -23,5 +27,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)",
+  ],
 };
+
