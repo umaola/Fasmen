@@ -83,12 +83,13 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
   }
 
   const { email, password } = validatedFields.data;
+  const normalizedEmail = email.trim().toLowerCase();
 
   let destination: string | null = null;
   try {
     let userId: string | undefined;
 
-    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
     if (apiKey && hasFirestoreCredentials()) {
       // Verify credentials via Firebase Identity Toolkit
       const verifyRes = await fetch(
@@ -96,7 +97,7 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, returnSecureToken: true }),
+          body: JSON.stringify({ email: normalizedEmail, password, returnSecureToken: true }),
         }
       );
 
@@ -115,12 +116,22 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
             message: "Firebase API key is invalid. Please verify NEXT_PUBLIC_FIREBASE_API_KEY in Vercel environment variables.",
           };
         }
+        if (errorCode === "EMAIL_NOT_FOUND") {
+          return {
+            message: "No account found with this email. If you signed up with Google, please click 'Continue with Google'.",
+          };
+        }
+        if (errorCode === "INVALID_PASSWORD" || errorCode === "INVALID_LOGIN_CREDENTIALS") {
+          return {
+            message: "Incorrect password. If you signed up with Google, please use 'Continue with Google'.",
+          };
+        }
         if (errorCode === "TOO_MANY_ATTEMPTS_TRY_LATER") {
           return {
             message: "Access temporarily disabled due to too many failed attempts. Please try again later.",
           };
         }
-        return { message: "Incorrect email or password." };
+        return { message: data?.error?.message || "Incorrect email or password." };
       }
 
       userId = data.localId;
@@ -130,7 +141,7 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
       );
     }
 
-    let profile = userId ? await findUserById(userId) : await findUserByEmail(email);
+    let profile = userId ? await findUserById(userId) : await findUserByEmail(normalizedEmail);
 
     // Auto-recovery: If authentication succeeded in Firebase Auth but Firestore profile was missing
     if (!profile && userId && hasFirestoreCredentials()) {
@@ -141,8 +152,8 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
           if (authUser) {
             profile = await createUserProfile({
               id: authUser.uid,
-              displayName: authUser.displayName || email.split("@")[0],
-              email: authUser.email || email,
+              displayName: authUser.displayName || normalizedEmail.split("@")[0],
+              email: authUser.email || normalizedEmail,
               role: "student",
             });
           }
@@ -153,7 +164,7 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
     }
 
     if (!profile) {
-      return { message: "Incorrect email or password." };
+      return { message: "Account profile not found. If you just signed up, please try logging in again." };
     }
 
     await createSession(profile.id, profile.role);

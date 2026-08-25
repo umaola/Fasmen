@@ -99,6 +99,9 @@ export default function LoginPage() {
               name="email"
               type="email"
               autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               aria-invalid={!!state?.errors?.email}
