@@ -47,13 +47,42 @@ export interface UserProfile {
   } | null;
 }
 
+import { getDb, hasFirestoreCredentials } from "./firestore";
+
 export async function findUserByEmail(email: string): Promise<UserProfile | undefined> {
-  const users = await readCollection<UserProfile>(USERS_FILE);
   const normalized = email.trim().toLowerCase();
+  if (hasFirestoreCredentials()) {
+    const db = await getDb();
+    if (db) {
+      try {
+        const snap = await db.collection("users").where("email", "==", normalized).limit(1).get();
+        if (!snap.empty) {
+          const doc = snap.docs[0];
+          return { id: doc.id, ...(doc.data() as Omit<UserProfile, "id">) };
+        }
+      } catch (err) {
+        console.warn("Firestore findUserByEmail query failed, falling back:", err);
+      }
+    }
+  }
+  const users = await readCollection<UserProfile>(USERS_FILE);
   return users.find((u) => u.email.toLowerCase() === normalized);
 }
 
 export async function findUserById(id: string): Promise<UserProfile | undefined> {
+  if (hasFirestoreCredentials()) {
+    const db = await getDb();
+    if (db) {
+      try {
+        const doc = await db.collection("users").doc(id).get();
+        if (doc.exists) {
+          return { id: doc.id, ...(doc.data() as Omit<UserProfile, "id">) };
+        }
+      } catch (err) {
+        console.warn("Firestore findUserById query failed, falling back:", err);
+      }
+    }
+  }
   const users = await readCollection<UserProfile>(USERS_FILE);
   return users.find((u) => u.id === id);
 }
@@ -63,6 +92,20 @@ export async function updateUserProfile(
   patch: { displayName: string; bio: string | null }
 ): Promise<UserProfile | null> {
   let updated: UserProfile | null = null;
+  if (hasFirestoreCredentials()) {
+    const db = await getDb();
+    if (db) {
+      try {
+        const now = new Date().toISOString();
+        await db.collection("users").doc(userId).update({
+          ...patch,
+          updatedAt: now,
+        });
+      } catch (err) {
+        console.warn("Firestore updateUserProfile update failed:", err);
+      }
+    }
+  }
   await withCollection<UserProfile>(USERS_FILE, (users) =>
     users.map((u) => {
       if (u.id !== userId) return u;
@@ -75,6 +118,20 @@ export async function updateUserProfile(
 
 export async function updateUserPhoto(userId: string, photoURL: string): Promise<UserProfile | null> {
   let updated: UserProfile | null = null;
+  if (hasFirestoreCredentials()) {
+    const db = await getDb();
+    if (db) {
+      try {
+        const now = new Date().toISOString();
+        await db.collection("users").doc(userId).update({
+          photoURL,
+          updatedAt: now,
+        });
+      } catch (err) {
+        console.warn("Firestore updateUserPhoto update failed:", err);
+      }
+    }
+  }
   await withCollection<UserProfile>(USERS_FILE, (users) =>
     users.map((u) => {
       if (u.id !== userId) return u;
@@ -115,8 +172,9 @@ export async function createUserProfile(input: {
   photoURL?: string | null;
 }): Promise<UserProfile> {
   const now = new Date().toISOString();
+  const id = input.id || randomUUID();
   const profile: UserProfile = {
-    id: input.id || randomUUID(),
+    id,
     displayName: input.displayName,
     email: input.email.trim().toLowerCase(),
     phoneNumber: null,
@@ -139,7 +197,21 @@ export async function createUserProfile(input: {
         : null,
   };
 
-  await withCollection<UserProfile>(USERS_FILE, (users) => [...users, profile]);
+  if (hasFirestoreCredentials()) {
+    const db = await getDb();
+    if (db) {
+      try {
+        await db.collection("users").doc(id).set(profile);
+      } catch (err) {
+        console.warn("Firestore direct set in createUserProfile failed:", err);
+      }
+    }
+  }
+
+  await withCollection<UserProfile>(USERS_FILE, (users) => {
+    const filtered = users.filter((u) => u.id !== id);
+    return [...filtered, profile];
+  });
   return profile;
 }
 

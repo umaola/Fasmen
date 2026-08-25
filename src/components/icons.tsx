@@ -185,6 +185,32 @@ export function ArrowRightIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function ArrowLeftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M20 12H4" />
+      <path d="m11 19-7-7 7-7" />
+    </Icon>
+  );
+}
+
+export function AcademicCapIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+      <path d="M6 12v5c3 3 9 3 12 0v-5" />
+    </Icon>
+  );
+}
+
+export function SparklesIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon {...props}>
+      <path d="m12 3 1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z" />
+    </Icon>
+  );
+}
+
 export function CertificateIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Icon {...props}>
@@ -229,3 +255,4 @@ export function CheckCircleIcon(props: SVGProps<SVGSVGElement>) {
     </Icon>
   );
 }
+

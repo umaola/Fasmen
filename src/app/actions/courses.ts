@@ -70,7 +70,7 @@ export async function createCourse(
       .filter(Boolean),
   });
 
-  redirect(`/dashboard/courses/${course.id}`);
+  redirect(`/dashboard/courses/${course.id}?step=2`);
 }
 
 export async function editCourse(

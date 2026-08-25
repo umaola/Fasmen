@@ -37,16 +37,16 @@ export function CourseRowActions({ course }: { course: Course }) {
         {menuOpen && (
           <div className="absolute right-0 bottom-full z-10 mb-1 w-36 rounded-md border border-neutral-200 bg-white py-1 shadow-[0_4px_16px_rgba(18,22,28,0.12)]">
             <Link
-              href={`/dashboard/courses/${course.id}`}
+              href={`/dashboard/courses/${course.id}?step=5`}
               className="block w-full px-4 py-2 text-left text-sm text-neutral-900 hover:bg-neutral-100"
             >
-              View
+              View summary
             </Link>
             <Link
-              href={`/dashboard/courses/${course.id}?edit=true`}
+              href={`/dashboard/courses/${course.id}?step=1`}
               className="block w-full px-4 py-2 text-left text-sm text-neutral-900 hover:bg-neutral-100"
             >
-              Edit
+              Edit course
             </Link>
             <button
               type="button"

@@ -50,6 +50,7 @@ const COLLECTIONS: Record<string, { name: string; idField: string }> = {
   "questions.json": { name: "assessmentQuestions", idField: "id" },
   "quiz-attempts.json": { name: "quizAttempts", idField: "id" },
   "subscriptions.json": { name: "subscriptions", idField: "id" },
+  "credentials.json": { name: "credentials", idField: "userId" },
 };
 
 function collectionFor(file: string) {

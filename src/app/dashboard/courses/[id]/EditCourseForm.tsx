@@ -7,7 +7,15 @@ import type { CreateCourseState } from "@/lib/definitions";
 import type { Course } from "@/lib/courses";
 import { FormAlert } from "@/components/FormAlert";
 
-export function EditCourseForm({ course }: { course: Course }) {
+import { CourseWizardNav } from "../CourseWizardNav";
+
+export function EditCourseForm({
+  course,
+  showWizardNav = true,
+}: {
+  course: Course;
+  showWizardNav?: boolean;
+}) {
   const boundAction = editCourse.bind(null, course.id);
   const [state, action, pending] = useActionState<CreateCourseState, FormData>(
     boundAction,
@@ -29,12 +37,19 @@ export function EditCourseForm({ course }: { course: Course }) {
   return (
     <form
       action={action}
-      className="mt-4 flex flex-col gap-5 rounded-lg bg-white p-6 shadow-[0_1px_3px_rgba(18,22,28,0.08)]"
+      className="flex flex-col gap-5 rounded-xl bg-white p-6 sm:p-8 shadow-[0_1px_3px_rgba(18,22,28,0.08)] border border-neutral-200/80"
     >
-      <FormAlert message={state?.message} />
-      {state?.success && <FormAlert type="success" message="Course details saved." />}
+      <div>
+        <h2 className="font-heading text-xl font-bold text-primary-900">Step 1: Course details</h2>
+        <p className="mt-1 text-sm text-neutral-700">
+          Update the basic info, categories, and assessment criteria for this course.
+        </p>
+      </div>
 
-      <Field label="Title" name="title" error={state?.errors?.title?.[0]}>
+      <FormAlert message={state?.message} />
+      {state?.success && <FormAlert type="success" message="Course details saved successfully." />}
+
+      <Field label="Course title" name="title" error={state?.errors?.title?.[0]}>
         <input
           id="title"
           name="title"
@@ -42,7 +57,7 @@ export function EditCourseForm({ course }: { course: Course }) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           aria-invalid={!!state?.errors?.title}
-          className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+          className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
             state?.errors?.title
               ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
               : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -50,7 +65,7 @@ export function EditCourseForm({ course }: { course: Course }) {
         />
       </Field>
 
-      <Field label="Description" name="description" error={state?.errors?.description?.[0]}>
+      <Field label="Course description" name="description" error={state?.errors?.description?.[0]}>
         <textarea
           id="description"
           name="description"
@@ -58,7 +73,7 @@ export function EditCourseForm({ course }: { course: Course }) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           aria-invalid={!!state?.errors?.description}
-          className={`mt-1 w-full rounded-sm border px-3 py-2 text-base outline-none transition focus:ring-1 ${
+          className={`mt-1 w-full rounded-md border px-3 py-2 text-base outline-none transition focus:ring-2 ${
             state?.errors?.description
               ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
               : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -66,7 +81,7 @@ export function EditCourseForm({ course }: { course: Course }) {
         />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Category" name="category" error={state?.errors?.category?.[0]}>
           <select
             id="category"
@@ -74,7 +89,7 @@ export function EditCourseForm({ course }: { course: Course }) {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             aria-invalid={!!state?.errors?.category}
-            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+            className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
               state?.errors?.category
                 ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
                 : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -88,14 +103,14 @@ export function EditCourseForm({ course }: { course: Course }) {
           </select>
         </Field>
 
-        <Field label="Level" name="level" error={state?.errors?.level?.[0]}>
+        <Field label="Experience level" name="level" error={state?.errors?.level?.[0]}>
           <select
             id="level"
             name="level"
             value={level}
             onChange={(e) => setLevel(e.target.value as Course["level"])}
             aria-invalid={!!state?.errors?.level}
-            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+            className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
               state?.errors?.level
                 ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
                 : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -117,7 +132,7 @@ export function EditCourseForm({ course }: { course: Course }) {
           onChange={(e) => setTags(e.target.value)}
           placeholder="e.g. react, frontend, javascript"
           aria-invalid={!!state?.errors?.tags}
-          className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+          className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
             state?.errors?.tags
               ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
               : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -125,8 +140,8 @@ export function EditCourseForm({ course }: { course: Course }) {
         />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Price (NGN)" name="priceNaira" error={state?.errors?.priceNaira?.[0]}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Price in Naira (NGN)" name="priceNaira" error={state?.errors?.priceNaira?.[0]}>
           <input
             id="priceNaira"
             name="priceNaira"
@@ -136,7 +151,7 @@ export function EditCourseForm({ course }: { course: Course }) {
             value={priceNaira}
             onChange={(e) => setPriceNaira(e.target.value)}
             aria-invalid={!!state?.errors?.priceNaira}
-            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+            className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
               state?.errors?.priceNaira
                 ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
                 : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -144,14 +159,14 @@ export function EditCourseForm({ course }: { course: Course }) {
           />
         </Field>
 
-        <Field label="Language" name="language" error={state?.errors?.language?.[0]}>
+        <Field label="Course language" name="language" error={state?.errors?.language?.[0]}>
           <select
             id="language"
             name="language"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
             aria-invalid={!!state?.errors?.language}
-            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+            className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
               state?.errors?.language
                 ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
                 : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -165,9 +180,9 @@ export function EditCourseForm({ course }: { course: Course }) {
         </Field>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field
-          label="Pass threshold (%)"
+          label="Assessment pass threshold (%)"
           name="passThresholdPercent"
           error={state?.errors?.passThresholdPercent?.[0]}
         >
@@ -180,7 +195,7 @@ export function EditCourseForm({ course }: { course: Course }) {
             value={passThresholdPercent}
             onChange={(e) => setPassThresholdPercent(e.target.value)}
             aria-invalid={!!state?.errors?.passThresholdPercent}
-            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+            className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
               state?.errors?.passThresholdPercent
                 ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
                 : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -189,7 +204,7 @@ export function EditCourseForm({ course }: { course: Course }) {
         </Field>
 
         <Field
-          label="Quiz attempts allowed"
+          label="Assessment attempt limit"
           name="maxAttempts"
           error={state?.errors?.maxAttempts?.[0]}
         >
@@ -201,7 +216,7 @@ export function EditCourseForm({ course }: { course: Course }) {
             value={maxAttempts}
             onChange={(e) => setMaxAttempts(e.target.value)}
             aria-invalid={!!state?.errors?.maxAttempts}
-            className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
+            className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
               state?.errors?.maxAttempts
                 ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
                 : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
@@ -210,13 +225,24 @@ export function EditCourseForm({ course }: { course: Course }) {
         </Field>
       </div>
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="h-11 self-start rounded-md bg-primary-700 px-6 font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
-      >
-        {pending ? "Saving..." : "Save changes"}
-      </button>
+      {showWizardNav ? (
+        <CourseWizardNav
+          courseId={course.id}
+          currentStep={1}
+          proceedType="submit"
+          proceedLabel={state?.success ? "Proceed to Media" : "Save & proceed to Media"}
+          proceedHref={`/dashboard/courses/${course.id}?step=2`}
+          pending={pending}
+        />
+      ) : (
+        <button
+          type="submit"
+          disabled={pending}
+          className="h-11 self-start rounded-md bg-primary-700 px-6 font-medium text-white transition hover:bg-primary-900 disabled:opacity-60 cursor-pointer"
+        >
+          {pending ? "Saving..." : "Save changes"}
+        </button>
+      )}
     </form>
   );
 }

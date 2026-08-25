@@ -102,13 +102,56 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
 
       const data = await verifyRes.json();
       if (!verifyRes.ok) {
+        console.error("Firebase signInWithPassword error response:", data?.error?.message, data);
+        const errorCode = data?.error?.message;
+        if (errorCode === "OPERATION_NOT_ALLOWED") {
+          return {
+            message:
+              "Email/Password sign-in is disabled in Firebase Console. Please enable Email/Password provider in Firebase Console > Authentication > Sign-in method.",
+          };
+        }
+        if (errorCode === "API_KEY_INVALID") {
+          return {
+            message: "Firebase API key is invalid. Please verify NEXT_PUBLIC_FIREBASE_API_KEY in Vercel environment variables.",
+          };
+        }
+        if (errorCode === "TOO_MANY_ATTEMPTS_TRY_LATER") {
+          return {
+            message: "Access temporarily disabled due to too many failed attempts. Please try again later.",
+          };
+        }
         return { message: "Incorrect email or password." };
       }
 
       userId = data.localId;
+    } else if (!hasFirestoreCredentials() && process.env.NODE_ENV === "production") {
+      console.warn(
+        "Production environment missing Firebase credentials. Accounts cannot persist across Vercel serverless function invocations without FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY."
+      );
     }
 
-    const profile = userId ? (await findUserById(userId)) : (await findUserByEmail(email));
+    let profile = userId ? await findUserById(userId) : await findUserByEmail(email);
+
+    // Auto-recovery: If authentication succeeded in Firebase Auth but Firestore profile was missing
+    if (!profile && userId && hasFirestoreCredentials()) {
+      const auth = await getAdminAuth();
+      if (auth) {
+        try {
+          const authUser = await auth.getUser(userId);
+          if (authUser) {
+            profile = await createUserProfile({
+              id: authUser.uid,
+              displayName: authUser.displayName || email.split("@")[0],
+              email: authUser.email || email,
+              role: "student",
+            });
+          }
+        } catch (recoverErr) {
+          console.error("Auto-recovery profile creation failed:", recoverErr);
+        }
+      }
+    }
+
     if (!profile) {
       return { message: "Incorrect email or password." };
     }
