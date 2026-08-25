@@ -38,7 +38,7 @@ export async function signup(_state: SignupState, formData: FormData): Promise<S
 
     // Create Firebase Auth user when Firebase is configured
     if (hasFirestoreCredentials()) {
-      const auth = getAdminAuth();
+      const auth = await getAdminAuth();
       if (auth) {
         try {
           const authUser = await auth.createUser({
@@ -131,7 +131,7 @@ export async function loginWithFirebaseTokenAction(input: {
   roleIfNewUser?: Role;
 }): Promise<{ success: boolean; error?: string; redirectUrl?: string }> {
   try {
-    const auth = getAdminAuth();
+    const auth = await getAdminAuth();
     if (!auth) {
       return { success: false, error: "Authentication service not available." };
     }
@@ -220,4 +220,3 @@ export async function logout(): Promise<void> {
   await deleteSession();
   redirect("/login");
 }
-

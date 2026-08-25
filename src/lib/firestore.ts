@@ -1,7 +1,7 @@
-import { initializeApp, getApps, getApp, cert } from 'firebase-admin/app';
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
-import { getAuth, type Auth } from 'firebase-admin/auth';
-import { getStorage, type Storage } from 'firebase-admin/storage';
+import type { App } from 'firebase-admin/app';
+import type { Firestore } from 'firebase-admin/firestore';
+import type { Auth } from 'firebase-admin/auth';
+import type { Storage } from 'firebase-admin/storage';
 
 export function hasFirestoreCredentials(): boolean {
   const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -18,15 +18,21 @@ export function hasFirestoreCredentials(): boolean {
   );
 }
 
-export function ensureAdminApp() {
+let cachedApp: App | null = null;
+let cachedDb: Firestore | null = null;
+let cachedAuth: Auth | null = null;
+let cachedStorage: Storage | null = null;
+
+export async function ensureAdminApp(): Promise<App | null> {
+  if (cachedApp) return cachedApp;
+  if (!hasFirestoreCredentials()) return null;
+
   try {
+    const { initializeApp, getApps, getApp, cert } = await import('firebase-admin/app');
     const existingApps = getApps();
     if (existingApps.length > 0) {
-      return getApp();
-    }
-
-    if (!hasFirestoreCredentials()) {
-      return null;
+      cachedApp = getApp();
+      return cachedApp;
     }
 
     let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
@@ -41,43 +47,53 @@ export function ensureAdminApp() {
       privateKey: privateKey,
     });
 
-    return initializeApp({
+    cachedApp = initializeApp({
       credential,
       storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
     });
+    return cachedApp;
   } catch (err) {
     console.warn('Firebase Admin app initialization failed, falling back to local storage:', err);
     return null;
   }
 }
 
-export function getDb(): Firestore | null {
+export async function getDb(): Promise<Firestore | null> {
+  if (cachedDb) return cachedDb;
   try {
-    const app = ensureAdminApp();
+    const app = await ensureAdminApp();
     if (!app) return null;
-    return getFirestore(app);
+    const { getFirestore } = await import('firebase-admin/firestore');
+    cachedDb = getFirestore(app);
+    return cachedDb;
   } catch (err) {
     console.warn('Failed to get Firestore instance:', err);
     return null;
   }
 }
 
-export function getAdminAuth(): Auth | null {
+export async function getAdminAuth(): Promise<Auth | null> {
+  if (cachedAuth) return cachedAuth;
   try {
-    const app = ensureAdminApp();
+    const app = await ensureAdminApp();
     if (!app) return null;
-    return getAuth(app);
+    const { getAuth } = await import('firebase-admin/auth');
+    cachedAuth = getAuth(app);
+    return cachedAuth;
   } catch (err) {
     console.warn('Failed to get Firebase Admin Auth instance:', err);
     return null;
   }
 }
 
-export function getAdminStorage(): Storage | null {
+export async function getAdminStorage(): Promise<Storage | null> {
+  if (cachedStorage) return cachedStorage;
   try {
-    const app = ensureAdminApp();
+    const app = await ensureAdminApp();
     if (!app) return null;
-    return getStorage(app);
+    const { getStorage } = await import('firebase-admin/storage');
+    cachedStorage = getStorage(app);
+    return cachedStorage;
   } catch (err) {
     console.warn('Failed to get Firebase Admin Storage instance:', err);
     return null;

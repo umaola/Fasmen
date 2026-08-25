@@ -34,7 +34,7 @@ export async function saveUploadedImage(file: File, subdir: string): Promise<str
   // If Firebase credentials are configured, upload to Firebase Storage bucket
   if (hasFirestoreCredentials()) {
     try {
-      const storage = getAdminStorage();
+      const storage = await getAdminStorage();
       if (storage) {
         const bucket = storage.bucket();
         const destination = `${subdir}/${filename}`;
@@ -74,4 +74,3 @@ export async function saveUploadedImage(file: File, subdir: string): Promise<str
     return `data:${file.type};base64,${buffer.toString("base64")}`;
   }
 }
-

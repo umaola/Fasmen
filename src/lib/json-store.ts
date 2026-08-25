@@ -143,7 +143,7 @@ async function writeFileRaw<T>(file: string, data: T[]): Promise<void> {
 async function readAllFirestore<T>(file: string): Promise<T[]> {
   try {
     const { name } = collectionFor(file);
-    const db = getDb();
+    const db = await getDb();
     if (!db) {
       return await readFileRaw<T>(file);
     }
@@ -188,7 +188,7 @@ export function withCollection<T>(
         const current = await readAllFirestore<T>(file);
         const updated = await mutate(current);
 
-        const db = getDb();
+        const db = await getDb();
         if (db) {
           try {
             const collection = db.collection(name);
