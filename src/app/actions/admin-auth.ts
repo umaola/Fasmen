@@ -1,26 +1,20 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { LoginFormSchema, type LoginState } from "@/lib/definitions";
 import { findUserByEmail, createUserProfile, isSystemAdminEmail } from "@/lib/users";
 import { createSession, deleteSession } from "@/lib/session";
 import { hasFirestoreCredentials } from "@/lib/firestore";
 
-export async function adminLoginAction(
-  _state: LoginState,
-  formData: FormData
-): Promise<LoginState> {
-  const validatedFields = LoginFormSchema.safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
-  });
+export async function adminLoginAction(input: {
+  email: string;
+  password: string;
+}): Promise<{ success: boolean; error?: string; redirectUrl?: string }> {
+  const normalizedEmail = (input.email || "").trim().toLowerCase();
+  const password = input.password || "";
 
-  if (!validatedFields.success) {
-    return { errors: validatedFields.error.flatten().fieldErrors };
+  if (!normalizedEmail || !password) {
+    return { success: false, error: "Email and password are required." };
   }
-
-  const { email, password } = validatedFields.data;
-  const normalizedEmail = email.trim().toLowerCase();
 
   // 1. Check Master Admin Credentials (guaranteed instant access on live Vercel & localhost)
   const isMasterAdminEmail =
@@ -44,7 +38,7 @@ export async function adminLoginAction(
       });
     }
     await createSession(profile.id, "admin", normalizedEmail);
-    redirect("/admin/review");
+    return { success: true, redirectUrl: "/admin/review" };
   }
 
   // 2. Check standard Firebase Auth credentials if configured
@@ -61,26 +55,23 @@ export async function adminLoginAction(
       );
 
       if (!verifyRes.ok) {
-        return { message: "Invalid administrator credentials. Please check your email and password." };
+        return { success: false, error: "Invalid administrator credentials." };
       }
 
       const profile = await findUserByEmail(normalizedEmail);
       if (!profile || profile.role !== "admin") {
-        return { message: "Access denied. This account does not have administrator privileges." };
+        return { success: false, error: "Access denied. This account does not have administrator privileges." };
       }
 
       await createSession(profile.id, "admin", normalizedEmail);
-      redirect("/admin/review");
+      return { success: true, redirectUrl: "/admin/review" };
     } catch (err) {
-      if (err instanceof Error && err.message.includes("NEXT_REDIRECT")) {
-        throw err;
-      }
       console.error("Admin login error:", err);
-      return { message: "Authentication service unavailable. Please try master credentials." };
+      return { success: false, error: "Authentication service unavailable. Please try master credentials." };
     }
   }
 
-  return { message: "Invalid administrator credentials. Please check your email and password." };
+  return { success: false, error: "Invalid administrator credentials." };
 }
 
 export async function adminLogoutAction(): Promise<void> {

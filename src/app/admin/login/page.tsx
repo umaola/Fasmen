@@ -1,23 +1,42 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { adminLoginAction } from "@/app/actions/admin-auth";
 import { FormAlert } from "@/components/FormAlert";
 import { ShieldCheckIcon } from "@/components/icons";
-import type { LoginState } from "@/lib/definitions";
 
 export default function AdminLoginPage() {
-  const [state, action, pending] = useActionState<LoginState, FormData>(
-    adminLoginAction,
-    undefined
-  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function handleFillMasterAdmin() {
     setEmail("admin@fasmen.com");
     setPassword("Admin@Fasmen2026!");
+    setError(null);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setPending(true);
+    setError(null);
+
+    try {
+      const res = await adminLoginAction({ email, password });
+      if (res.success && res.redirectUrl) {
+        // Direct browser navigation guarantees the session cookie is transmitted and the review queue loads cleanly
+        window.location.href = res.redirectUrl;
+      } else {
+        setError(res.error || "Invalid administrator credentials.");
+        setPending(false);
+      }
+    } catch (err) {
+      console.error("Admin login submission error:", err);
+      setError("An unexpected error occurred. Please try again.");
+      setPending(false);
+    }
   }
 
   return (
@@ -43,8 +62,8 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Login Form */}
-        <form action={action} className="flex flex-col gap-4">
-          <FormAlert message={state?.message} />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <FormAlert message={error} />
 
           <div>
             <label htmlFor="admin-email" className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
@@ -61,16 +80,9 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@fasmen.com"
-              aria-invalid={!!state?.errors?.email}
-              className={`mt-1.5 h-11 w-full rounded-lg bg-[#0b101b] border px-3.5 text-sm text-white placeholder-neutral-500 outline-none transition focus:ring-2 ${
-                state?.errors?.email
-                  ? "border-error-500 focus:border-error-500 focus:ring-error-500/20"
-                  : "border-neutral-700/80 focus:border-primary-500 focus:ring-primary-500/20"
-              }`}
+              required
+              className="mt-1.5 h-11 w-full rounded-lg bg-[#0b101b] border border-neutral-700/80 px-3.5 text-sm text-white placeholder-neutral-500 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
             />
-            {state?.errors?.email && (
-              <p className="mt-1 text-xs text-error-400">{state.errors.email[0]}</p>
-            )}
           </div>
 
           <div>
@@ -86,12 +98,8 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                aria-invalid={!!state?.errors?.password}
-                className={`h-11 w-full rounded-lg bg-[#0b101b] border px-3.5 pr-10 text-sm text-white placeholder-neutral-500 outline-none transition focus:ring-2 ${
-                  state?.errors?.password
-                    ? "border-error-500 focus:border-error-500 focus:ring-error-500/20"
-                    : "border-neutral-700/80 focus:border-primary-500 focus:ring-primary-500/20"
-                }`}
+                required
+                className="h-11 w-full rounded-lg bg-[#0b101b] border border-neutral-700/80 px-3.5 pr-10 text-sm text-white placeholder-neutral-500 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
               />
               <button
                 type="button"
@@ -111,9 +119,6 @@ export default function AdminLoginPage() {
                 )}
               </button>
             </div>
-            {state?.errors?.password && (
-              <p className="mt-1 text-xs text-error-400">{state.errors.password[0]}</p>
-            )}
           </div>
 
           <button
