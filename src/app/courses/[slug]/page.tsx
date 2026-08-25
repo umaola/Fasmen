@@ -25,18 +25,23 @@ export default async function CourseDetailPage({
   }
 
   const [lessons, tutor, user] = await Promise.all([
-    listLessonsByCourse(course.id),
-    findUserById(course.tutorId),
-    getCurrentUser(),
+    listLessonsByCourse(course.id).catch(() => []),
+    findUserById(course.tutorId).catch(() => undefined),
+    getCurrentUser().catch(() => null),
   ]);
 
   const enrollment =
-    user?.role === "student" ? await findEnrollment(user.id, course.id) : undefined;
+    user?.role === "student" ? await findEnrollment(user.id, course.id).catch(() => undefined) : undefined;
 
   const [reviews, myReview] = await Promise.all([
-    listReviewsByCourse(course.id),
-    user?.role === "student" ? findReviewByStudentAndCourse(user.id, course.id) : undefined,
+    listReviewsByCourse(course.id).catch(() => []),
+    user?.role === "student" ? findReviewByStudentAndCourse(user.id, course.id).catch(() => undefined) : undefined,
   ]);
+
+  const reviewCount = Number(course.reviewCount) || 0;
+  const averageRating = Number(course.averageRating) || 0;
+  const price = typeof course.price === "number" ? course.price : 0;
+  const title = course.title || "Untitled Course";
 
   return (
     <main className="flex-1 px-6 py-12">
@@ -49,7 +54,7 @@ export default async function CourseDetailPage({
           <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-lg bg-primary-100">
             <Image
               src={course.thumbnailUrl}
-              alt={course.title}
+              alt={title}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 768px"
@@ -61,25 +66,25 @@ export default async function CourseDetailPage({
         <div className="mt-4 flex items-start justify-between gap-6">
           <div>
             <span className="inline-flex rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
-              {categoryName(course.category)}
+              {categoryName(course.category || "")}
             </span>
             <h1 className="font-heading mt-2 text-3xl font-bold text-primary-900">
-              {course.title}
+              {title}
             </h1>
             <p className="mt-2 text-neutral-700">
-              by {course.tutorName} · {course.level} · {lessons.length} lesson
+              by {course.tutorName || "Instructor"} · {course.level || "beginner"} · {lessons.length} lesson
               {lessons.length === 1 ? "" : "s"}
             </p>
             <p className="mt-1 text-sm text-neutral-700">
-              {course.reviewCount > 0
-                ? `★ ${course.averageRating.toFixed(1)} (${course.reviewCount} reviews)`
+              {reviewCount > 0
+                ? `★ ${averageRating.toFixed(1)} (${reviewCount} reviews)`
                 : "No reviews yet"}
             </p>
           </div>
 
           <div className="shrink-0 text-right">
             <p className="font-heading text-2xl font-bold text-primary-900">
-              {(course.price / 100).toLocaleString("en-NG", {
+              {(price / 100).toLocaleString("en-NG", {
                 style: "currency",
                 currency: "NGN",
                 maximumFractionDigits: 0,
@@ -167,7 +172,7 @@ export default async function CourseDetailPage({
               About the instructor
             </h2>
             <div className="mt-4 rounded-lg bg-white p-5 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">
-              <p className="font-medium text-neutral-900">{course.tutorName}</p>
+              <p className="font-medium text-neutral-900">{course.tutorName || "Instructor"}</p>
               <p className="mt-2 whitespace-pre-line text-sm text-neutral-700">{tutor.bio}</p>
             </div>
           </>
@@ -203,8 +208,10 @@ export default async function CourseDetailPage({
                 className="rounded-lg bg-white p-4 shadow-[0_1px_3px_rgba(18,22,28,0.08)]"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-neutral-900">{review.studentName}</span>
-                  <span className="text-sm text-primary-700">{"★".repeat(review.rating)}</span>
+                  <span className="font-medium text-neutral-900">{review.studentName || "Student"}</span>
+                  <span className="text-sm text-primary-700">
+                    {"★".repeat(Math.max(0, Math.min(5, Math.floor(Number(review.rating) || 0))))}
+                  </span>
                 </div>
                 <p className="mt-2 whitespace-pre-line text-sm text-neutral-700">
                   {review.comment}

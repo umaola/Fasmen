@@ -1,4 +1,4 @@
-import { listPublishedCourses } from "@/lib/courses";
+import { listPublishedCourses, type Course } from "@/lib/courses";
 import { CATEGORIES } from "@/lib/categories";
 import { CourseCard } from "@/components/CourseCard";
 import { BackButton } from "./BackButton";
@@ -9,7 +9,12 @@ export default async function CourseCatalogPage({
   searchParams: Promise<{ q?: string; category?: string }>;
 }) {
   const { q, category } = await searchParams;
-  const courses = await listPublishedCourses({ search: q, category });
+  let courses: Course[] = [];
+  try {
+    courses = await listPublishedCourses({ search: q, category });
+  } catch (err) {
+    console.error("CourseCatalogPage: failed to load courses:", err);
+  }
 
   return (
     <main className="flex-1 px-6 py-12">

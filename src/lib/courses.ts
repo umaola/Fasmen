@@ -8,9 +8,6 @@ const LESSONS_FILE = "lessons.json";
 export type CourseStatus = "draft" | "pending-review" | "published" | "rejected";
 export type CourseLevel = "beginner" | "intermediate" | "advanced";
 
-// Mirrors courses/{courseId} from firestore-schema.md. videoAssetId / CDN
-// fields are omitted for now — no video CDN is wired up yet, so lessons are
-// reading-only until that integration lands.
 export interface Course {
   id: string;
   title: string;
@@ -40,9 +37,6 @@ export interface Course {
 
 export type LessonType = "reading" | "video";
 
-// Mirrors courses/{courseId}/lessons/{lessonId}. videoGuid is the Bunny
-// Stream video GUID (see src/lib/bunny.ts) — not a raw URL — resolved into a
-// playback URL via getBunnyEmbedUrl() wherever a lesson is actually played.
 export interface Lesson {
   id: string;
   courseId: string;
@@ -57,7 +51,7 @@ export interface Lesson {
 }
 
 function slugify(title: string): string {
-  return title
+  return (title || "")
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
@@ -69,7 +63,7 @@ async function uniqueSlug(title: string): Promise<string> {
   const base = slugify(title) || "course";
   let candidate = base;
   let suffix = 1;
-  while (courses.some((c) => c.slug === candidate)) {
+  while (courses.some((c) => c && c.slug === candidate)) {
     suffix += 1;
     candidate = `${base}-${suffix}`;
   }
@@ -92,25 +86,25 @@ export async function createCourseDraft(input: {
   const now = new Date().toISOString();
   const course: Course = {
     id: randomUUID(),
-    title: input.title,
+    title: input.title || "Untitled Course",
     slug: await uniqueSlug(input.title),
-    description: input.description,
+    description: input.description || "",
     tutorId: input.tutorId,
-    tutorName: input.tutorName,
+    tutorName: input.tutorName || "Instructor",
     category: input.category,
-    tags: input.tags,
-    price: Math.round(input.priceNaira * 100),
+    tags: Array.isArray(input.tags) ? input.tags : [],
+    price: Math.round((Number(input.priceNaira) || 0) * 100),
     currency: "NGN",
     status: "draft",
-    language: input.language,
-    level: input.level,
+    language: input.language || "en",
+    level: input.level || "beginner",
     thumbnailUrl: null,
     totalLessons: 0,
     enrollmentCount: 0,
     averageRating: 0,
     reviewCount: 0,
-    passThresholdPercent: input.passThresholdPercent,
-    maxAttempts: input.maxAttempts,
+    passThresholdPercent: Number(input.passThresholdPercent) || 70,
+    maxAttempts: Number(input.maxAttempts) || 3,
     rejectionFeedback: null,
     createdAt: now,
     updatedAt: now,
@@ -122,53 +116,78 @@ export async function createCourseDraft(input: {
 }
 
 export async function listCoursesByTutor(tutorId: string): Promise<Course[]> {
-  const courses = await readCollection<Course>(COURSES_FILE);
-  return courses
-    .filter((c) => c.tutorId === tutorId)
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  try {
+    const courses = await readCollection<Course>(COURSES_FILE);
+    return courses
+      .filter((c) => Boolean(c && c.tutorId === tutorId))
+      .sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+  } catch (err) {
+    console.error("listCoursesByTutor error:", err);
+    return [];
+  }
 }
 
 export async function listPublishedCourses(filters?: {
   category?: string;
   search?: string;
 }): Promise<Course[]> {
-  const courses = await readCollection<Course>(COURSES_FILE);
-  const search = filters?.search?.trim().toLowerCase();
+  try {
+    const courses = await readCollection<Course>(COURSES_FILE);
+    const search = filters?.search?.trim().toLowerCase();
 
-  return courses
-    .filter((c) => c.status === "published")
-    .filter((c) => !filters?.category || c.category === filters.category)
-    .filter(
-      (c) =>
-        !search ||
-        c.title.toLowerCase().includes(search) ||
-        c.tags.some((tag) => tag.toLowerCase().includes(search))
-    )
-    .sort((a, b) => b.enrollmentCount - a.enrollmentCount);
+    return courses
+      .filter((c) => Boolean(c && c.status === "published"))
+      .filter((c) => !filters?.category || c.category === filters.category)
+      .filter((c) => {
+        if (!search) return true;
+        const titleMatch = typeof c.title === "string" && c.title.toLowerCase().includes(search);
+        const tagMatch = Array.isArray(c.tags) && c.tags.some((tag) => typeof tag === "string" && tag.toLowerCase().includes(search));
+        return titleMatch || tagMatch;
+      })
+      .sort((a, b) => (Number(b.enrollmentCount) || 0) - (Number(a.enrollmentCount) || 0));
+  } catch (err) {
+    console.error("listPublishedCourses error:", err);
+    return [];
+  }
 }
 
 export async function listPendingReviewCourses(): Promise<Course[]> {
-  const courses = await readCollection<Course>(COURSES_FILE);
-  return courses
-    .filter((c) => c.status === "pending-review")
-    .sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
+  try {
+    const courses = await readCollection<Course>(COURSES_FILE);
+    return courses
+      .filter((c) => Boolean(c && c.status === "pending-review"))
+      .sort((a, b) => (a.updatedAt || "").localeCompare(b.updatedAt || ""));
+  } catch (err) {
+    console.error("listPendingReviewCourses error:", err);
+    return [];
+  }
 }
 
 export async function findCourseById(id: string): Promise<Course | undefined> {
-  const courses = await readCollection<Course>(COURSES_FILE);
-  return courses.find((c) => c.id === id);
+  try {
+    const courses = await readCollection<Course>(COURSES_FILE);
+    return courses.find((c) => Boolean(c && c.id === id));
+  } catch (err) {
+    console.error("findCourseById error:", err);
+    return undefined;
+  }
 }
 
 export async function findCourseBySlug(slug: string): Promise<Course | undefined> {
-  const courses = await readCollection<Course>(COURSES_FILE);
-  return courses.find((c) => c.slug === slug);
+  try {
+    const courses = await readCollection<Course>(COURSES_FILE);
+    return courses.find((c) => Boolean(c && c.slug === slug));
+  } catch (err) {
+    console.error("findCourseBySlug error:", err);
+    return undefined;
+  }
 }
 
 async function updateCourse(id: string, patch: Partial<Course>): Promise<Course | null> {
   let updated: Course | null = null;
   await withCollection<Course>(COURSES_FILE, (courses) =>
     courses.map((c) => {
-      if (c.id !== id) return c;
+      if (!c || c.id !== id) return c;
       updated = { ...c, ...patch, updatedAt: new Date().toISOString() };
       return updated;
     })
@@ -203,7 +222,7 @@ export async function updateCourseDetails(
   }
 ): Promise<Course | null> {
   const { priceNaira, ...rest } = patch;
-  return updateCourse(courseId, { ...rest, price: Math.round(priceNaira * 100) });
+  return updateCourse(courseId, { ...rest, price: Math.round((Number(priceNaira) || 0) * 100) });
 }
 
 export async function updateCourseThumbnail(
@@ -214,19 +233,19 @@ export async function updateCourseThumbnail(
 }
 
 export async function deleteCourse(courseId: string): Promise<void> {
-  await withCollection<Course>(COURSES_FILE, (courses) => courses.filter((c) => c.id !== courseId));
+  await withCollection<Course>(COURSES_FILE, (courses) => courses.filter((c) => Boolean(c && c.id !== courseId)));
 }
 
 export async function deleteLessonsByCourse(courseId: string): Promise<void> {
   await withCollection<Lesson>(LESSONS_FILE, (lessons) =>
-    lessons.filter((l) => l.courseId !== courseId)
+    lessons.filter((l) => Boolean(l && l.courseId !== courseId))
   );
 }
 
 export async function incrementEnrollmentCount(courseId: string): Promise<void> {
   const course = await findCourseById(courseId);
   if (!course) return;
-  await updateCourse(courseId, { enrollmentCount: course.enrollmentCount + 1 });
+  await updateCourse(courseId, { enrollmentCount: (Number(course.enrollmentCount) || 0) + 1 });
 }
 
 export async function updateCourseRatingStats(
@@ -237,23 +256,31 @@ export async function updateCourseRatingStats(
 }
 
 export async function listLessonsByCourse(courseId: string): Promise<Lesson[]> {
-  const lessons = await readCollection<Lesson>(LESSONS_FILE);
-  return lessons.filter((l) => l.courseId === courseId).sort((a, b) => a.order - b.order);
+  try {
+    const lessons = await readCollection<Lesson>(LESSONS_FILE);
+    return lessons
+      .filter((l) => Boolean(l && l.courseId === courseId))
+      .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+  } catch (err) {
+    console.error("listLessonsByCourse error:", err);
+    return [];
+  }
 }
 
-// There's no dedicated activity/event log yet, so this derives one entry per
-// course from its current status — a reasonable proxy until real history
-// (submission events, lesson adds, etc.) gets its own log.
 export function describeCourseActivity(course: Course): { message: string; at: string } {
+  if (!course) {
+    return { message: "Course updated", at: new Date().toISOString() };
+  }
+  const title = course.title || "Course";
   switch (course.status) {
     case "published":
-      return { message: `"${course.title}" was approved and published`, at: course.publishedAt! };
+      return { message: `"${title}" was approved and published`, at: course.publishedAt || course.updatedAt || new Date().toISOString() };
     case "rejected":
-      return { message: `"${course.title}" was rejected`, at: course.updatedAt };
+      return { message: `"${title}" was rejected`, at: course.updatedAt || new Date().toISOString() };
     case "pending-review":
-      return { message: `"${course.title}" was submitted for review`, at: course.updatedAt };
+      return { message: `"${title}" was submitted for review`, at: course.updatedAt || new Date().toISOString() };
     default:
-      return { message: `"${course.title}" was created as a draft`, at: course.createdAt };
+      return { message: `"${title}" was created as a draft`, at: course.createdAt || new Date().toISOString() };
   }
 }
 
@@ -270,13 +297,13 @@ export async function addLesson(input: {
   const lesson: Lesson = {
     id: randomUUID(),
     courseId: input.courseId,
-    title: input.title,
+    title: input.title || "Untitled Lesson",
     order: existing.length,
     type: input.type,
-    content: input.content,
+    content: input.content || "",
     videoGuid: input.type === "video" ? (input.videoGuid ?? null) : null,
     videoDurationSeconds: input.type === "video" ? (input.videoDurationSeconds ?? null) : null,
-    isPreview: input.isPreview,
+    isPreview: Boolean(input.isPreview),
     createdAt: new Date().toISOString(),
   };
 
@@ -298,7 +325,7 @@ export async function updateLesson(
 ): Promise<Lesson | null> {
   const all = await withCollection<Lesson>(LESSONS_FILE, (lessons) =>
     lessons.map((l) =>
-      l.id === lessonId
+      l && l.id === lessonId
         ? {
             ...l,
             title: patch.title,
@@ -311,18 +338,16 @@ export async function updateLesson(
         : l
     )
   );
-  return all.find((l) => l.id === lessonId) ?? null;
+  return all.find((l) => Boolean(l && l.id === lessonId)) ?? null;
 }
 
-// Swaps `order` with the adjacent lesson — simpler and less error-prone than
-// renumbering the whole list for a single-step move.
 export async function moveLesson(
   courseId: string,
   lessonId: string,
   direction: "up" | "down"
 ): Promise<void> {
   const lessons = await listLessonsByCourse(courseId);
-  const index = lessons.findIndex((l) => l.id === lessonId);
+  const index = lessons.findIndex((l) => l && l.id === lessonId);
   if (index === -1) return;
 
   const swapIndex = direction === "up" ? index - 1 : index + 1;
@@ -333,6 +358,7 @@ export async function moveLesson(
 
   await withCollection<Lesson>(LESSONS_FILE, (all) =>
     all.map((l) => {
+      if (!l) return l;
       if (l.id === current.id) return { ...l, order: swapWith.order };
       if (l.id === swapWith.id) return { ...l, order: current.order };
       return l;

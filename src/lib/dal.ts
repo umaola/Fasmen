@@ -22,7 +22,20 @@ export const verifySession = cache(async () => {
 });
 
 export const getCurrentUser = cache(async () => {
-  const session = await getSession();
-  if (!session?.userId) return null;
-  return (await findUserById(session.userId)) ?? null;
+  try {
+    const session = await getSession();
+    if (!session?.userId) return null;
+    return (await findUserById(session.userId)) ?? null;
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "digest" in error &&
+      (error as { digest?: string }).digest === "DYNAMIC_SERVER_USAGE"
+    ) {
+      throw error;
+    }
+    console.error("getCurrentUser error:", error);
+    return null;
+  }
 });

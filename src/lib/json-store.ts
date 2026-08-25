@@ -83,13 +83,17 @@ async function readFileRaw<T>(file: string): Promise<T[]> {
 
 async function writeFileRaw<T>(file: string, data: T[]): Promise<void> {
   if (process.env.NODE_ENV === "production" && !hasFirestoreCredentials()) {
-    throw new Error(
+    console.warn(
       "Database storage is not configured for production. Local file persistence is read-only on Vercel. Please configure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY in your Vercel Project Settings > Environment Variables."
     );
   }
-  const fullPath = path.join(DATA_DIR, file);
-  await ensureFile(fullPath);
-  await fs.writeFile(fullPath, JSON.stringify(data, null, 2), "utf8");
+  try {
+    const fullPath = path.join(DATA_DIR, file);
+    await ensureFile(fullPath);
+    await fs.writeFile(fullPath, JSON.stringify(data, null, 2), "utf8");
+  } catch (err) {
+    console.warn(`Unable to persist to local file ${file} (expected on read-only serverless):`, err);
+  }
 }
 
 async function readAllFirestore<T>(file: string): Promise<T[]> {
@@ -98,10 +102,13 @@ async function readAllFirestore<T>(file: string): Promise<T[]> {
     const db = getDb();
     if (!db) {
       console.warn(`Firestore DB instance not available for ${file}, falling back to local file`);
-      return readFileRaw<T>(file);
+      return await readFileRaw<T>(file);
     }
     const snapshot = await db.collection(name).get();
-    return snapshot.docs.map((doc) => doc.data() as T);
+    return snapshot.docs.map((doc) => {
+      const data = doc.data() as Record<string, unknown>;
+      return { id: doc.id, ...data } as T;
+    });
   } catch (error) {
     console.error(`Failed to read collection from Firestore (${file}), falling back to local file:`, error);
     try {
@@ -112,13 +119,17 @@ async function readAllFirestore<T>(file: string): Promise<T[]> {
   }
 }
 
-
 export function readCollection<T>(file: string): Promise<T[]> {
-  return enqueue(file, () => {
-    if (hasFirestoreCredentials()) {
-      return readAllFirestore<T>(file);
+  return enqueue(file, async () => {
+    try {
+      if (hasFirestoreCredentials()) {
+        return await readAllFirestore<T>(file);
+      }
+      return await readFileRaw<T>(file);
+    } catch (error) {
+      console.error(`readCollection error for ${file}:`, error);
+      return [];
     }
-    return readFileRaw<T>(file);
   });
 }
 
@@ -128,38 +139,43 @@ export function withCollection<T>(
   mutate: (data: T[]) => T[] | Promise<T[]>
 ): Promise<T[]> {
   return enqueue(file, async () => {
-    if (hasFirestoreCredentials()) {
-      const { name, idField } = collectionFor(file);
-      const current = await readAllFirestore<T>(file);
-      const updated = await mutate(current);
+    try {
+      if (hasFirestoreCredentials()) {
+        const { name, idField } = collectionFor(file);
+        const current = await readAllFirestore<T>(file);
+        const updated = await mutate(current);
 
-      const db = getDb();
-      if (!db) {
-        throw new Error(`Firestore DB instance not available for ${file}`);
-      }
-      const collection = db.collection(name);
-      const batch = db.batch();
-
-      const before = new Map(current.map((r) => [docIdOf(r, idField, file), r]));
-      const after = new Map(updated.map((r) => [docIdOf(r, idField, file), r]));
-
-      for (const [id, record] of after) {
-        const previous = before.get(id);
-        if (!previous || JSON.stringify(previous) !== JSON.stringify(record)) {
-          batch.set(collection.doc(id), record as Record<string, unknown>);
+        const db = getDb();
+        if (!db) {
+          throw new Error(`Firestore DB instance not available for ${file}`);
         }
-      }
-      for (const id of before.keys()) {
-        if (!after.has(id)) batch.delete(collection.doc(id));
+        const collection = db.collection(name);
+        const batch = db.batch();
+
+        const before = new Map(current.map((r) => [docIdOf(r, idField, file), r]));
+        const after = new Map(updated.map((r) => [docIdOf(r, idField, file), r]));
+
+        for (const [id, record] of after) {
+          const previous = before.get(id);
+          if (!previous || JSON.stringify(previous) !== JSON.stringify(record)) {
+            batch.set(collection.doc(id), record as Record<string, unknown>);
+          }
+        }
+        for (const id of before.keys()) {
+          if (!after.has(id)) batch.delete(collection.doc(id));
+        }
+
+        await batch.commit();
+        return updated;
       }
 
-      await batch.commit();
+      const current = await readFileRaw<T>(file);
+      const updated = await mutate(current);
+      await writeFileRaw(file, updated);
       return updated;
+    } catch (err) {
+      console.error(`withCollection error for ${file}:`, err);
+      return [];
     }
-
-    const current = await readFileRaw<T>(file);
-    const updated = await mutate(current);
-    await writeFileRaw(file, updated);
-    return updated;
   });
 }

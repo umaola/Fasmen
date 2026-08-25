@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import Link from "next/link";
-import { listPublishedCourses } from "@/lib/courses";
+import { listPublishedCourses, type Course } from "@/lib/courses";
 import { CATEGORIES, categoryBadgeClass } from "@/lib/categories";
 import { CourseCard } from "@/components/CourseCard";
 import {
@@ -31,7 +31,13 @@ const STEPS = [
 ];
 
 export default async function LandingPage() {
-  const featured = await listPublishedCourses();
+  let featured: Course[] = [];
+  try {
+    featured = await listPublishedCourses();
+  } catch (err) {
+    console.error("LandingPage: failed to load published courses:", err);
+  }
+
   const previewA = featured[0];
   const previewB = featured[1];
 

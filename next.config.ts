@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   trailingSlash: false,
   serverExternalPackages: ["firebase-admin"],
+  outputFileTracingIncludes: {
+    "/**": ["./data/**/*"],
+  },
   images: {
     remotePatterns: [
       {
