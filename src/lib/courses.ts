@@ -163,6 +163,15 @@ export async function listPendingReviewCourses(): Promise<Course[]> {
   }
 }
 
+export async function listAllCourses(): Promise<Course[]> {
+  try {
+    return await readCollection<Course>(COURSES_FILE);
+  } catch (err) {
+    console.error("listAllCourses error:", err);
+    return [];
+  }
+}
+
 export async function findCourseById(id: string): Promise<Course | undefined> {
   try {
     const courses = await readCollection<Course>(COURSES_FILE);
