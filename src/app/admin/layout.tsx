@@ -3,6 +3,9 @@ import { getCurrentUser } from "@/lib/dal";
 import { adminLogoutAction } from "@/app/actions/admin-auth";
 import { ShieldCheckIcon, ClipboardCheckIcon, LogOutIcon, BookIcon } from "@/components/icons";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminLayout({
   children,
 }: {

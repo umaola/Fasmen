@@ -23,6 +23,9 @@ interface CourseQueueItem {
   readingCount: number;
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminReviewPage() {
   const user = await getCurrentUser();
   if (!user || user.role !== "admin") {
