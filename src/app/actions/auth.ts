@@ -110,7 +110,7 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
         role: "admin",
       });
     }
-    await createSession(profile.id, "admin");
+    await createSession(profile.id, "admin", normalizedEmail);
     redirect("/dashboard/admin/review");
   }
 
@@ -197,7 +197,7 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
     }
 
     const sessionRole: Role = isSystemAdminEmail(normalizedEmail) ? "admin" : profile.role;
-    await createSession(profile.id, sessionRole);
+    await createSession(profile.id, sessionRole, normalizedEmail);
     destination = sessionRole === "admin" ? "/dashboard/admin/review" : "/dashboard";
   } catch (error) {
     console.error("Login error:", error);

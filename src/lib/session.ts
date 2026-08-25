@@ -8,9 +8,9 @@ import {
   decrypt,
 } from "./session-token";
 
-export async function createSession(userId: string, role: Role): Promise<void> {
+export async function createSession(userId: string, role: Role, email?: string): Promise<void> {
   const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
-  const sessionToken = await encrypt({ userId, role });
+  const sessionToken = await encrypt({ userId, role, email });
 
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, sessionToken, {

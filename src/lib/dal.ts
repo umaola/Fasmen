@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "./session";
-import { findUserById } from "./users";
+import { findUserById, isSystemAdminEmail, type UserProfile } from "./users";
 
 // Also guards against a session cookie that outlived its user record (e.g.
 // the local JSON store was reset during development) — without this check,
@@ -13,7 +13,7 @@ export const verifySession = cache(async () => {
     redirect("/login");
   }
 
-  const user = await findUserById(session.userId);
+  const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
@@ -21,11 +21,31 @@ export const verifySession = cache(async () => {
   return session;
 });
 
-export const getCurrentUser = cache(async () => {
+export const getCurrentUser = cache(async (): Promise<UserProfile | null> => {
   try {
     const session = await getSession();
     if (!session?.userId) return null;
-    return (await findUserById(session.userId)) ?? null;
+
+    const user = await findUserById(session.userId);
+    if (user) return user;
+
+    // Resilient fallback for System Admin or embedded session identity
+    if (session.role === "admin" || (session.email && isSystemAdminEmail(session.email))) {
+      return {
+        id: session.userId,
+        displayName: "System Administrator",
+        email: session.email || "admin@fasmen.com",
+        phoneNumber: null,
+        photoURL: null,
+        role: "admin",
+        bio: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        tutorProfile: null,
+      };
+    }
+
+    return null;
   } catch (error: unknown) {
     if (
       typeof error === "object" &&
@@ -39,3 +59,4 @@ export const getCurrentUser = cache(async () => {
     return null;
   }
 });
+
