@@ -11,6 +11,7 @@ import { enrollInCourse } from "@/app/actions/enrollments";
 import { listReviewsByCourse, findReviewByStudentAndCourse } from "@/lib/reviews";
 import { deleteReviewAction } from "@/app/actions/reviews";
 import { ReviewForm } from "./ReviewForm";
+import { formatDuration } from "@/lib/format";
 
 export default async function CourseDetailPage({
   params,
@@ -137,6 +138,11 @@ export default async function CourseDetailPage({
               <div className="flex items-center justify-between">
                 <span className="font-medium text-neutral-900">
                   {index + 1}. {lesson.title}
+                  {lesson.type === "video" && lesson.videoDurationSeconds ? (
+                    <span className="ml-2 text-xs font-normal text-neutral-500">
+                      · {formatDuration(lesson.videoDurationSeconds)}
+                    </span>
+                  ) : null}
                 </span>
                 {lesson.isPreview ? (
                   <span className="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700">

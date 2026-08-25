@@ -3,6 +3,31 @@
 import { useRef, useState } from "react";
 import * as tus from "tus-js-client";
 
+export function extractVideoDuration(file: File): Promise<number> {
+  return new Promise((resolve) => {
+    try {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      const objectUrl = URL.createObjectURL(file);
+
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(objectUrl);
+        const duration = Math.round(video.duration);
+        resolve(Number.isFinite(duration) && duration > 0 ? duration : 0);
+      };
+
+      video.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(0);
+      };
+
+      video.src = objectUrl;
+    } catch {
+      resolve(0);
+    }
+  });
+}
+
 // Deliberately shows the tutor nothing about how/where the video is stored —
 // just an upload button and a progress percentage. The resulting Bunny video
 // GUID is written into a hidden `videoGuid` field so it rides along with the
@@ -10,9 +35,11 @@ import * as tus from "tus-js-client";
 export function VideoUploadButton({
   courseId,
   defaultGuid,
+  onDurationChange,
 }: {
   courseId: string;
   defaultGuid?: string | null;
+  onDurationChange?: (durationSeconds: number) => void;
 }) {
   const [guid, setGuid] = useState<string | null>(defaultGuid ?? null);
   const [status, setStatus] = useState<"idle" | "uploading" | "done" | "error">(
@@ -26,6 +53,16 @@ export function VideoUploadButton({
     setStatus("uploading");
     setProgress(0);
     setError(null);
+
+    // Automatically detect video duration directly from the uploaded file
+    try {
+      const durationSeconds = await extractVideoDuration(file);
+      if (durationSeconds > 0 && onDurationChange) {
+        onDurationChange(durationSeconds);
+      }
+    } catch {
+      // Continue with upload even if client metadata extraction had an issue
+    }
 
     try {
       const res = await fetch("/api/bunny/upload-credentials", {
@@ -95,7 +132,7 @@ export function VideoUploadButton({
             ? "Replace video"
             : "Upload video"}
       </button>
-      {status === "done" && <p className="mt-1 text-xs text-success-600">Video uploaded</p>}
+      {status === "done" && <p className="mt-1 text-xs font-medium text-success-600">✓ Video uploaded successfully</p>}
       {status === "error" && error && <p className="mt-1 text-sm text-error-600">{error}</p>}
     </div>
   );

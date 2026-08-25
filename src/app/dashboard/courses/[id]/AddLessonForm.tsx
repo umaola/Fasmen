@@ -5,6 +5,7 @@ import { createLesson } from "@/app/actions/courses";
 import type { AddLessonState } from "@/lib/definitions";
 import { VideoUploadButton } from "@/components/VideoUploadButton";
 import { FormAlert } from "@/components/FormAlert";
+import { formatDuration } from "@/lib/format";
 
 export function AddLessonForm({ courseId }: { courseId: string }) {
   const boundAction = createLesson.bind(null, courseId);
@@ -113,7 +114,10 @@ export function AddLessonForm({ courseId }: { courseId: string }) {
           <div>
             <span className="block text-sm font-medium text-neutral-900">Video</span>
             <div className="mt-1">
-              <VideoUploadButton courseId={courseId} />
+              <VideoUploadButton
+                courseId={courseId}
+                onDurationChange={(seconds) => setVideoDurationSeconds(String(seconds))}
+              />
             </div>
             {state?.errors?.videoGuid && (
               <p className="mt-1 text-sm font-medium text-error-600">{state.errors.videoGuid[0]}</p>
@@ -124,22 +128,34 @@ export function AddLessonForm({ courseId }: { courseId: string }) {
               htmlFor="lesson-video-duration"
               className="block text-sm font-medium text-neutral-900"
             >
-              Duration (seconds)
+              Duration
             </label>
             <input
+              type="hidden"
               id="lesson-video-duration"
               name="videoDurationSeconds"
-              type="number"
-              min={1}
               value={videoDurationSeconds}
-              onChange={(e) => setVideoDurationSeconds(e.target.value)}
-              aria-invalid={!!state?.errors?.videoDurationSeconds}
-              className={`mt-1 h-11 w-full rounded-sm border px-3 text-base outline-none transition focus:ring-1 ${
-                state?.errors?.videoDurationSeconds
-                  ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
-                  : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
-              }`}
             />
+            <div
+              className={`mt-1 flex h-11 w-full items-center justify-between rounded-sm border px-3 text-sm transition ${
+                state?.errors?.videoDurationSeconds
+                  ? "border-error-600 bg-error-50 text-error-900"
+                  : "border-neutral-200 bg-neutral-50 text-neutral-700"
+              }`}
+            >
+              <span className={videoDurationSeconds ? "font-medium text-neutral-900" : "text-neutral-500"}>
+                {videoDurationSeconds
+                  ? `${formatDuration(Number(videoDurationSeconds))} (${videoDurationSeconds}s)`
+                  : "Auto-detected when you upload a video"}
+              </span>
+              {videoDurationSeconds ? (
+                <span className="inline-flex items-center rounded-full bg-success-600/10 px-2 py-0.5 text-xs font-medium text-success-700">
+                  ✓ Auto-calculated
+                </span>
+              ) : (
+                <span className="text-xs text-neutral-400">Read-only (auto-calculated)</span>
+              )}
+            </div>
             {state?.errors?.videoDurationSeconds && (
               <p className="mt-1 text-sm font-medium text-error-600">{state.errors.videoDurationSeconds[0]}</p>
             )}

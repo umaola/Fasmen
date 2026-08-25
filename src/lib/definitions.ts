@@ -103,8 +103,8 @@ export const AddLessonFormSchema = z
     content: z.string().trim(),
     videoGuid: z.string().min(1).optional().or(z.literal("")),
     videoDurationSeconds: z.coerce
-      .number({ error: "Enter a valid duration." })
-      .min(1, { error: "Must be at least 1 second." })
+      .number({ error: "Upload a video to detect duration." })
+      .min(1, { error: "Video duration must be at least 1 second." })
       .optional(),
     isPreview: z.enum(["on"]).optional(),
   })
@@ -115,6 +115,10 @@ export const AddLessonFormSchema = z
   .refine((v) => v.type !== "video" || !!v.videoGuid, {
     path: ["videoGuid"],
     error: "Upload a video.",
+  })
+  .refine((v) => v.type !== "video" || (typeof v.videoDurationSeconds === "number" && v.videoDurationSeconds > 0), {
+    path: ["videoDurationSeconds"],
+    error: "Upload a video to automatically calculate its duration.",
   });
 
 export type AddLessonState =

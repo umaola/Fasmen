@@ -5,6 +5,7 @@ import type { Lesson } from "@/lib/courses";
 import { moveLessonAction } from "@/app/actions/courses";
 import { ChevronUpIcon, ChevronDownIcon } from "@/components/icons";
 import { EditLessonForm } from "./EditLessonForm";
+import { formatDuration } from "@/lib/format";
 
 export function LessonsList({
   courseId,
@@ -29,6 +30,11 @@ export function LessonsList({
           <div className="flex items-center justify-between gap-4">
             <span className="text-sm text-neutral-900">
               {index + 1}. {lesson.title}
+              {lesson.type === "video" && lesson.videoDurationSeconds ? (
+                <span className="ml-2 text-xs font-normal text-neutral-500">
+                  · {formatDuration(lesson.videoDurationSeconds)}
+                </span>
+              ) : null}
             </span>
             <div className="flex shrink-0 items-center gap-2">
               {lesson.isPreview && (

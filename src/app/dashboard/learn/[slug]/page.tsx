@@ -5,6 +5,7 @@ import { findCourseBySlug, listLessonsByCourse } from "@/lib/courses";
 import { findEnrollment } from "@/lib/enrollments";
 import { completeLessonAction } from "@/app/actions/progress";
 import { getBunnyEmbedUrl } from "@/lib/bunny";
+import { formatDuration } from "@/lib/format";
 
 export default async function LearnPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -59,6 +60,11 @@ export default async function LearnPage({ params }: { params: Promise<{ slug: st
               <div className="flex items-center justify-between">
                 <span className="font-medium text-neutral-900">
                   {index + 1}. {lesson.title}
+                  {lesson.type === "video" && lesson.videoDurationSeconds ? (
+                    <span className="ml-2 text-xs font-normal text-neutral-500">
+                      · {formatDuration(lesson.videoDurationSeconds)}
+                    </span>
+                  ) : null}
                 </span>
                 {completed ? (
                   <span className="rounded-full bg-[#e4f5ec] px-2 py-0.5 text-xs font-medium text-success-600">
