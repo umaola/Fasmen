@@ -9,7 +9,13 @@ import {
   type LoginState,
   type ForgotPasswordState,
 } from "@/lib/definitions";
-import { createUserProfile, findUserByEmail, findUserById, type Role } from "@/lib/users";
+import {
+  createUserProfile,
+  findUserByEmail,
+  findUserById,
+  isSystemAdminEmail,
+  type Role,
+} from "@/lib/users";
 import { createSession, deleteSession } from "@/lib/session";
 import { getAdminAuth, hasFirestoreCredentials } from "@/lib/firestore";
 
@@ -167,8 +173,9 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
       return { message: "Account profile not found. If you just signed up, please try logging in again." };
     }
 
-    await createSession(profile.id, profile.role);
-    destination = "/dashboard";
+    const sessionRole: Role = isSystemAdminEmail(normalizedEmail) ? "admin" : profile.role;
+    await createSession(profile.id, sessionRole);
+    destination = sessionRole === "admin" ? "/dashboard/admin/review" : "/dashboard";
   } catch (error) {
     console.error("Login error:", error);
     const errMessage = error instanceof Error ? error.message : "Failed to log in.";
@@ -212,10 +219,15 @@ export async function loginWithFirebaseTokenAction(input: {
       });
     }
 
-    await createSession(profile.id, profile.role);
+    const sessionRole: Role = isSystemAdminEmail(email) ? "admin" : profile.role;
+    await createSession(profile.id, sessionRole);
 
     const redirectUrl =
-      isNew && profile.role === "tutor" ? "/dashboard?justSignedUp=1" : "/dashboard";
+      sessionRole === "admin"
+        ? "/dashboard/admin/review"
+        : isNew && profile.role === "tutor"
+        ? "/dashboard?justSignedUp=1"
+        : "/dashboard";
 
     return { success: true, redirectUrl };
   } catch (error) {

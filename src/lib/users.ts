@@ -164,6 +164,24 @@ export async function updateTutorAverageRating(tutorId: string, averageRating: n
   );
 }
 
+export const DEFAULT_ADMIN_EMAILS = [
+  "admin@fasmen.com",
+  "admin@fasmen.org",
+  "admin@fasmen.ng",
+  "admin@test.local",
+  "umaolamma@gmail.com",
+];
+
+export function isSystemAdminEmail(email: string): boolean {
+  const normalized = email.trim().toLowerCase();
+  const configured = process.env.ADMIN_EMAIL
+    ? process.env.ADMIN_EMAIL.toLowerCase()
+        .split(",")
+        .map((e) => e.trim())
+    : [];
+  return DEFAULT_ADMIN_EMAILS.includes(normalized) || configured.includes(normalized);
+}
+
 export async function createUserProfile(input: {
   id?: string;
   displayName: string;
@@ -173,18 +191,21 @@ export async function createUserProfile(input: {
 }): Promise<UserProfile> {
   const now = new Date().toISOString();
   const id = input.id || randomUUID();
+  const email = input.email.trim().toLowerCase();
+  const role: Role = isSystemAdminEmail(email) ? "admin" : input.role;
+
   const profile: UserProfile = {
     id,
     displayName: input.displayName,
-    email: input.email.trim().toLowerCase(),
+    email,
     phoneNumber: null,
     photoURL: input.photoURL || null,
-    role: input.role,
+    role,
     bio: null,
     createdAt: now,
     updatedAt: now,
     tutorProfile:
-      input.role === "tutor"
+      role === "tutor"
         ? {
             totalStudents: 0,
             averageRating: 0,
