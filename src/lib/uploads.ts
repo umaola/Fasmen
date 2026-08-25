@@ -23,10 +23,7 @@ export async function saveUploadedImage(file: File, subdir: string): Promise<str
   if (file.size > MAX_UPLOAD_BYTES) {
     throw new UploadError("Image must be smaller than 5MB.");
   }
-  const ext = ALLOWED_MIME_TO_EXT[file.type];
-  if (!ext) {
-    throw new UploadError("Only PNG, JPEG, WEBP, or GIF images are accepted.");
-  }
+  const ext = ALLOWED_MIME_TO_EXT[file.type] || "jpg";
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const filename = `${randomUUID()}.${ext}`;
@@ -36,25 +33,26 @@ export async function saveUploadedImage(file: File, subdir: string): Promise<str
     try {
       const storage = await getAdminStorage();
       if (storage) {
-        const bucket = storage.bucket();
+        const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+        const bucket = bucketName ? storage.bucket(bucketName) : storage.bucket();
         const destination = `${subdir}/${filename}`;
         const storageFile = bucket.file(destination);
         const downloadToken = randomUUID();
 
         await storageFile.save(buffer, {
           metadata: {
-            contentType: file.type,
+            contentType: file.type || "image/jpeg",
             metadata: {
               firebaseStorageDownloadTokens: downloadToken,
             },
           },
         });
 
-        const bucketName = bucket.name || process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-        return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(destination)}?alt=media&token=${downloadToken}`;
+        const finalBucketName = bucket.name || bucketName;
+        return `https://firebasestorage.googleapis.com/v0/b/${finalBucketName}/o/${encodeURIComponent(destination)}?alt=media&token=${downloadToken}`;
       }
     } catch (err) {
-      console.error("Firebase Storage upload failed, falling back:", err);
+      console.error("Firebase Storage upload failed, falling back to data URL:", err);
     }
   }
 

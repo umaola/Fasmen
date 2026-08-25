@@ -153,22 +153,19 @@ export function VideoUploadButton({
           if (file) handleFile(file);
         }}
       />
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        disabled={status === "uploading"}
-        className="h-11 rounded-md border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-60 cursor-pointer"
-      >
-        {status === "uploading"
-          ? `Uploading... ${progress}%`
-          : status === "done"
-            ? "Replace video"
-            : "Upload video"}
-      </button>
+      {status !== "uploading" && (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="h-11 rounded-md border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-60 cursor-pointer"
+        >
+          {status === "done" ? "Replace video" : "Upload video"}
+        </button>
+      )}
 
-      {/* Progress bar and byte indicator for large uploads */}
+      {/* Progress bar and byte indicator for uploads */}
       {status === "uploading" && (
-        <div className="mt-3 w-full max-w-md space-y-1.5">
+        <div className="w-full max-w-md space-y-1.5">
           <div className="flex items-center justify-between text-xs text-neutral-700">
             <span className="font-semibold text-primary-900">Uploading: {progress}%</span>
             {totalBytes > 0 && (
@@ -184,7 +181,7 @@ export function VideoUploadButton({
             />
           </div>
           <p className="text-[11px] text-neutral-500">
-            Chunked upload active (5MB chunks) — please keep this window open.
+            Please keep this window open.
           </p>
         </div>
       )}
