@@ -78,7 +78,7 @@ export default function LoginPage() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
             />
           </svg>
-          {googlePending ? "Signing in..." : "Continue with Google"}
+          {googlePending ? "Signing in..." : "Google"}
         </button>
 
         <div className="my-5 flex items-center gap-3">
@@ -171,14 +171,14 @@ export default function LoginPage() {
             disabled={pending || googlePending}
             className="mt-2 h-11 rounded-md bg-primary-700 font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
           >
-            {pending ? "Logging in..." : "Log in"}
+            {pending ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-neutral-700">
           Don&apos;t have an account?{" "}
           <Link href="/signup" className="font-medium text-primary-700">
-            Sign up
+            Signup
           </Link>
         </p>
       </div>

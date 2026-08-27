@@ -48,7 +48,7 @@ export default async function VerifyCertificatePage({
               href={`/verify/${certificate.id}/pdf`}
               className="mt-6 inline-flex h-11 items-center rounded-md bg-primary-700 px-6 font-medium text-white transition hover:bg-primary-900"
             >
-              Download PDF
+              Download
             </Link>
           </div>
         </div>

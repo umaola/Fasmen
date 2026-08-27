@@ -94,7 +94,7 @@ export default async function AdminOverviewPage() {
                     {pendingCourses.length} awaiting review
                   </span>
                 </div>
-                <span className="text-xs font-semibold text-primary-700">Inspect →</span>
+                <span className="text-xs font-semibold text-primary-700">Inspect</span>
               </Link>
             )}
 
@@ -109,7 +109,7 @@ export default async function AdminOverviewPage() {
                     {unverifiedTutors.length} pending verification
                   </span>
                 </div>
-                <span className="text-xs font-semibold text-primary-700">Verify →</span>
+                <span className="text-xs font-semibold text-primary-700">Verify</span>
               </Link>
             )}
 
@@ -124,7 +124,7 @@ export default async function AdminOverviewPage() {
                     {formatNaira(unpaidTotalKobo)} ({unpaidPayouts.length} tx)
                   </span>
                 </div>
-                <span className="text-xs font-semibold text-primary-700">Disburse →</span>
+                <span className="text-xs font-semibold text-primary-700">Disburse</span>
               </Link>
             )}
           </div>
@@ -319,7 +319,7 @@ export default async function AdminOverviewPage() {
               Recent Course Activity
             </h2>
             <Link href="/admin/courses" className="text-xs font-semibold text-primary-700 hover:underline">
-              View all →
+              View →
             </Link>
           </div>
 
@@ -360,7 +360,7 @@ export default async function AdminOverviewPage() {
               Recent Transactions
             </h2>
             <Link href="/admin/finance" className="text-xs font-semibold text-primary-700 hover:underline">
-              View ledger →
+              Ledger →
             </Link>
           </div>
 

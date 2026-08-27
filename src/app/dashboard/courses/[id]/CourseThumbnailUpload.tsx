@@ -120,7 +120,7 @@ export function CourseThumbnailUpload({
               disabled={isBusy}
               className="inline-flex h-10 items-center justify-center rounded-lg bg-primary-700 px-5 text-sm font-medium text-white shadow-xs transition hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-60 cursor-pointer"
             >
-              {displayImage ? "Replace cover image" : "Upload cover image"}
+              {displayImage ? "Replace" : "Upload"}
             </button>
             {isBusy && (
               <span className="text-xs font-medium text-primary-700">

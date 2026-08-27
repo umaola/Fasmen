@@ -99,7 +99,7 @@ export function AddAdminForm() {
             disabled={pending}
             className="h-10 rounded-md bg-primary-700 px-6 text-sm font-medium text-white shadow-sm transition hover:bg-primary-900 disabled:opacity-60 cursor-pointer shrink-0"
           >
-            {pending ? "Granting Access..." : "Authorize Administrator"}
+            {pending ? "Authorizing..." : "Authorize"}
           </button>
         </div>
       </form>

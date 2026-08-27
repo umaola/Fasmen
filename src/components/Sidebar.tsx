@@ -60,7 +60,7 @@ export function Sidebar({
           className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-primary-100 transition hover:bg-white/10 hover:text-white"
         >
           <LogOutIcon className="h-5 w-5 shrink-0" />
-          Log out
+          Logout
         </button>
       </form>
     </>

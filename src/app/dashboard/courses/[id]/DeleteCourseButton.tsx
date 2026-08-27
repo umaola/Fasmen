@@ -28,7 +28,7 @@ export function DeleteCourseButton({
               type="submit"
               className="h-9 rounded-md bg-error-600 px-4 text-sm font-medium text-white transition hover:brightness-95"
             >
-              Yes, delete it
+              Delete
             </button>
           </form>
           <button
@@ -51,7 +51,7 @@ export function DeleteCourseButton({
       onClick={() => setConfirming(true)}
       className="h-10 rounded-md bg-error-600 px-5 text-sm font-medium text-white transition hover:brightness-95 disabled:opacity-50"
     >
-      Delete course
+      Delete
     </button>
   );
 }

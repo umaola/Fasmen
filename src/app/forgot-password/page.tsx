@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
               disabled={pending}
               className="mt-2 h-11 rounded-md bg-primary-700 font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
             >
-              {pending ? "Sending reset link..." : "Send reset link"}
+              {pending ? "Sending..." : "Reset"}
             </button>
           </form>
         )}
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
         <p className="mt-6 text-center text-sm text-neutral-700">
           Remember your password?{" "}
           <Link href="/login" className="font-medium text-primary-700">
-            Log in
+            Login
           </Link>
         </p>
       </div>

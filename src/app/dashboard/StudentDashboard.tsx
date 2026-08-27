@@ -24,7 +24,7 @@ export async function StudentDashboard({ studentId }: { studentId: string }) {
           href="/courses"
           className="mt-6 inline-flex h-11 items-center rounded-md bg-accent-600 px-6 font-medium text-white transition hover:brightness-95"
         >
-          Browse courses
+          Explore
         </Link>
       </div>
     );
@@ -69,7 +69,7 @@ export async function StudentDashboard({ studentId }: { studentId: string }) {
             href="/courses"
             className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-[#12101F] px-5 text-sm font-medium text-white transition hover:brightness-110"
           >
-            Browse courses
+            Explore
             <ArrowRightIcon className="h-4 w-4" />
           </Link>
         </div>

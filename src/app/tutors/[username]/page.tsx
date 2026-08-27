@@ -23,7 +23,7 @@ export default async function TutorPortfolioPage({
     <main className="flex-1 px-6 py-12">
       <div className="mx-auto max-w-6xl">
         <Link href="/courses" className="text-sm font-medium text-primary-700">
-          ← Back to catalog
+          ← Catalog
         </Link>
 
         <div className="mt-4 flex items-start gap-5 rounded-lg bg-white p-6 shadow-[0_1px_3px_rgba(18,22,28,0.08)]">

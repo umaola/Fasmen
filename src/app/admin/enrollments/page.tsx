@@ -160,7 +160,7 @@ export default async function AdminEnrollmentsPage({
                           target="_blank"
                           className="rounded bg-accent-600 px-2.5 py-1 text-xs font-medium text-white hover:brightness-95"
                         >
-                          Verify ↗
+                          Verify
                         </Link>
                       ) : (
                         <span className="text-xs text-neutral-400">None</span>

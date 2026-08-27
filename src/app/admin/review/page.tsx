@@ -102,7 +102,7 @@ export default async function AdminReviewPage() {
               className="inline-flex items-center gap-2 rounded-md bg-primary-700 px-4 py-2 text-xs font-medium text-white transition hover:bg-primary-900"
             >
               <BookIcon className="h-4 w-4" />
-              <span>Explore Course Catalog</span>
+              <span>Catalog</span>
             </Link>
           </div>
         </div>
@@ -213,7 +213,7 @@ export default async function AdminReviewPage() {
                         className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-success-600 font-medium text-sm text-white shadow-sm transition hover:bg-success-700 cursor-pointer"
                       >
                         <CheckCircleIcon className="h-4 w-4" />
-                        <span>Approve & Publish Live</span>
+                        <span>Approve</span>
                       </button>
                     </form>
 

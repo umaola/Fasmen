@@ -397,7 +397,7 @@ export function VerificationForm({
             disabled={pending}
             className="h-11 rounded-md bg-primary-700 px-6 font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
           >
-            {pending ? "Saving..." : verified ? "Save changes" : "Complete registration"}
+            {pending ? "Saving..." : verified ? "Save" : "Submit"}
           </button>
           {verified ? (
             <button
@@ -418,7 +418,7 @@ export function VerificationForm({
               href="/dashboard"
               className="text-sm font-medium text-neutral-700 hover:text-primary-700"
             >
-              Skip for now
+              Skip
             </Link>
           )}
         </div>

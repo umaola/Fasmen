@@ -260,7 +260,7 @@ export default async function CourseDetailPage({
                         href={`/tutors/${tutor.tutorProfile.username}`}
                         className="text-xs font-semibold text-primary-700 hover:text-accent-600 underline"
                       >
-                        View Full Instructor Profile & Courses →
+                        Profile →
                       </Link>
                     </div>
                   )}
@@ -407,7 +407,7 @@ export default async function CourseDetailPage({
                     href={`/login?redirect=/courses/${course.slug}`}
                     className="flex h-12 w-full items-center justify-center rounded-xl bg-primary-700 font-semibold text-sm text-white shadow-md transition hover:bg-primary-800 cursor-pointer"
                   >
-                    Log In to Enroll →
+                    Login →
                   </Link>
                 )}
 
@@ -418,7 +418,7 @@ export default async function CourseDetailPage({
                       className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent-600 font-semibold text-sm text-white shadow-md transition hover:bg-accent-700 cursor-pointer"
                     >
                       <AcademicCapIcon className="h-5 w-5" />
-                      <span>{price === 0 ? "Enroll in Free Course" : "Enroll Now"}</span>
+                      <span>Enroll</span>
                     </button>
                   </form>
                 )}
@@ -428,7 +428,7 @@ export default async function CourseDetailPage({
                     href={`/dashboard/learn/${course.slug}`}
                     className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-success-600 font-semibold text-sm text-white shadow-md transition hover:bg-success-700 cursor-pointer"
                   >
-                    <span>Continue Learning</span>
+                    <span>Continue</span>
                     <span>→</span>
                   </Link>
                 )}
@@ -488,7 +488,7 @@ export default async function CourseDetailPage({
               href={`/login?redirect=/courses/${course.slug}`}
               className="rounded-lg bg-primary-700 px-5 py-2.5 text-xs font-semibold text-white shadow hover:bg-primary-800"
             >
-              Sign In to Enroll
+              Login
             </Link>
           )}
 
@@ -498,7 +498,7 @@ export default async function CourseDetailPage({
                 type="submit"
                 className="rounded-lg bg-accent-600 px-5 py-2.5 text-xs font-semibold text-white shadow hover:bg-accent-700 cursor-pointer"
               >
-                Enroll Now
+                Enroll
               </button>
             </form>
           )}
@@ -508,7 +508,7 @@ export default async function CourseDetailPage({
               href={`/dashboard/learn/${course.slug}`}
               className="rounded-lg bg-success-600 px-5 py-2.5 text-xs font-semibold text-white shadow hover:bg-success-700"
             >
-              Continue Learning
+              Continue
             </Link>
           )}
         </div>

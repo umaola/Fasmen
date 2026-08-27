@@ -159,7 +159,7 @@ export function VideoUploadButton({
           onClick={() => inputRef.current?.click()}
           className="h-11 rounded-md border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-60 cursor-pointer"
         >
-          {status === "done" ? "Replace video" : "Upload video"}
+          {status === "done" ? "Replace" : "Upload"}
         </button>
       )}
 

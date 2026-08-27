@@ -75,7 +75,7 @@ export function SettingsForm({
         disabled={pending}
         className="h-11 rounded-md bg-primary-700 font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
       >
-        {pending ? "Saving..." : "Save changes"}
+        {pending ? "Saving..." : "Save"}
       </button>
     </form>
   );

@@ -120,7 +120,7 @@ export default async function CourseDetailPage({
               courseId={course.id}
               currentStep={2}
               proceedHref={`/dashboard/courses/${course.id}?step=3`}
-              proceedLabel="Proceed to Lessons"
+              proceedLabel="Next"
             />
           </div>
         </div>
@@ -258,7 +258,7 @@ export default async function CourseDetailPage({
             courseId={course.id}
             currentStep={4}
             proceedHref={`/dashboard/courses/${course.id}?step=5`}
-            proceedLabel="Proceed to Review"
+            proceedLabel="Next"
           />
         </div>
       )}
@@ -412,7 +412,7 @@ export default async function CourseDetailPage({
                     disabled={submitBlockedReason !== undefined}
                     className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-accent-600 text-sm font-semibold text-white shadow-xs transition hover:bg-accent-600/90 focus:outline-none focus:ring-2 focus:ring-accent-600 focus:ring-offset-2 disabled:opacity-50 cursor-pointer"
                   >
-                    <span>Submit course for review</span>
+                    <span>Submit</span>
                     <ShieldCheckIcon className="h-4 w-4" />
                   </button>
                   {submitBlockedReason && (

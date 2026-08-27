@@ -82,7 +82,7 @@ export function ProfilePhotoUpload({
         )}
       </div>
       <label className="cursor-pointer rounded-md border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-60">
-        {isBusy ? (isCompressing ? "Preparing..." : "Uploading...") : "Select profile image"}
+        {isBusy ? (isCompressing ? "Preparing..." : "Uploading...") : "Upload"}
         <input
           ref={fileInputRef}
           type="file"

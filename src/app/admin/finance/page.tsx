@@ -143,7 +143,7 @@ export default async function AdminFinancePage() {
                         type="submit"
                         className="rounded-md bg-primary-700 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-primary-900 cursor-pointer"
                       >
-                        Process Payout →
+                        Disburse
                       </button>
                     </form>
                   </div>

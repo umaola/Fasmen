@@ -92,7 +92,7 @@ export function ReviewForm({
         disabled={pending}
         className="h-10 self-start rounded-md bg-primary-700 px-5 text-sm font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
       >
-        {pending ? "Saving..." : existingReview ? "Update review" : "Submit review"}
+        {pending ? "Saving..." : existingReview ? "Update" : "Submit"}
       </button>
     </form>
   );

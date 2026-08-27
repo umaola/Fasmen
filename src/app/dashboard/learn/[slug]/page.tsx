@@ -76,7 +76,7 @@ export default async function LearnPage({ params }: { params: Promise<{ slug: st
                       type="submit"
                       className="h-8 rounded-md border border-primary-700 px-3 text-xs font-medium text-primary-700 transition hover:bg-primary-100"
                     >
-                      Mark complete
+                      Complete
                     </button>
                   </form>
                 )}
@@ -124,7 +124,7 @@ export default async function LearnPage({ params }: { params: Promise<{ slug: st
               href={`/dashboard/learn/${slug}/assessment`}
               className="mt-3 inline-flex h-10 items-center rounded-md border border-primary-700 px-5 text-sm font-medium text-primary-700 transition hover:bg-primary-100"
             >
-              {enrollment.assessment.passed ? "View result" : "Take assessment"}
+              {enrollment.assessment.passed ? "Result" : "Assessment"}
             </Link>
           </>
         ) : (

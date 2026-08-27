@@ -68,7 +68,7 @@ export function Pagination({
             className="h-7 rounded-md border border-neutral-200 px-2 text-xs font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-50 sm:h-9 sm:px-4 sm:text-sm"
           >
             <span className="sm:hidden">←</span>
-            <span className="hidden sm:inline">← Previous</span>
+            <span className="hidden sm:inline">Previous</span>
           </button>
           <button
             type="button"
@@ -78,7 +78,7 @@ export function Pagination({
             className="h-7 rounded-md border border-neutral-200 px-2 text-xs font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-50 sm:h-9 sm:px-4 sm:text-sm"
           >
             <span className="sm:hidden">→</span>
-            <span className="hidden sm:inline">Next →</span>
+            <span className="hidden sm:inline">Next</span>
           </button>
         </div>
       </div>

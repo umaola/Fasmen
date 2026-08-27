@@ -38,17 +38,7 @@ export function CourseWizardNav({
       ? `/dashboard/courses/${courseId}?step=${currentStep + 1}`
       : undefined);
 
-  const defaultProceedLabel = isLastStep
-    ? "Submit for review"
-    : `Proceed to ${
-        currentStep === 1
-          ? "Media"
-          : currentStep === 2
-          ? "Lessons"
-          : currentStep === 3
-          ? "Assessment"
-          : "Review"
-      }`;
+  const defaultProceedLabel = isLastStep ? "Submit" : "Next";
 
   const label = proceedLabel || defaultProceedLabel;
 
@@ -59,7 +49,7 @@ export function CourseWizardNav({
         href={cancelHref}
         className="text-sm font-medium text-neutral-700 hover:text-neutral-900 transition underline-offset-4 hover:underline"
       >
-        Cancel & exit to courses
+        Cancel
       </Link>
 
       {/* Back and Proceed buttons */}

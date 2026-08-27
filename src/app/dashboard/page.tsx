@@ -94,7 +94,7 @@ async function TutorOverview({
           title="Complete your registration"
           body="Complete your tutor verification details before creating your first course on FASMEN."
           actionHref="/dashboard/account/verify"
-          actionLabel="Complete registration"
+          actionLabel="Verify"
         />
       );
     }
@@ -104,7 +104,7 @@ async function TutorOverview({
         title="No courses yet"
         body="Create your first course draft, add a few lessons, and submit it for admin review."
         actionHref="/dashboard/courses/new"
-        actionLabel="Create a course"
+        actionLabel="Create"
       />
     );
   }

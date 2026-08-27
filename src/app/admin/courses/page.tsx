@@ -190,7 +190,7 @@ export default async function AdminCoursesPage({
                         target="_blank"
                         className="rounded border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
                       >
-                        Preview ↗
+                        Preview
                       </Link>
 
                       {c.status === "published" ? (
@@ -208,7 +208,7 @@ export default async function AdminCoursesPage({
                             type="submit"
                             className="rounded bg-primary-700 px-2.5 py-1 text-xs font-medium text-white hover:bg-primary-900 cursor-pointer"
                           >
-                            Publish Live
+                            Publish
                           </button>
                         </form>
                       )}

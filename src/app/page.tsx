@@ -50,19 +50,19 @@ export default async function LandingPage() {
             href="/courses"
             className="hidden text-sm font-medium text-neutral-700 transition hover:text-primary-700 sm:inline"
           >
-            Browse courses
+            Courses
           </Link>
           <Link
             href="/login"
             className="text-sm font-medium text-neutral-700 transition hover:text-primary-700"
           >
-            Log in
+            Login
           </Link>
           <Link
             href="/signup"
             className="inline-flex h-10 items-center rounded-md bg-primary-700 px-4 text-sm font-medium text-white transition hover:bg-primary-900"
           >
-            Get started
+            Start
           </Link>
         </nav>
       </header>
@@ -81,14 +81,14 @@ export default async function LandingPage() {
               href="/signup"
               className="inline-flex h-11 items-center rounded-md bg-primary-700 px-6 font-medium text-white transition hover:bg-primary-900"
             >
-              Get started
+              Start
               <ArrowRightIcon className="ml-2 h-4 w-4" />
             </Link>
             <Link
               href="/courses"
               className="inline-flex h-11 items-center rounded-md border border-primary-700 px-6 font-medium text-primary-700 transition hover:bg-primary-100"
             >
-              Browse courses
+              Explore
             </Link>
           </div>
         </div>
@@ -139,7 +139,7 @@ export default async function LandingPage() {
               href="/courses"
               className="hidden text-sm font-medium text-primary-700 transition hover:text-primary-900 sm:inline"
             >
-              Browse all
+              All
             </Link>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -198,7 +198,7 @@ export default async function LandingPage() {
           href="/signup"
           className="mt-6 inline-flex h-11 items-center rounded-md bg-primary-700 px-6 font-medium text-white transition hover:bg-primary-900"
         >
-          Get started
+          Start
           <ArrowRightIcon className="ml-2 h-4 w-4" />
         </Link>
       </section>
@@ -216,13 +216,13 @@ export default async function LandingPage() {
               href="/courses"
               className="text-sm font-medium text-neutral-700 transition hover:text-primary-700"
             >
-              Browse courses
+              Courses
             </Link>
             <Link
               href="/login"
               className="text-sm font-medium text-neutral-700 transition hover:text-primary-700"
             >
-              Log in
+              Login
             </Link>
           </nav>
           <p className="text-xs text-neutral-400">

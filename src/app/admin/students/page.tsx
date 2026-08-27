@@ -183,7 +183,7 @@ export default async function AdminStudentsPage({
                                 type="submit"
                                 className="rounded border border-neutral-300 bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary-700 transition cursor-pointer"
                               >
-                                Reset Quiz Retries
+                                Reset
                               </button>
                             </form>
                           )}

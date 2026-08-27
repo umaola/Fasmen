@@ -159,7 +159,7 @@ export function AddQuestionForm({ courseId }: { courseId: string }) {
         disabled={pending}
         className="h-11 rounded-md border border-primary-700 font-medium text-primary-700 transition hover:bg-primary-100 disabled:opacity-60"
       >
-        {pending ? "Adding..." : "Add question"}
+        {pending ? "Adding..." : "Add"}
       </button>
     </form>
   );

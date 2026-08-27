@@ -200,7 +200,7 @@ export function EditLessonForm({
           disabled={pending}
           className="h-10 rounded-md bg-primary-700 px-5 text-sm font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
         >
-          {pending ? "Saving..." : "Save lesson"}
+          {pending ? "Saving..." : "Save"}
         </button>
         <button
           type="button"

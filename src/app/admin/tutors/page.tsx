@@ -193,7 +193,7 @@ export default async function AdminTutorsPage({
                             target="_blank"
                             className="rounded border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
                           >
-                            Portfolio ↗
+                            Portfolio
                           </Link>
                         )}
 
@@ -203,7 +203,7 @@ export default async function AdminTutorsPage({
                               type="submit"
                               className="rounded bg-success-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-success-700 cursor-pointer"
                             >
-                              Approve ID
+                              Approve
                             </button>
                           </form>
                         ) : (

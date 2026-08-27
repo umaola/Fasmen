@@ -129,7 +129,7 @@ export default async function AdminCertificatesPage({
                         target="_blank"
                         className="rounded border border-primary-700 bg-white px-2.5 py-1 text-xs font-medium text-primary-700 hover:bg-primary-100/40"
                       >
-                        Public Link ↗
+                        Verify
                       </Link>
 
                       <Link

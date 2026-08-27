@@ -24,7 +24,7 @@ export default async function TutorCoursesPage() {
           className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-accent-600 font-medium text-white transition hover:brightness-95 sm:w-auto sm:px-6"
         >
           <PlusIcon className="h-5 w-5 sm:hidden" />
-          <span className="hidden sm:inline">Create a course</span>
+          <span className="hidden sm:inline">Create</span>
         </Link>
       </div>
 

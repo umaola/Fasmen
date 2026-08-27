@@ -63,7 +63,7 @@ export function RejectCourseForm({ courseId }: { courseId: string }) {
           disabled={pending}
           className="h-10 shrink-0 rounded-md bg-error-600 px-5 text-sm font-medium text-white transition hover:brightness-95 disabled:opacity-60"
         >
-          {pending ? "Sending..." : "Confirm reject"}
+          {pending ? "Rejecting..." : "Reject"}
         </button>
         <button
           type="button"

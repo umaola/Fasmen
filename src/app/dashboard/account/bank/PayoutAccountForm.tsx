@@ -48,7 +48,7 @@ export function PayoutAccountForm({
           href="/dashboard/account/verify"
           className="mt-3 inline-flex h-10 items-center rounded-md bg-primary-700 px-5 text-sm font-medium text-white transition hover:bg-primary-900"
         >
-          Complete verification
+          Verify
         </Link>
       </div>
     );
@@ -67,7 +67,7 @@ export function PayoutAccountForm({
             onClick={() => setPanelOpen(true)}
             className="mt-3 h-9 rounded-md border border-primary-700 px-4 text-sm font-medium text-primary-700 transition hover:bg-primary-100"
           >
-            Update account
+            Update
           </button>
         </div>
       ) : (
@@ -85,7 +85,7 @@ export function PayoutAccountForm({
             onClick={() => setPanelOpen(true)}
             className="h-10 shrink-0 rounded-md bg-primary-700 px-5 text-sm font-medium text-white transition hover:bg-primary-900"
           >
-            Connect account
+            Connect
           </button>
         </div>
       )}
@@ -196,7 +196,7 @@ export function PayoutAccountForm({
                 disabled={pending}
                 className="h-10 rounded-md bg-primary-700 px-5 text-sm font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
               >
-                {pending ? "Connecting..." : "Connect account"}
+                {pending ? "Connecting..." : "Connect"}
               </button>
               <button
                 type="button"

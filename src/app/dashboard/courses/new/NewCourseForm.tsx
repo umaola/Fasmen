@@ -223,7 +223,7 @@ export function NewCourseForm() {
         <CourseWizardNav
           currentStep={1}
           proceedType="submit"
-          proceedLabel="Proceed to Media"
+          proceedLabel="Next"
           pending={pending}
         />
       </form>

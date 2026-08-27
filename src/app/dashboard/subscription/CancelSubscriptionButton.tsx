@@ -18,7 +18,7 @@ export function CancelSubscriptionButton({ planName }: { planName: string }) {
               type="submit"
               className="h-9 rounded-md bg-error-600 px-4 text-sm font-medium text-white transition hover:brightness-95"
             >
-              Yes, cancel
+              Cancel
             </button>
           </form>
           <button
@@ -26,7 +26,7 @@ export function CancelSubscriptionButton({ planName }: { planName: string }) {
             onClick={() => setConfirming(false)}
             className="h-9 rounded-md border border-neutral-200 px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
           >
-            Keep plan
+            Keep
           </button>
         </div>
       </div>
@@ -41,7 +41,7 @@ export function CancelSubscriptionButton({ planName }: { planName: string }) {
         onClick={() => setConfirming(true)}
         className="shrink-0 text-sm font-medium text-error-600 hover:underline"
       >
-        Cancel subscription
+        Cancel
       </button>
     </div>
   );

@@ -40,13 +40,13 @@ export function CourseRowActions({ course }: { course: Course }) {
               href={`/dashboard/courses/${course.id}?step=5`}
               className="block w-full px-4 py-2 text-left text-sm text-neutral-900 hover:bg-neutral-100"
             >
-              View summary
+              Summary
             </Link>
             <Link
               href={`/dashboard/courses/${course.id}?step=1`}
               className="block w-full px-4 py-2 text-left text-sm text-neutral-900 hover:bg-neutral-100"
             >
-              Edit course
+              Edit
             </Link>
             <button
               type="button"
@@ -96,7 +96,7 @@ export function CourseRowActions({ course }: { course: Course }) {
                       type="submit"
                       className="h-10 w-full rounded-md bg-error-600 text-sm font-medium text-white transition hover:brightness-95"
                     >
-                      Yes, delete it
+                      Delete
                     </button>
                   </form>
                   <button

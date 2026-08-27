@@ -27,13 +27,13 @@ export default function GlobalError({
               onClick={() => reset()}
               className="inline-flex h-11 items-center rounded-md bg-blue-600 px-6 font-medium text-white transition hover:bg-blue-700"
             >
-              Try again
+              Retry
             </button>
             <Link
               href="/"
               className="inline-flex h-11 items-center rounded-md border border-neutral-300 bg-white px-6 font-medium text-neutral-700 transition hover:bg-neutral-100"
             >
-              Go to homepage
+              Home
             </Link>
           </div>
         </div>

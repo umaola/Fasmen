@@ -22,14 +22,14 @@ export function WelcomeModal() {
             href="/dashboard/account/verify"
             className="inline-flex h-11 items-center justify-center rounded-md bg-primary-700 font-medium text-white transition hover:bg-primary-900"
           >
-            Complete registration
+            Verify
           </Link>
           <button
             type="button"
             onClick={() => setOpen(false)}
             className="h-11 rounded-md text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
           >
-            Go to dashboard
+            Dashboard
           </button>
         </div>
       </div>

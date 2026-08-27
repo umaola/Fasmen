@@ -230,7 +230,7 @@ export function EditCourseForm({
           courseId={course.id}
           currentStep={1}
           proceedType="submit"
-          proceedLabel={state?.success ? "Proceed to Media" : "Save & proceed to Media"}
+          proceedLabel="Next"
           proceedHref={`/dashboard/courses/${course.id}?step=2`}
           pending={pending}
         />
@@ -240,7 +240,7 @@ export function EditCourseForm({
           disabled={pending}
           className="h-11 self-start rounded-md bg-primary-700 px-6 font-medium text-white transition hover:bg-primary-900 disabled:opacity-60 cursor-pointer"
         >
-          {pending ? "Saving..." : "Save changes"}
+          {pending ? "Saving..." : "Save"}
         </button>
       )}
     </form>

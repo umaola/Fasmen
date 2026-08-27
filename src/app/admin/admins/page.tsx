@@ -112,7 +112,7 @@ export default async function AdminManagementPage() {
                             type="submit"
                             className="rounded border border-error-600 px-2.5 py-1 text-xs font-medium text-error-600 hover:bg-[#fbe9e7] transition cursor-pointer"
                           >
-                            Revoke Access
+                            Revoke
                           </button>
                         </form>
                       )}

@@ -218,7 +218,7 @@ function SignupContent() {
               onClick={() => setStep(2)}
               className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary-700 font-medium text-white shadow-sm transition hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 cursor-pointer"
             >
-              <span>Continue as {role === "student" ? "Student" : "Private Instructor"}</span>
+              <span>Next</span>
               <ArrowRightIcon className="h-4 w-4" />
             </button>
           </div>
@@ -226,7 +226,7 @@ function SignupContent() {
           <p className="mt-6 text-center text-sm text-neutral-700">
             Already have an account?{" "}
             <Link href="/login" className="font-semibold text-primary-700 hover:underline">
-              Log in
+              Login
             </Link>
           </p>
         </div>
@@ -302,7 +302,7 @@ function SignupContent() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              {googlePending ? "Signing up..." : "Sign up with Google"}
+              {googlePending ? "Signing up..." : "Google"}
             </button>
           </div>
 
@@ -327,16 +327,16 @@ function SignupContent() {
                 autoComplete="name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Jane Doe"
+                placeholder="e.g. Amaka Okafor"
                 aria-invalid={!!state?.errors?.displayName}
-                className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
+                className={`mt-1 h-11 w-full rounded-lg border bg-neutral-50/50 px-3.5 text-base text-neutral-900 placeholder-neutral-400 outline-none transition focus:bg-white focus:ring-2 ${
                   state?.errors?.displayName
-                    ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
-                    : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+                    ? "border-error-600 focus:border-error-600 focus:ring-error-600/20"
+                    : "border-neutral-200 focus:border-primary-600 focus:ring-primary-600/20"
                 }`}
               />
               {state?.errors?.displayName && (
-                <p className="mt-1 text-sm text-error-600">{state.errors.displayName[0]}</p>
+                <p className="mt-1 text-xs text-error-600">{state.errors.displayName[0]}</p>
               )}
             </div>
 
@@ -356,14 +356,14 @@ function SignupContent() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 aria-invalid={!!state?.errors?.email}
-                className={`mt-1 h-11 w-full rounded-md border px-3 text-base outline-none transition focus:ring-2 ${
+                className={`mt-1 h-11 w-full rounded-lg border bg-neutral-50/50 px-3.5 text-base text-neutral-900 placeholder-neutral-400 outline-none transition focus:bg-white focus:ring-2 ${
                   state?.errors?.email
-                    ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
-                    : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+                    ? "border-error-600 focus:border-error-600 focus:ring-error-600/20"
+                    : "border-neutral-200 focus:border-primary-600 focus:ring-primary-600/20"
                 }`}
               />
               {state?.errors?.email && (
-                <p className="mt-1 text-sm text-error-600">{state.errors.email[0]}</p>
+                <p className="mt-1 text-xs text-error-600">{state.errors.email[0]}</p>
               )}
             </div>
 
@@ -378,21 +378,25 @@ function SignupContent() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (!showCriteria && e.target.value.length > 0) {
+                      setShowCriteria(true);
+                    }
+                  }}
                   onFocus={() => setShowCriteria(true)}
-                  onClick={() => setShowCriteria(true)}
-                  placeholder="Create a password"
+                  placeholder="••••••••••••"
                   aria-invalid={!!state?.errors?.password}
-                  className={`h-11 w-full rounded-md border px-3 pr-10 text-base outline-none transition focus:ring-2 ${
+                  className={`h-11 w-full rounded-lg border bg-neutral-50/50 px-3.5 pr-10 text-base text-neutral-900 placeholder-neutral-400 outline-none transition focus:bg-white focus:ring-2 ${
                     state?.errors?.password
-                      ? "border-error-600 focus:border-error-600 focus:ring-error-600/30"
-                      : "border-neutral-200 focus:border-primary-500 focus:ring-primary-500/20"
+                      ? "border-error-600 focus:border-error-600 focus:ring-error-600/20"
+                      : "border-neutral-200 focus:border-primary-600 focus:ring-primary-600/20"
                   }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 focus:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 focus:outline-none cursor-pointer"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -409,7 +413,7 @@ function SignupContent() {
               </div>
 
               {showCriteria && (
-                <div className="mt-2 rounded-md border border-neutral-200 bg-neutral-100/70 p-3 text-xs">
+                <div className="mt-2 rounded-md border border-neutral-200 bg-neutral-50 p-3 text-xs">
                   <p className="font-medium text-neutral-700 mb-2">Password must contain:</p>
                   <ul className="space-y-1.5">
                     {passwordCriteria.map((item) => (
@@ -460,14 +464,14 @@ function SignupContent() {
               disabled={pending || googlePending}
               className="mt-2 flex h-11 items-center justify-center rounded-lg bg-primary-700 font-medium text-white transition hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-60 cursor-pointer shadow-xs"
             >
-              {pending ? "Creating account..." : `Create ${role === "student" ? "Student" : "Instructor"} account`}
+              {pending ? "Signing up..." : "Signup"}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-neutral-700">
             Already have an account?{" "}
             <Link href="/login" className="font-semibold text-primary-700 hover:underline">
-              Log in
+              Login
             </Link>
           </p>
         </div>

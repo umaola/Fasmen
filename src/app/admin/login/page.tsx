@@ -26,7 +26,6 @@ export default function AdminLoginPage() {
     try {
       const res = await adminLoginAction({ email, password });
       if (res.success && res.redirectUrl) {
-        // Direct browser navigation guarantees the session cookie is transmitted and the review queue loads cleanly
         window.location.href = res.redirectUrl;
       } else {
         setError(res.error || "Invalid administrator credentials.");
@@ -47,15 +46,9 @@ export default function AdminLoginPage() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-700 mb-3">
             <ShieldCheckIcon className="h-6 w-6" />
           </div>
-          <span className="inline-block px-2.5 py-0.5 rounded-full bg-accent-100 text-[11px] font-bold tracking-wider uppercase text-accent-600 mb-1.5">
-            Restricted Control Center
-          </span>
           <h1 className="font-heading text-2xl font-bold text-primary-900">
-            FASMEN Admin Portal
+            Admin Portal
           </h1>
-          <p className="mt-1.5 text-xs text-neutral-700">
-            Sign in as <strong>Stanley Anyaehie</strong> or an administrator authorized by him. There is no public registration.
-          </p>
         </div>
 
         {/* Login Form */}
@@ -64,7 +57,7 @@ export default function AdminLoginPage() {
 
           <div>
             <label htmlFor="admin-email" className="block text-sm font-medium text-neutral-900">
-              Admin Email
+              Email
             </label>
             <input
               id="admin-email"
@@ -123,19 +116,18 @@ export default function AdminLoginPage() {
             disabled={pending}
             className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary-700 font-medium text-white shadow-sm transition hover:bg-primary-900 disabled:opacity-60 cursor-pointer"
           >
-            <ShieldCheckIcon className="h-4 w-4" />
-            <span>{pending ? "Authenticating..." : "Sign In to Control Center"}</span>
+            <span>{pending ? "Signing in..." : "Login"}</span>
           </button>
         </form>
 
-        {/* 1-Click Quick Auto-Fill for Stanley Anyaehie */}
+        {/* Quick Auto-Fill Helper */}
         <div className="mt-6 border-t border-neutral-200 pt-4 text-center">
           <button
             type="button"
             onClick={handleFillStanleyAdmin}
             className="text-xs font-medium text-primary-700 hover:underline cursor-pointer"
           >
-            Auto-fill Master Admin Credentials (Stanley Anyaehie)
+            Auto-fill
           </button>
         </div>
       </div>

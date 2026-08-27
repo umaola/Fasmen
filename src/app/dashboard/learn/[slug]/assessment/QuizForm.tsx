@@ -99,7 +99,7 @@ export function QuizForm({
         disabled={pending}
         className="h-11 self-start rounded-md bg-primary-700 px-6 font-medium text-white transition hover:bg-primary-900 disabled:opacity-60"
       >
-        {pending ? "Submitting..." : `Submit (${attemptsRemaining} attempt(s) remaining)`}
+        {pending ? "Submitting..." : "Submit"}
       </button>
     </form>
   );
