@@ -1,10 +1,42 @@
-import Link from "next/link";
 import { getCurrentUser } from "@/lib/dal";
 import { adminLogoutAction } from "@/app/actions/admin-auth";
-import { ShieldCheckIcon, ClipboardCheckIcon, LogOutIcon, BookIcon } from "@/components/icons";
+import { Sidebar, type SidebarNavItem } from "@/components/Sidebar";
+import {
+  HomeIcon,
+  ClipboardCheckIcon,
+  BookIcon,
+  UserCircleIcon,
+  WalletIcon,
+  CertificateIcon,
+} from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+const iconClass = "h-5 w-5 shrink-0";
+
+const ADMIN_NAV_ITEMS: SidebarNavItem[] = [
+  { href: "/admin", label: "Overview", icon: <HomeIcon className={iconClass} /> },
+  {
+    href: "/admin/review",
+    label: "Review Queue",
+    icon: <ClipboardCheckIcon className={iconClass} />,
+  },
+  { href: "/admin/courses", label: "Course Catalog", icon: <BookIcon className={iconClass} /> },
+  { href: "/admin/tutors", label: "Instructors", icon: <UserCircleIcon className={iconClass} /> },
+  { href: "/admin/students", label: "Students", icon: <UserCircleIcon className={iconClass} /> },
+  { href: "/admin/enrollments", label: "Enrollments", icon: <BookIcon className={iconClass} /> },
+  {
+    href: "/admin/finance",
+    label: "Finance & Payouts",
+    icon: <WalletIcon className={iconClass} />,
+  },
+  {
+    href: "/admin/certificates",
+    label: "Certificates",
+    icon: <CertificateIcon className={iconClass} />,
+  },
+];
 
 export default async function AdminLayout({
   children,
@@ -13,75 +45,23 @@ export default async function AdminLayout({
 }) {
   const user = await getCurrentUser();
 
-  return (
-    <div className="min-h-screen bg-neutral-50 flex flex-col">
-      {/* Top Navigation Bar for Authenticated Admin */}
-      {user && user.role === "admin" && (
-        <header className="sticky top-0 z-50 bg-[#0f172a] text-white border-b border-neutral-800 shadow-sm">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-            {/* Logo & Portal Identity */}
-            <div className="flex items-center gap-6">
-              <Link href="/admin/review" className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-600 text-white font-bold">
-                  <ShieldCheckIcon className="h-5 w-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-heading text-base font-bold tracking-tight text-white leading-none">
-                    FASMEN
-                  </span>
-                  <span className="text-[10px] font-semibold tracking-wider uppercase text-primary-400">
-                    Admin Portal
-                  </span>
-                </div>
-              </Link>
+  if (user && user.role === "admin") {
+    return (
+      <div className="flex flex-1 flex-col lg:min-h-screen lg:flex-row bg-neutral-100">
+        <Sidebar
+          navItems={ADMIN_NAV_ITEMS}
+          displayName={user.displayName || "Administrator"}
+          roleLabel="System Admin"
+          logoutAction={adminLogoutAction}
+        />
+        <div className="flex flex-1 flex-col min-w-0">
+          <main className="flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-10 max-w-7xl w-full mx-auto">
+            {children}
+          </main>
+        </div>
+      </div>
+    );
+  }
 
-              {/* Navigation Links */}
-              <nav className="hidden md:flex items-center gap-1 border-l border-neutral-700/60 pl-6">
-                <Link
-                  href="/admin/review"
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-neutral-800/80 text-white transition hover:bg-neutral-800"
-                >
-                  <ClipboardCheckIcon className="h-4 w-4 text-primary-400" />
-                  <span>Review Queue</span>
-                </Link>
-                <Link
-                  href="/courses"
-                  target="_blank"
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-neutral-300 transition hover:bg-neutral-800 hover:text-white"
-                >
-                  <BookIcon className="h-4 w-4 text-neutral-400" />
-                  <span>Live Catalog ↗</span>
-                </Link>
-              </nav>
-            </div>
-
-            {/* Admin User Info & Log Out */}
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:flex flex-col text-right">
-                <span className="text-xs font-semibold text-white">
-                  {user.displayName || "Administrator"}
-                </span>
-                <span className="text-[11px] text-primary-400 font-mono">
-                  {user.email}
-                </span>
-              </div>
-
-              <form action={adminLogoutAction}>
-                <button
-                  type="submit"
-                  className="flex items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800/80 px-3 py-1.5 text-xs font-medium text-neutral-200 transition hover:bg-error-950 hover:border-error-700 hover:text-error-300 cursor-pointer"
-                >
-                  <LogOutIcon className="h-3.5 w-3.5" />
-                  <span>Sign out</span>
-                </button>
-              </form>
-            </div>
-          </div>
-        </header>
-      )}
-
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col">{children}</main>
-    </div>
-  );
+  return <main className="flex-1 bg-neutral-100 flex flex-col">{children}</main>;
 }

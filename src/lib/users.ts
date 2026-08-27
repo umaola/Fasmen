@@ -308,3 +308,67 @@ export async function completeTutorVerification(
   );
   return all.find((u) => u.id === userId) ?? null;
 }
+
+export async function listAllUsers(): Promise<UserProfile[]> {
+  const users = await readCollection<UserProfile>(USERS_FILE);
+  return users.map((u) => {
+    const role: Role = isSystemAdminEmail(u.email) ? "admin" : u.role;
+    return { ...u, role };
+  });
+}
+
+export async function listAllTutors(): Promise<UserProfile[]> {
+  const users = await listAllUsers();
+  return users.filter((u) => u.role === "tutor" || u.tutorProfile !== null);
+}
+
+export async function listAllStudents(): Promise<UserProfile[]> {
+  const users = await listAllUsers();
+  return users.filter((u) => u.role === "student");
+}
+
+export async function setTutorVerificationStatus(
+  userId: string,
+  verified: boolean
+): Promise<UserProfile | null> {
+  let updated: UserProfile | null = null;
+  if (hasFirestoreCredentials()) {
+    const db = await getDb();
+    if (db) {
+      try {
+        const now = new Date().toISOString();
+        await db.collection("users").doc(userId).update({
+          "tutorProfile.verified": verified,
+          updatedAt: now,
+        });
+      } catch (err) {
+        console.warn("Firestore setTutorVerificationStatus update failed:", err);
+      }
+    }
+  }
+
+  const all = await withCollection<UserProfile>(USERS_FILE, (users) =>
+    users.map((u) => {
+      if (u.id !== userId) return u;
+      const tutorProfile = u.tutorProfile || {
+        totalStudents: 0,
+        averageRating: 0,
+        verified,
+        username: u.displayName.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+        idType: null,
+        idNumber: null,
+        payoutAccount: null,
+      };
+      updated = {
+        ...u,
+        updatedAt: new Date().toISOString(),
+        tutorProfile: {
+          ...tutorProfile,
+          verified,
+        },
+      };
+      return updated;
+    })
+  );
+  return all.find((u) => u.id === userId) ?? updated;
+}

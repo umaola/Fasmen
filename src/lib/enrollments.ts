@@ -167,3 +167,25 @@ export async function setCertificateId(
   if (!enrollment) return null;
   return updateEnrollment(enrollment.id, { certificateId });
 }
+
+export async function listAllEnrollments(): Promise<Enrollment[]> {
+  const enrollments = await readCollection<Enrollment>(ENROLLMENTS_FILE);
+  return enrollments.sort((a, b) => b.enrolledAt.localeCompare(a.enrolledAt));
+}
+
+export async function resetStudentQuizAttempts(
+  studentId: string,
+  courseId: string
+): Promise<Enrollment | null> {
+  const enrollment = await findEnrollment(studentId, courseId);
+  if (!enrollment) return null;
+
+  return updateEnrollment(enrollment.id, {
+    assessment: {
+      attemptsUsed: 0,
+      bestScorePercent: enrollment.assessment.bestScorePercent,
+      passed: enrollment.assessment.passed,
+      lastAttemptAt: enrollment.assessment.lastAttemptAt,
+    },
+  });
+}

@@ -192,7 +192,7 @@ export async function findCourseBySlug(slug: string): Promise<Course | undefined
   }
 }
 
-async function updateCourse(id: string, patch: Partial<Course>): Promise<Course | null> {
+export async function updateCourse(id: string, patch: Partial<Course>): Promise<Course | null> {
   let updated: Course | null = null;
   await withCollection<Course>(COURSES_FILE, (courses) =>
     courses.map((c) => {

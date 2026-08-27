@@ -52,16 +52,25 @@ const SIDEBAR_NAV: Record<"student" | "tutor" | "admin", SidebarNavItem[]> = {
     },
   ],
   admin: [
-    { href: "/dashboard", label: "Dashboard", icon: <HomeIcon className={iconClass} /> },
+    { href: "/admin", label: "Overview", icon: <HomeIcon className={iconClass} /> },
     {
-      href: "/dashboard/admin/review",
-      label: "Review queue",
+      href: "/admin/review",
+      label: "Review Queue",
       icon: <ClipboardCheckIcon className={iconClass} />,
     },
+    { href: "/admin/courses", label: "Course Catalog", icon: <BookIcon className={iconClass} /> },
+    { href: "/admin/tutors", label: "Instructors", icon: <UserCircleIcon className={iconClass} /> },
+    { href: "/admin/students", label: "Students", icon: <UserCircleIcon className={iconClass} /> },
+    { href: "/admin/enrollments", label: "Enrollments", icon: <BookIcon className={iconClass} /> },
     {
-      href: "/dashboard/admin/reconciliation",
-      label: "Reconciliation",
+      href: "/admin/finance",
+      label: "Finance & Payouts",
       icon: <WalletIcon className={iconClass} />,
+    },
+    {
+      href: "/admin/certificates",
+      label: "Certificates",
+      icon: <CertificateIcon className={iconClass} />,
     },
   ],
 };

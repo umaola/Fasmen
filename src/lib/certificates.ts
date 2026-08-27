@@ -64,3 +64,14 @@ export async function listCertificatesByStudent(studentId: string): Promise<Cert
     .filter((c) => c.studentId === studentId)
     .sort((a, b) => b.issuedAt.localeCompare(a.issuedAt));
 }
+
+export async function listAllCertificates(): Promise<Certificate[]> {
+  const certificates = await readCollection<Certificate>(CERTIFICATES_FILE);
+  return certificates.sort((a, b) => b.issuedAt.localeCompare(a.issuedAt));
+}
+
+export async function revokeCertificate(id: string): Promise<void> {
+  await withCollection<Certificate>(CERTIFICATES_FILE, (certificates) =>
+    certificates.filter((c) => c.id !== id)
+  );
+}
