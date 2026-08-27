@@ -11,6 +11,7 @@ import {
   StarIcon,
   CreditCardIcon,
   CertificateIcon,
+  ShieldCheckIcon,
 } from "@/components/icons";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -71,6 +72,11 @@ const SIDEBAR_NAV: Record<"student" | "tutor" | "admin", SidebarNavItem[]> = {
       href: "/admin/certificates",
       label: "Certificates",
       icon: <CertificateIcon className={iconClass} />,
+    },
+    {
+      href: "/admin/admins",
+      label: "Admin Team",
+      icon: <ShieldCheckIcon className={iconClass} />,
     },
   ],
 };

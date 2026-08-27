@@ -13,7 +13,9 @@
   --font-heading: var(--font-sora);
 
   /* Primary palette — design-system.md section 2.1 */
+  --color-primary-950: #061527;
   --color-primary-900: #0b2545;
+  --color-primary-800: #0e3059;
   --color-primary-700: #123c73;
   --color-primary-500: #1d5dad;
   --color-primary-100: #dcebfa;

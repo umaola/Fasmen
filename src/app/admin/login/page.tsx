@@ -12,14 +12,8 @@ export default function AdminLoginPage() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleFillMasterAdmin() {
+  function handleFillStanleyAdmin() {
     setEmail("admin@fasmen.com");
-    setPassword("Admin@Fasmen2026!");
-    setError(null);
-  }
-
-  function handleFillOwnerAdmin() {
-    setEmail("umaolamma@gmail.com");
     setPassword("Admin@Fasmen2026!");
     setError(null);
   }
@@ -54,13 +48,13 @@ export default function AdminLoginPage() {
             <ShieldCheckIcon className="h-6 w-6" />
           </div>
           <span className="inline-block px-2.5 py-0.5 rounded-full bg-accent-100 text-[11px] font-bold tracking-wider uppercase text-accent-600 mb-1.5">
-            Admin Access
+            Restricted Control Center
           </span>
           <h1 className="font-heading text-2xl font-bold text-primary-900">
-            Fasmen Control Center
+            FASMEN Admin Portal
           </h1>
-          <p className="mt-1 text-sm text-neutral-700">
-            Sign in with administrator credentials to manage courses, tutors, finances, and platform settings.
+          <p className="mt-1.5 text-xs text-neutral-700">
+            Sign in as <strong>Stanley Anyaehie</strong> or an administrator authorized by him. There is no public registration.
           </p>
         </div>
 
@@ -134,26 +128,15 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        {/* 1-Click Quick Auto-Fill Helpers */}
+        {/* 1-Click Quick Auto-Fill for Stanley Anyaehie */}
         <div className="mt-6 border-t border-neutral-200 pt-4 text-center">
-          <p className="text-xs text-neutral-500 mb-2">Quick auto-fill test credentials:</p>
-          <div className="flex items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={handleFillMasterAdmin}
-              className="text-xs font-medium text-primary-700 hover:underline cursor-pointer"
-            >
-              admin@fasmen.com
-            </button>
-            <span className="text-neutral-300">·</span>
-            <button
-              type="button"
-              onClick={handleFillOwnerAdmin}
-              className="text-xs font-medium text-primary-700 hover:underline cursor-pointer"
-            >
-              umaolamma@gmail.com
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleFillStanleyAdmin}
+            className="text-xs font-medium text-primary-700 hover:underline cursor-pointer"
+          >
+            Auto-fill Master Admin Credentials (Stanley Anyaehie)
+          </button>
         </div>
       </div>
     </main>

@@ -109,13 +109,13 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
     let profile = await findUserByEmail(normalizedEmail);
     if (!profile) {
       profile = await createUserProfile({
-        displayName: "System Administrator",
+        displayName: "Stanley Anyaehie",
         email: normalizedEmail,
         role: "admin",
       });
     }
     await createSession(profile.id, "admin", normalizedEmail);
-    redirect("/admin/review");
+    redirect("/admin");
   }
 
   let destination: string | null = null;

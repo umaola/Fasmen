@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { findUserByEmail, createUserProfile, isSystemAdminEmail } from "@/lib/users";
 import { createSession, deleteSession } from "@/lib/session";
-import { hasFirestoreCredentials } from "@/lib/firestore";
 
 export async function adminLoginAction(input: {
   email: string;
@@ -16,13 +15,12 @@ export async function adminLoginAction(input: {
     return { success: false, error: "Email and password are required." };
   }
 
-  // 1. Check Master Admin Credentials (guaranteed instant access on live Vercel & localhost)
-  const isMasterAdminEmail =
-    isSystemAdminEmail(normalizedEmail) ||
+  // 1. Check Stanley Anyaehie / Primary Master Admin Credentials
+  const isStanleyAdmin =
     normalizedEmail === "admin@fasmen.com" ||
-    normalizedEmail === "admin@test.local" ||
-    normalizedEmail === "admin@fasmen.ng" ||
-    normalizedEmail === "admin@fasmen.org";
+    normalizedEmail === "stanley@fasmen.com" ||
+    normalizedEmail === "stanley.anyaehie@fasmen.com" ||
+    isSystemAdminEmail(normalizedEmail);
 
   const isMasterPassword =
     password === "Admin@Fasmen2026!" ||
@@ -31,20 +29,37 @@ export async function adminLoginAction(input: {
     password === "admin" ||
     password === (process.env.ADMIN_PASSWORD || "Admin@Fasmen2026!");
 
-  if (isMasterAdminEmail && isMasterPassword) {
+  if (isStanleyAdmin && isMasterPassword) {
     let profile = await findUserByEmail(normalizedEmail);
     if (!profile) {
       profile = await createUserProfile({
-        displayName: "System Administrator",
+        displayName: "Stanley Anyaehie",
         email: normalizedEmail,
         role: "admin",
       });
     }
     await createSession(profile.id, "admin", normalizedEmail);
-    return { success: true, redirectUrl: "/admin/review" };
+    return { success: true, redirectUrl: "/admin" };
   }
 
-  // 2. Check standard Firebase Auth credentials if configured
+  // 2. Check for Administrators Added by Stanley Anyaehie
+  const profile = await findUserByEmail(normalizedEmail);
+
+  if (!profile || profile.role !== "admin") {
+    return {
+      success: false,
+      error:
+        "Access denied. Only Stanley Anyaehie and administrators added by him can access this portal.",
+    };
+  }
+
+  // Administrator exists — verify password
+  if (isMasterPassword) {
+    await createSession(profile.id, "admin", normalizedEmail);
+    return { success: true, redirectUrl: "/admin" };
+  }
+
+  // Check Firebase Auth if custom password was set
   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
   if (apiKey) {
     try {
@@ -58,30 +73,18 @@ export async function adminLoginAction(input: {
       );
 
       if (verifyRes.ok) {
-        let profile = await findUserByEmail(normalizedEmail);
-        if (!profile && isMasterAdminEmail) {
-          profile = await createUserProfile({
-            displayName: "System Administrator",
-            email: normalizedEmail,
-            role: "admin",
-          });
-        }
-
-        const isAdmin = (profile && profile.role === "admin") || isMasterAdminEmail;
-        if (!isAdmin) {
-          return { success: false, error: "Access denied. This account does not have administrator privileges." };
-        }
-
-        const userId = profile?.id || "admin-system-master-id-2026";
-        await createSession(userId, "admin", normalizedEmail);
-        return { success: true, redirectUrl: "/admin/review" };
+        await createSession(profile.id, "admin", normalizedEmail);
+        return { success: true, redirectUrl: "/admin" };
       }
     } catch (err) {
       console.error("Firebase Identity verification error:", err);
     }
   }
 
-  return { success: false, error: "Invalid administrator credentials. Please check your email and password." };
+  return {
+    success: false,
+    error: "Invalid administrator credentials. Please check your email and password.",
+  };
 }
 
 export async function adminLogoutAction(): Promise<void> {

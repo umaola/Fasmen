@@ -180,6 +180,8 @@ export async function updateTutorAverageRating(tutorId: string, averageRating: n
 
 export const DEFAULT_ADMIN_EMAILS = [
   "admin@fasmen.com",
+  "stanley@fasmen.com",
+  "stanley.anyaehie@fasmen.com",
   "admin@fasmen.org",
   "admin@fasmen.ng",
   "admin@test.local",
@@ -325,6 +327,100 @@ export async function listAllTutors(): Promise<UserProfile[]> {
 export async function listAllStudents(): Promise<UserProfile[]> {
   const users = await listAllUsers();
   return users.filter((u) => u.role === "student");
+}
+
+export async function listAllAdmins(): Promise<UserProfile[]> {
+  const users = await listAllUsers();
+  return users.filter((u) => u.role === "admin" || isSystemAdminEmail(u.email));
+}
+
+export async function createAdminUser(input: {
+  displayName: string;
+  email: string;
+}): Promise<UserProfile> {
+  const normalizedEmail = input.email.trim().toLowerCase();
+  const existing = await findUserByEmail(normalizedEmail);
+
+  if (existing) {
+    if (hasFirestoreCredentials()) {
+      const db = await getDb();
+      if (db) {
+        try {
+          await db.collection("users").doc(existing.id).update({
+            role: "admin",
+            displayName: input.displayName.trim() || existing.displayName,
+            updatedAt: new Date().toISOString(),
+          });
+        } catch (err) {
+          console.warn("Firestore createAdminUser update failed:", err);
+        }
+      }
+    }
+
+    await withCollection<UserProfile>(USERS_FILE, (users) =>
+      users.map((u) =>
+        u.id === existing.id
+          ? {
+              ...u,
+              role: "admin",
+              displayName: input.displayName.trim() || u.displayName,
+              updatedAt: new Date().toISOString(),
+            }
+          : u
+      )
+    );
+
+    return {
+      ...existing,
+      role: "admin",
+      displayName: input.displayName.trim() || existing.displayName,
+    };
+  }
+
+  return await createUserProfile({
+    displayName: input.displayName.trim(),
+    email: normalizedEmail,
+    role: "admin",
+  });
+}
+
+export async function removeAdminUser(userId: string): Promise<boolean> {
+  const user = await findUserById(userId);
+  if (!user) return false;
+
+  // Protect Stanley Anyaehie / Primary root admin from being removed
+  const normalized = user.email.toLowerCase();
+  if (normalized === "admin@fasmen.com" || normalized === "stanley@fasmen.com") {
+    throw new Error("The primary root administrator (Stanley Anyaehie) cannot be removed.");
+  }
+
+  if (hasFirestoreCredentials()) {
+    const db = await getDb();
+    if (db) {
+      try {
+        await db.collection("users").doc(userId).update({
+          role: "student",
+          updatedAt: new Date().toISOString(),
+        });
+      } catch (err) {
+        console.warn("Firestore removeAdminUser update failed:", err);
+      }
+    }
+  }
+
+  await withCollection<UserProfile>(USERS_FILE, (users) =>
+    users.map((u) =>
+      u.id === userId
+        ? {
+            ...u,
+            role: "student",
+            updatedAt: new Date().toISOString(),
+          }
+        : u
+    )
+  );
+
+  return true;
 }
 
 export async function setTutorVerificationStatus(

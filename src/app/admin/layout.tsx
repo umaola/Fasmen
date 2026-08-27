@@ -8,6 +8,7 @@ import {
   UserCircleIcon,
   WalletIcon,
   CertificateIcon,
+  ShieldCheckIcon,
 } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +37,11 @@ const ADMIN_NAV_ITEMS: SidebarNavItem[] = [
     label: "Certificates",
     icon: <CertificateIcon className={iconClass} />,
   },
+  {
+    href: "/admin/admins",
+    label: "Admin Team",
+    icon: <ShieldCheckIcon className={iconClass} />,
+  },
 ];
 
 export default async function AdminLayout({
@@ -50,7 +56,7 @@ export default async function AdminLayout({
       <div className="flex flex-1 flex-col lg:min-h-screen lg:flex-row bg-neutral-100">
         <Sidebar
           navItems={ADMIN_NAV_ITEMS}
-          displayName={user.displayName || "Administrator"}
+          displayName={user.displayName || "Stanley Anyaehie"}
           roleLabel="System Admin"
           logoutAction={adminLogoutAction}
         />

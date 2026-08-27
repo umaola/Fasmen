@@ -41,11 +41,11 @@ export const getCurrentUser = cache(async (): Promise<UserProfile | null> => {
       return user;
     }
 
-    // Resilient fallback for System Admin or embedded session identity
+    // Resilient fallback for Stanley Anyaehie or embedded session identity
     if (session.role === "admin" || (session.email && isSystemAdminEmail(session.email))) {
       return {
         id: session.userId,
-        displayName: "System Administrator",
+        displayName: "Stanley Anyaehie",
         email: session.email || "admin@fasmen.com",
         phoneNumber: null,
         photoURL: null,
