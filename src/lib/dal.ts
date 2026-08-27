@@ -2,11 +2,8 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "./session";
-import { findUserById, isSystemAdminEmail, type UserProfile } from "./users";
+import { findUserById, findUserByEmail, isSystemAdminEmail, createUserProfile, type UserProfile } from "./users";
 
-// Also guards against a session cookie that outlived its user record (e.g.
-// the local JSON store was reset during development) — without this check,
-// the page would render with a null user instead of bouncing to /login.
 export const verifySession = cache(async () => {
   const session = await getSession();
   if (!session?.userId) {
@@ -26,7 +23,11 @@ export const getCurrentUser = cache(async (): Promise<UserProfile | null> => {
     const session = await getSession();
     if (!session?.userId) return null;
 
-    const user = await findUserById(session.userId);
+    let user = await findUserById(session.userId);
+    if (!user && session.email) {
+      user = await findUserByEmail(session.email);
+    }
+
     if (user) {
       if (
         session.role === "admin" ||
@@ -57,6 +58,43 @@ export const getCurrentUser = cache(async (): Promise<UserProfile | null> => {
       };
     }
 
+    // Resilient auto-recovery for student and tutor accounts on live Vercel
+    if (session.userId) {
+      const email = session.email || `${session.userId}@user.fasmen.local`;
+      const rawName = email.split("@")[0] || "User";
+      const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+      const role = session.role || "student";
+
+      const fallbackUser: UserProfile = {
+        id: session.userId,
+        displayName,
+        email,
+        phoneNumber: null,
+        photoURL: null,
+        role,
+        bio: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        tutorProfile:
+          role === "tutor"
+            ? {
+                totalStudents: 0,
+                averageRating: 0,
+                verified: false,
+                username: rawName.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+                idType: null,
+                idNumber: null,
+                payoutAccount: null,
+              }
+            : null,
+      };
+
+      // Asynchronously ensure profile is saved in Firestore/store
+      createUserProfile(fallbackUser).catch(() => {});
+
+      return fallbackUser;
+    }
+
     return null;
   } catch (error: unknown) {
     if (
@@ -71,4 +109,3 @@ export const getCurrentUser = cache(async (): Promise<UserProfile | null> => {
     return null;
   }
 });
-

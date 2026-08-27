@@ -33,7 +33,7 @@ export default function LoginPage() {
         setGooglePending(false);
         return;
       }
-      router.push(authRes.redirectUrl || "/dashboard");
+      window.location.href = authRes.redirectUrl || "/dashboard";
     } catch (err: unknown) {
       console.error(err);
       const msg = err instanceof Error ? err.message : "Google sign-in was cancelled or failed.";

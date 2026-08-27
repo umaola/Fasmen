@@ -4,7 +4,13 @@ import type { Auth } from 'firebase-admin/auth';
 import type { Storage } from 'firebase-admin/storage';
 
 export function hasFirestoreCredentials(): boolean {
-  const projectId = process.env.FIREBASE_PROJECT_ID;
+  // Check JSON service account string first
+  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY || process.env.FIREBASE_SERVICE_ACCOUNT;
+  if (serviceAccountJson && serviceAccountJson.trim()) {
+    return true;
+  }
+
+  const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
@@ -35,16 +41,41 @@ export async function ensureAdminApp(): Promise<App | null> {
       return cachedApp;
     }
 
-    let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-    privateKey = privateKey
-      .trim()
-      .replace(/^["']|["']$/g, '')
-      .replace(/\\n/g, '\n');
+    const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY || process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (serviceAccountJson && serviceAccountJson.trim()) {
+      try {
+        let raw = serviceAccountJson.trim();
+        // Check if base64 encoded
+        if (raw.startsWith('ey')) {
+          raw = Buffer.from(raw, 'base64').toString('utf8');
+        }
+        const parsed = JSON.parse(raw);
+        cachedApp = initializeApp({
+          credential: cert(parsed),
+          storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || parsed.project_id + '.appspot.com',
+        });
+        return cachedApp;
+      } catch (jsonErr) {
+        console.warn('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON:', jsonErr);
+      }
+    }
+
+    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '';
+    const clientEmail = (process.env.FIREBASE_CLIENT_EMAIL || '').trim();
+    let privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').trim();
+
+    if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+      privateKey = privateKey.slice(1, -1);
+    }
+    if (privateKey.startsWith("'") && privateKey.endsWith("'")) {
+      privateKey = privateKey.slice(1, -1);
+    }
+    privateKey = privateKey.replace(/\\n/g, '\n').replace(/\\r/g, '');
 
     const credential = cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: privateKey,
+      projectId,
+      clientEmail,
+      privateKey,
     });
 
     cachedApp = initializeApp({
