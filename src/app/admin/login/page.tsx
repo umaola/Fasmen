@@ -18,6 +18,12 @@ export default function AdminLoginPage() {
     setError(null);
   }
 
+  function handleFillOwnerAdmin() {
+    setEmail("umaolamma@gmail.com");
+    setPassword("Admin@Fasmen2026!");
+    setError(null);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setPending(true);
@@ -131,15 +137,28 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        {/* Quick Fill Helper for Master Admin */}
-        <div className="mt-6 border-t border-neutral-800 pt-4 text-center">
-          <button
-            type="button"
-            onClick={handleFillMasterAdmin}
-            className="text-xs text-neutral-400 hover:text-primary-300 underline cursor-pointer"
-          >
-            Auto-fill Master Admin Credentials
-          </button>
+        {/* Quick Fill Helpers */}
+        <div className="mt-6 border-t border-neutral-800 pt-4 flex flex-col gap-2 text-center">
+          <span className="text-[11px] text-neutral-400 uppercase tracking-wider font-semibold">
+            Quick Auto-Fill (1-Click)
+          </span>
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleFillMasterAdmin}
+              className="text-xs text-primary-400 hover:text-primary-300 underline cursor-pointer"
+            >
+              admin@fasmen.com
+            </button>
+            <span className="text-neutral-600">·</span>
+            <button
+              type="button"
+              onClick={handleFillOwnerAdmin}
+              className="text-xs text-primary-400 hover:text-primary-300 underline cursor-pointer"
+            >
+              umaolamma@gmail.com
+            </button>
+          </div>
         </div>
 
         {/* Security Warning Notice */}

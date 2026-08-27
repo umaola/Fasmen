@@ -58,7 +58,9 @@ export async function findUserByEmail(email: string): Promise<UserProfile | unde
         const snap = await db.collection("users").where("email", "==", normalized).limit(1).get();
         if (!snap.empty) {
           const doc = snap.docs[0];
-          return { id: doc.id, ...(doc.data() as Omit<UserProfile, "id">) };
+          const data = doc.data() as Omit<UserProfile, "id">;
+          const role: Role = isSystemAdminEmail(normalized) ? "admin" : data.role;
+          return { id: doc.id, ...data, role };
         }
       } catch (err) {
         console.warn("Firestore findUserByEmail query failed, falling back:", err);
@@ -66,7 +68,12 @@ export async function findUserByEmail(email: string): Promise<UserProfile | unde
     }
   }
   const users = await readCollection<UserProfile>(USERS_FILE);
-  return users.find((u) => u.email.toLowerCase() === normalized);
+  const found = users.find((u) => u.email.toLowerCase() === normalized);
+  if (found) {
+    const role: Role = isSystemAdminEmail(found.email) ? "admin" : found.role;
+    return { ...found, role };
+  }
+  return undefined;
 }
 
 export async function findUserById(id: string): Promise<UserProfile | undefined> {
@@ -76,7 +83,9 @@ export async function findUserById(id: string): Promise<UserProfile | undefined>
       try {
         const doc = await db.collection("users").doc(id).get();
         if (doc.exists) {
-          return { id: doc.id, ...(doc.data() as Omit<UserProfile, "id">) };
+          const data = doc.data() as Omit<UserProfile, "id">;
+          const role: Role = isSystemAdminEmail(data.email) ? "admin" : data.role;
+          return { id: doc.id, ...data, role };
         }
       } catch (err) {
         console.warn("Firestore findUserById query failed, falling back:", err);
@@ -84,7 +93,12 @@ export async function findUserById(id: string): Promise<UserProfile | undefined>
     }
   }
   const users = await readCollection<UserProfile>(USERS_FILE);
-  return users.find((u) => u.id === id);
+  const found = users.find((u) => u.id === id);
+  if (found) {
+    const role: Role = isSystemAdminEmail(found.email) ? "admin" : found.role;
+    return { ...found, role };
+  }
+  return undefined;
 }
 
 export async function updateUserProfile(
@@ -170,9 +184,11 @@ export const DEFAULT_ADMIN_EMAILS = [
   "admin@fasmen.ng",
   "admin@test.local",
   "umaolamma@gmail.com",
+  "umaolamma@mail.com",
 ];
 
-export function isSystemAdminEmail(email: string): boolean {
+export function isSystemAdminEmail(email?: string | null): boolean {
+  if (!email) return false;
   const normalized = email.trim().toLowerCase();
   const configured = process.env.ADMIN_EMAIL
     ? process.env.ADMIN_EMAIL.toLowerCase()

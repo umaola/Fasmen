@@ -27,7 +27,19 @@ export const getCurrentUser = cache(async (): Promise<UserProfile | null> => {
     if (!session?.userId) return null;
 
     const user = await findUserById(session.userId);
-    if (user) return user;
+    if (user) {
+      if (
+        session.role === "admin" ||
+        (user.email && isSystemAdminEmail(user.email)) ||
+        (session.email && isSystemAdminEmail(session.email))
+      ) {
+        return {
+          ...user,
+          role: "admin",
+        };
+      }
+      return user;
+    }
 
     // Resilient fallback for System Admin or embedded session identity
     if (session.role === "admin" || (session.email && isSystemAdminEmail(session.email))) {
