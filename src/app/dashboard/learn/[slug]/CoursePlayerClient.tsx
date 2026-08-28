@@ -8,7 +8,6 @@ import type { UserProfile } from "@/lib/users";
 import type { StudentLessonNote } from "@/lib/notes";
 import { completeLessonAction } from "@/app/actions/progress";
 import { formatDuration } from "@/lib/format";
-import { getBunnyEmbedUrl } from "@/lib/bunny";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -24,6 +23,11 @@ import {
 } from "@/components/icons";
 import { WishlistButton } from "@/components/WishlistButton";
 import { LessonNotesView } from "./LessonNotesView";
+
+function getBunnyEmbedUrl(videoGuid: string): string {
+  const libraryId = process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID || "726945";
+  return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoGuid}`;
+}
 
 interface CoursePlayerClientProps {
   course: Course;

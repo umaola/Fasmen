@@ -39,16 +39,19 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-100 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-[0_1px_3px_rgba(18,22,28,0.08)] border border-neutral-200">
+    <main className="min-h-screen bg-neutral-100 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-16">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 sm:p-8 shadow-[0_2px_12px_rgba(18,22,28,0.08)] border border-neutral-200">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-700 mb-3">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 mb-3">
             <ShieldCheckIcon className="h-6 w-6" />
           </div>
-          <h1 className="font-heading text-2xl font-bold text-primary-900">
+          <h1 className="font-heading text-xl sm:text-2xl font-bold text-primary-900">
             Admin Portal
           </h1>
+          <p className="mt-1 text-xs sm:text-sm text-neutral-500">
+            Restricted access for system administrators
+          </p>
         </div>
 
         {/* Login Form */}
@@ -56,7 +59,7 @@ export default function AdminLoginPage() {
           <FormAlert message={error} />
 
           <div>
-            <label htmlFor="admin-email" className="block text-sm font-medium text-neutral-900">
+            <label htmlFor="admin-email" className="block text-xs sm:text-sm font-medium text-neutral-900">
               Email
             </label>
             <input
@@ -71,12 +74,12 @@ export default function AdminLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@fasmen.com"
               required
-              className="mt-1 h-11 w-full rounded-md border border-neutral-200 px-3 text-base text-neutral-900 placeholder-neutral-400 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"
+              className="mt-1 h-11 w-full rounded-xl border border-neutral-200 px-3.5 text-sm sm:text-base text-neutral-900 placeholder-neutral-400 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"
             />
           </div>
 
           <div>
-            <label htmlFor="admin-password" className="block text-sm font-medium text-neutral-900">
+            <label htmlFor="admin-password" className="block text-xs sm:text-sm font-medium text-neutral-900">
               Password
             </label>
             <div className="relative mt-1">
@@ -89,7 +92,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
                 required
-                className="h-11 w-full rounded-md border border-neutral-200 px-3 pr-10 text-base text-neutral-900 placeholder-neutral-400 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"
+                className="h-11 w-full rounded-xl border border-neutral-200 px-3.5 pr-10 text-sm sm:text-base text-neutral-900 placeholder-neutral-400 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"
               />
               <button
                 type="button"
@@ -114,7 +117,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={pending}
-            className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary-700 font-medium text-white shadow-sm transition hover:bg-primary-900 disabled:opacity-60 cursor-pointer"
+            className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-700 font-semibold text-white shadow-sm transition hover:bg-primary-900 disabled:opacity-60 cursor-pointer"
           >
             <span>{pending ? "Signing in..." : "Login"}</span>
           </button>
@@ -125,9 +128,9 @@ export default function AdminLoginPage() {
           <button
             type="button"
             onClick={handleFillStanleyAdmin}
-            className="text-xs font-medium text-primary-700 hover:underline cursor-pointer"
+            className="text-xs font-semibold text-primary-700 hover:underline cursor-pointer"
           >
-            Auto-fill
+            Auto-fill Stanley Admin
           </button>
         </div>
       </div>

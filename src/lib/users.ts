@@ -187,6 +187,9 @@ export const DEFAULT_ADMIN_EMAILS = [
   "admin@test.local",
   "umaolamma@gmail.com",
   "umaolamma@mail.com",
+  "umaolla@gmail.com",
+  "umaolla@mail.com",
+  "umaola@gmail.com",
 ];
 
 export function isSystemAdminEmail(email?: string | null): boolean {

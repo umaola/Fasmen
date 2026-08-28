@@ -104,6 +104,12 @@ export async function signup(_state: SignupState, formData: FormData): Promise<S
     await createSession(profile.id, profile.role, normalizedEmail);
     destination = profile.role === "tutor" ? "/dashboard?justSignedUp=1" : "/dashboard";
   } catch (error) {
+    if (
+      (typeof error === "object" && error !== null && "digest" in error) ||
+      (error instanceof Error && error.message === "NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
     console.error("Signup error:", error);
     const errMessage = error instanceof Error ? error.message : "Failed to create account.";
     return { message: errMessage };
@@ -127,33 +133,14 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
   const { email, password } = validatedFields.data;
   const normalizedEmail = email.trim().toLowerCase();
 
-  // 1. Built-in Master Administrator credentials (works 100% on live Vercel & localhost)
-  const isMasterAdminEmail =
-    isSystemAdminEmail(normalizedEmail) ||
-    normalizedEmail === "admin@fasmen.com" ||
-    normalizedEmail === "stanley@fasmen.com" ||
-    normalizedEmail === "admin@test.local" ||
-    normalizedEmail === "admin@fasmen.ng" ||
-    normalizedEmail === "admin@fasmen.org";
+  // 1. Enforce admin isolation: Administrators MUST log in via the dedicated Admin Portal (/admin/login)
+  const isAdminEmail = isSystemAdminEmail(normalizedEmail);
+  const existingProfile = await findUserByEmail(normalizedEmail);
 
-  const validAdminPassword =
-    password === "Admin@Fasmen2026!" ||
-    password === "FasmenAdmin2026!" ||
-    password === "admin123" ||
-    password === "admin" ||
-    password === (process.env.ADMIN_PASSWORD || "Admin@Fasmen2026!");
-
-  if (isMasterAdminEmail && validAdminPassword) {
-    let profile = await findUserByEmail(normalizedEmail);
-    if (!profile) {
-      profile = await createUserProfile({
-        displayName: "Stanley Anyaehie",
-        email: normalizedEmail,
-        role: "admin",
-      });
-    }
-    await createSession(profile.id, "admin", normalizedEmail);
-    redirect("/admin");
+  if (isAdminEmail || existingProfile?.role === "admin") {
+    return {
+      message: "Administrator accounts must sign in via the Admin Portal at /admin/login.",
+    };
   }
 
   let destination: string | null = null;
@@ -176,75 +163,87 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
 
       const data = await verifyRes.json();
       if (!verifyRes.ok) {
-        console.error("Firebase signInWithPassword response:", data?.error?.message);
+        console.warn("Firebase signInWithPassword response:", data?.error?.message);
         const errorCode = data?.error?.message;
 
-        if (errorCode === "CONFIGURATION_NOT_FOUND" || errorCode === "PROJECT_NOT_FOUND") {
-          // If Firebase Auth is not yet enabled in Firebase Console, attempt fallback to local database
-          const fallbackProfile = await findUserByEmail(normalizedEmail);
-          if (fallbackProfile) {
-            const sessionRole: Role = isSystemAdminEmail(normalizedEmail) ? "admin" : fallbackProfile.role;
-            await createSession(fallbackProfile.id, sessionRole, normalizedEmail);
-            destination = sessionRole === "admin" ? "/admin" : "/dashboard";
-            redirect(destination);
+        // Check if user exists in local/fallback database
+        const fallbackProfile = await findUserByEmail(normalizedEmail);
+        if (fallbackProfile) {
+          if (fallbackProfile.role === "admin") {
+            return {
+              message: "Administrator accounts must sign in via the Admin Portal at /admin/login.",
+            };
           }
-
-          return {
-            message:
-              "Firebase Authentication is not enabled for this project yet. Please go to Firebase Console (https://console.firebase.google.com) > Build > Authentication > 'Sign-in method' and click 'Get Started' then enable 'Email/Password'.",
-          };
+          await createSession(fallbackProfile.id, fallbackProfile.role, normalizedEmail);
+          destination = "/dashboard";
+        } else {
+          if (errorCode === "CONFIGURATION_NOT_FOUND" || errorCode === "PROJECT_NOT_FOUND") {
+            return {
+              message:
+                "Firebase Authentication is not enabled for this project yet. Please go to Firebase Console (https://console.firebase.google.com) > Build > Authentication > 'Sign-in method' and click 'Get Started' then enable 'Email/Password'.",
+            };
+          } else if (errorCode === "OPERATION_NOT_ALLOWED") {
+            return {
+              message:
+                "Email/Password sign-in is disabled in Firebase Console. Please enable Email/Password in Firebase Console > Authentication > Sign-in method.",
+            };
+          } else if (errorCode === "API_KEY_INVALID") {
+            return {
+              message: "Firebase API key is invalid. Please verify NEXT_PUBLIC_FIREBASE_API_KEY.",
+            };
+          } else if (errorCode === "EMAIL_NOT_FOUND") {
+            return {
+              message: "No account found with this email. Please click 'Signup' to create an account or sign in with Google.",
+            };
+          } else if (errorCode === "INVALID_PASSWORD" || errorCode === "INVALID_LOGIN_CREDENTIALS") {
+            return {
+              message: "Incorrect password. Please verify your credentials or click 'Forgot password?'.",
+            };
+          } else if (errorCode === "TOO_MANY_ATTEMPTS_TRY_LATER") {
+            return {
+              message: "Access temporarily disabled due to too many failed attempts. Please try again later.",
+            };
+          } else {
+            return { message: data?.error?.message || "Incorrect email or password." };
+          }
         }
-        if (errorCode === "OPERATION_NOT_ALLOWED") {
-          return {
-            message:
-              "Email/Password sign-in is disabled in Firebase Console. Please enable Email/Password in Firebase Console > Authentication > Sign-in method.",
-          };
-        }
-        if (errorCode === "API_KEY_INVALID") {
-          return {
-            message: "Firebase API key is invalid. Please verify NEXT_PUBLIC_FIREBASE_API_KEY.",
-          };
-        }
-        if (errorCode === "EMAIL_NOT_FOUND") {
-          return {
-            message: "No account found with this email. If you signed up with Google, click 'Continue with Google'.",
-          };
-        }
-        if (errorCode === "INVALID_PASSWORD" || errorCode === "INVALID_LOGIN_CREDENTIALS") {
-          return {
-            message: "Incorrect password. Please verify your credentials or click 'Continue with Google'.",
-          };
-        }
-        if (errorCode === "TOO_MANY_ATTEMPTS_TRY_LATER") {
-          return {
-            message: "Access temporarily disabled due to too many failed attempts. Please try again later.",
-          };
-        }
-        return { message: data?.error?.message || "Incorrect email or password." };
+      } else {
+        userId = data.localId;
+        authDisplayName = data.displayName;
       }
-
-      userId = data.localId;
-      authDisplayName = data.displayName;
     }
 
     // 3. Resolve or Auto-Synthesize Profile
-    let profile: UserProfile | undefined = userId
-      ? ((await findUserById(userId)) ?? (await findUserByEmail(normalizedEmail)))
-      : await findUserByEmail(normalizedEmail);
+    if (!destination) {
+      let profile: UserProfile | undefined = userId
+        ? ((await findUserById(userId)) ?? (await findUserByEmail(normalizedEmail)))
+        : await findUserByEmail(normalizedEmail);
 
-    if (!profile) {
-      profile = await createUserProfile({
-        id: userId,
-        displayName: authDisplayName || normalizedEmail.split("@")[0],
-        email: normalizedEmail,
-        role: isSystemAdminEmail(normalizedEmail) ? "admin" : "student",
-      });
+      if (profile?.role === "admin") {
+        return {
+          message: "Administrator accounts must sign in via the Admin Portal at /admin/login.",
+        };
+      }
+
+      if (!profile) {
+        profile = await createUserProfile({
+          id: userId,
+          displayName: authDisplayName || normalizedEmail.split("@")[0],
+          email: normalizedEmail,
+          role: "student",
+        });
+      }
+
+      await createSession(profile.id, profile.role, normalizedEmail);
+      destination = "/dashboard";
     }
-
-    const sessionRole: Role = isSystemAdminEmail(normalizedEmail) ? "admin" : profile.role;
-    await createSession(profile.id, sessionRole, normalizedEmail);
-    destination = sessionRole === "admin" ? "/admin" : "/dashboard";
   } catch (error) {
+    if (
+      (typeof error === "object" && error !== null && "digest" in error) ||
+      (error instanceof Error && error.message === "NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
     console.error("Login error:", error);
     const errMessage = error instanceof Error ? error.message : "Failed to log in.";
     return { message: errMessage };
@@ -321,27 +320,32 @@ export async function loginWithFirebaseTokenAction(input: {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
+    const isAdminEmail = isSystemAdminEmail(normalizedEmail);
     let profile = (await findUserById(uid)) ?? (await findUserByEmail(normalizedEmail));
-    let isNew = false;
 
+    if (isAdminEmail || profile?.role === "admin") {
+      return {
+        success: false,
+        error: "Administrator accounts must sign in via the Admin Portal at /admin/login.",
+      };
+    }
+
+    let isNew = false;
     if (!profile) {
       isNew = true;
       profile = await createUserProfile({
         id: uid,
         displayName: displayName || normalizedEmail.split("@")[0],
         email: normalizedEmail,
-        role: isSystemAdminEmail(normalizedEmail) ? "admin" : input.roleIfNewUser || "student",
+        role: input.roleIfNewUser || "student",
         photoURL,
       });
     }
 
-    const sessionRole: Role = isSystemAdminEmail(normalizedEmail) ? "admin" : profile.role;
-    await createSession(profile.id, sessionRole, normalizedEmail);
+    await createSession(profile.id, profile.role, normalizedEmail);
 
     const redirectUrl =
-      sessionRole === "admin"
-        ? "/admin"
-        : isNew && profile.role === "tutor"
+      isNew && profile.role === "tutor"
         ? "/dashboard?justSignedUp=1"
         : "/dashboard";
 
