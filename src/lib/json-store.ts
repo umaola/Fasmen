@@ -51,6 +51,9 @@ const COLLECTIONS: Record<string, { name: string; idField: string }> = {
   "quiz-attempts.json": { name: "quizAttempts", idField: "id" },
   "subscriptions.json": { name: "subscriptions", idField: "id" },
   "credentials.json": { name: "credentials", idField: "userId" },
+  "wishlists.json": { name: "wishlists", idField: "id" },
+  "notes.json": { name: "notes", idField: "id" },
+  "student-activity.json": { name: "studentActivity", idField: "id" },
 };
 
 function collectionFor(file: string) {

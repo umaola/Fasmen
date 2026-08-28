@@ -3,6 +3,8 @@ import { listPublishedCourses, type Course } from "@/lib/courses";
 import { CATEGORIES } from "@/lib/categories";
 import { CourseCard } from "@/components/CourseCard";
 import { SearchIcon, BookIcon, SparklesIcon } from "@/components/icons";
+import { getCurrentUser } from "@/lib/dal";
+import { getStudentWishlistCourseIds } from "@/lib/wishlist";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,9 +16,17 @@ export default async function CourseCatalogPage({
 }) {
   const { q, category, level, price } = await searchParams;
   let allPublished: Course[] = [];
+  let wishlistCourseIds: string[] = [];
 
   try {
-    allPublished = await listPublishedCourses({ search: q, category });
+    const [courses, user] = await Promise.all([
+      listPublishedCourses({ search: q, category }),
+      getCurrentUser().catch(() => null),
+    ]);
+    allPublished = courses;
+    if (user?.role === "student") {
+      wishlistCourseIds = await getStudentWishlistCourseIds(user.id);
+    }
   } catch (err) {
     console.error("CourseCatalogPage: failed to load courses:", err);
   }
@@ -210,7 +220,11 @@ export default async function CourseCatalogPage({
         ) : (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
             {filteredCourses.map((course) => (
-              <CourseCard key={course.id} course={course} />
+              <CourseCard
+                key={course.id}
+                course={course}
+                isWishlisted={wishlistCourseIds.includes(course.id)}
+              />
             ))}
           </div>
         )}

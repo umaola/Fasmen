@@ -1,17 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { findCourseBySlug, listLessonsByCourse, type Course, type Lesson } from "@/lib/courses";
+import { findCourseBySlug, listLessonsByCourse, type Lesson } from "@/lib/courses";
 import { categoryName } from "@/lib/categories";
-import { findUserById, type UserProfile } from "@/lib/users";
+import { findUserById } from "@/lib/users";
 import { getCurrentUser } from "@/lib/dal";
 import { findEnrollment } from "@/lib/enrollments";
 import { enrollInCourse } from "@/app/actions/enrollments";
 import { listReviewsByCourse, findReviewByStudentAndCourse, type Review } from "@/lib/reviews";
 import { deleteReviewAction } from "@/app/actions/reviews";
 import { formatNaira } from "@/lib/currency";
+import { isCourseWishlisted } from "@/lib/wishlist";
 import { ReviewForm } from "./ReviewForm";
 import { CurriculumAccordion } from "./CurriculumAccordion";
+import { WishlistButton } from "@/components/WishlistButton";
 import {
   StarIcon,
   CheckCircleIcon,
@@ -21,7 +23,6 @@ import {
   ClockIcon,
   CheckIcon,
   PlayIcon,
-  UserCircleIcon,
 } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
@@ -47,6 +48,9 @@ export default async function CourseDetailPage({
 
   const enrollment =
     user?.role === "student" ? await findEnrollment(user.id, course.id).catch(() => undefined) : undefined;
+
+  const isWishlisted =
+    user?.role === "student" ? await isCourseWishlisted(user.id, course.id).catch(() => false) : false;
 
   const [reviews, myReview] = await Promise.all([
     listReviewsByCourse(course.id).catch(() => [] as Review[]),
@@ -437,6 +441,16 @@ export default async function CourseDetailPage({
                   <div className="rounded-lg bg-neutral-100 p-3 text-center text-xs text-neutral-600">
                     Logged in as <strong className="capitalize">{user.role}</strong>. Switch to a student account to enroll.
                   </div>
+                )}
+
+                {user?.role === "student" && !isEnrolled && (
+                  <WishlistButton
+                    courseId={course.id}
+                    courseSlug={course.slug}
+                    initialWishlisted={isWishlisted}
+                    showLabel={true}
+                    className="flex h-11 w-full items-center justify-center rounded-xl border border-neutral-300 bg-white text-xs font-semibold text-neutral-700 shadow-xs hover:bg-neutral-50"
+                  />
                 )}
               </div>
 

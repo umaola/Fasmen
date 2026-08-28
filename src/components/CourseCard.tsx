@@ -4,8 +4,15 @@ import type { Course } from "@/lib/courses";
 import { categoryName } from "@/lib/categories";
 import { formatNaira } from "@/lib/currency";
 import { StarIcon, AcademicCapIcon, CheckCircleIcon } from "@/components/icons";
+import { WishlistButton } from "@/components/WishlistButton";
 
-export function CourseCard({ course }: { course: Course }) {
+export function CourseCard({
+  course,
+  isWishlisted = false,
+}: {
+  course: Course;
+  isWishlisted?: boolean;
+}) {
   if (!course) return null;
 
   const title = course.title || "Untitled Course";
@@ -22,7 +29,7 @@ export function CourseCard({ course }: { course: Course }) {
   return (
     <Link
       href={`/courses/${slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl bg-white border border-neutral-200/80 shadow-[0_1px_3px_rgba(18,22,28,0.06)] transition-all duration-300 hover:shadow-[0_12px_24px_rgba(11,37,69,0.10)] hover:-translate-y-1"
+      className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-neutral-200/80 shadow-[0_1px_3px_rgba(18,22,28,0.06)] transition-all duration-300 hover:shadow-[0_12px_24px_rgba(11,37,69,0.10)] hover:-translate-y-1"
     >
       {/* 16:9 Thumbnail Shell with Overlays */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-primary-950">
@@ -52,11 +59,18 @@ export function CourseCard({ course }: { course: Course }) {
           </span>
         </div>
 
-        {/* Difficulty Level (Top-Right) */}
-        <div className="absolute top-3 right-3">
+        {/* Wishlist & Difficulty (Top-Right) */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
           <span className="inline-flex items-center rounded-full bg-primary-900/80 backdrop-blur-md px-2.5 py-0.5 text-[11px] font-medium capitalize text-primary-100 border border-primary-700/50">
             {level}
           </span>
+          <WishlistButton
+            courseId={course.id}
+            courseSlug={slug}
+            initialWishlisted={isWishlisted}
+            className="h-7 w-7 p-1 shadow-md hover:scale-105"
+            size="sm"
+          />
         </div>
 
         {/* Certificate Badge (Bottom-Left) */}

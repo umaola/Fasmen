@@ -179,14 +179,16 @@ export default async function CourseDetailPage({
           <div className="border-b border-neutral-200/80 pb-4">
             <div className="flex items-center justify-between">
               <h2 className="font-heading text-xl font-bold text-primary-900">
-                Step 4: Assessment & Grading ({questions.length})
+                Step 4: Assessment & Grading (Optional)
               </h2>
-              <span className="rounded-full bg-accent-100 px-3 py-1 text-xs font-semibold text-accent-600">
-                Pass Mark: {course.passThresholdPercent}%
-              </span>
+              {questions.length > 0 && (
+                <span className="rounded-full bg-accent-100 px-3 py-1 text-xs font-semibold text-accent-600">
+                  Pass Mark: {course.passThresholdPercent}%
+                </span>
+              )}
             </div>
             <p className="mt-1 text-sm text-neutral-700">
-              Students must score at least {course.passThresholdPercent}% to pass and earn their certificate (up to {course.maxAttempts} attempt{course.maxAttempts === 1 ? "" : "s"}).
+              Adding quiz questions is optional. If you skip this step, students will automatically receive their verified certificate upon completing 100% of all lessons.
             </p>
           </div>
 
@@ -239,9 +241,9 @@ export default async function CourseDetailPage({
             ) : (
               <div className="my-6 rounded-lg border border-dashed border-neutral-300 p-8 text-center bg-neutral-50/50">
                 <ClipboardCheckIcon className="mx-auto h-8 w-8 text-neutral-400" />
-                <h3 className="mt-2 text-sm font-semibold text-neutral-900">No quiz questions yet</h3>
-                <p className="mt-1 text-xs text-neutral-700">
-                  Assessments test student comprehension before issuing certificates.
+                <h3 className="mt-2 text-sm font-semibold text-neutral-900">No quiz questions added (Optional)</h3>
+                <p className="mt-1 text-xs text-neutral-700 max-w-md mx-auto">
+                  You can proceed without an assessment. Students will receive their certificate automatically as soon as they complete all course lessons.
                 </p>
               </div>
             )}
@@ -258,7 +260,7 @@ export default async function CourseDetailPage({
             courseId={course.id}
             currentStep={4}
             proceedHref={`/dashboard/courses/${course.id}?step=5`}
-            proceedLabel="Next"
+            proceedLabel={questions.length > 0 ? "Next: Review" : "Skip / Next: Review"}
           />
         </div>
       )}
@@ -349,7 +351,9 @@ export default async function CourseDetailPage({
                 <li className="flex items-center gap-2 text-neutral-700">
                   <CheckCircleIcon className="h-4 w-4 text-success-600 shrink-0" />
                   <span>
-                    Assessment: {questions.length} question{questions.length === 1 ? "" : "s"} ({course.passThresholdPercent}% pass mark)
+                    {questions.length > 0
+                      ? `Assessment: ${questions.length} question${questions.length === 1 ? "" : "s"} (${course.passThresholdPercent}% pass mark)`
+                      : "Assessment: None (Certificate awarded upon 100% lesson completion)"}
                   </span>
                 </li>
 

@@ -12,6 +12,7 @@ import {
   CreditCardIcon,
   CertificateIcon,
   ShieldCheckIcon,
+  HeartIcon,
 } from "@/components/icons";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -25,6 +26,11 @@ const iconClass = "h-5 w-5 shrink-0";
 const SIDEBAR_NAV: Record<"student" | "tutor" | "admin", SidebarNavItem[]> = {
   student: [
     { href: "/dashboard", label: "Dashboard", icon: <HomeIcon className={iconClass} /> },
+    {
+      href: "/dashboard/saved",
+      label: "Saved courses",
+      icon: <HeartIcon className={iconClass} />,
+    },
     {
       href: "/dashboard/certificates",
       label: "Certificates",
